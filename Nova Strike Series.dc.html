@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: #050508; color: #fff; font-family: 'Montserrat', sans-serif; overflow-x: hidden; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #050508; }
+    ::-webkit-scrollbar-thumb { background: #FF0033; border-radius: 2px; }
+    @keyframes glowRed { 0%,100%{filter:drop-shadow(0 0 6px rgba(255,0,51,.8)) drop-shadow(0 0 12px rgba(255,0,51,.4))} 50%{filter:drop-shadow(0 0 14px rgba(255,0,51,1)) drop-shadow(0 0 28px rgba(255,0,51,.7)) drop-shadow(0 0 50px rgba(255,0,51,.3))} }
+    @keyframes glowCyan { 0%,100%{filter:drop-shadow(0 0 6px rgba(0,240,255,.8)) drop-shadow(0 0 12px rgba(0,240,255,.4))} 50%{filter:drop-shadow(0 0 14px rgba(0,240,255,1)) drop-shadow(0 0 28px rgba(0,240,255,.7))} }
+    @keyframes textRed { 0%,100%{text-shadow:0 0 10px rgba(255,0,51,.8),0 0 20px rgba(255,0,51,.5),0 0 40px rgba(255,0,51,.3)} 50%{text-shadow:0 0 20px rgba(255,0,51,1),0 0 40px rgba(255,0,51,.8),0 0 80px rgba(255,0,51,.5)} }
+    @keyframes textCyan { 0%,100%{text-shadow:0 0 10px rgba(0,240,255,.8),0 0 20px rgba(0,240,255,.5)} 50%{text-shadow:0 0 20px rgba(0,240,255,1),0 0 40px rgba(0,240,255,.8),0 0 60px rgba(0,240,255,.4)} }
+    @keyframes textGold { 0%,100%{text-shadow:0 0 10px rgba(212,160,23,.8),0 0 20px rgba(212,160,23,.4)} 50%{text-shadow:0 0 20px rgba(212,160,23,1),0 0 40px rgba(212,160,23,.6)} }
+    @keyframes particleRise { 0%{transform:translateY(0) scale(1);opacity:0} 10%{opacity:.8} 90%{opacity:.3} 100%{transform:translateY(-600px) scale(.2);opacity:0} }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(40px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes vsFlash { 0%,100%{transform:scale(1) rotate(45deg)} 50%{transform:scale(1.1) rotate(45deg)} }
+    @keyframes strokeDraw { from{stroke-dashoffset:2400} to{stroke-dashoffset:0} }
+    @keyframes strokeDrawInner { from{stroke-dashoffset:1900} to{stroke-dashoffset:0} }
+    @keyframes scanH { 0%{top:0;opacity:.5} 100%{top:100%;opacity:0} }
+    @keyframes btnPulse { 0%,100%{box-shadow:0 0 15px rgba(255,0,51,.5),0 0 30px rgba(255,0,51,.2)} 50%{box-shadow:0 0 30px rgba(255,0,51,.9),0 0 60px rgba(255,0,51,.4)} }
+    @keyframes logoAnim { from{opacity:0;letter-spacing:.4em;filter:blur(8px)} to{opacity:1;letter-spacing:.06em;filter:blur(0)} }
+    @keyframes countPop { 0%,100%{transform:scaleY(1)} 45%{transform:scaleY(.88)} }
+    @keyframes menuSlideIn { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+  </style>
+</helmet>
+
+<!-- MOBILE MENU OVERLAY -->
+<div style="display:{{ mobileMenuDisplay }};position:fixed;inset:0;background:rgba(5,5,8,.97);z-index:500;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:24px;animation:menuSlideIn .25s ease-out;">
+  <button style="position:absolute;top:16px;right:18px;background:none;border:none;color:rgba(255,255,255,.5);font-size:28px;cursor:pointer;line-height:1;padding:8px;" onClick="{{ closeMenu }}">✕</button>
+  <a href="#inicio" onClick="{{ closeMenu }}" style="font-family:'Bebas Neue',sans-serif;font-size:48px;color:#fff;text-decoration:none;letter-spacing:.12em;line-height:1;transition:color .2s;" style-hover="color:#FF0033;">INICIO</a>
+  <a href="#cartelera" onClick="{{ closeMenu }}" style="font-family:'Bebas Neue',sans-serif;font-size:48px;color:#fff;text-decoration:none;letter-spacing:.12em;line-height:1;" style-hover="color:#FF0033;">CARTELERA</a>
+  <a href="#vip" onClick="{{ closeMenu }}" style="font-family:'Bebas Neue',sans-serif;font-size:48px;color:#D4A017;text-decoration:none;letter-spacing:.12em;line-height:1;animation:textGold 3s ease-in-out infinite;">VIP</a>
+  <a href="#nova-feed" onClick="{{ closeMenu }}" style="font-family:'Bebas Neue',sans-serif;font-size:48px;color:#A855F7;text-decoration:none;letter-spacing:.12em;line-height:1;">NOVA FEED</a>
+  <a href="#patrocinadores" onClick="{{ closeMenu }}" style="font-family:'Bebas Neue',sans-serif;font-size:48px;color:rgba(255,255,255,.4);text-decoration:none;letter-spacing:.12em;line-height:1;">SPONSORS</a>
+  <a href="#vip" onClick="{{ closeMenu }}" style="background:#FF0033;color:#fff;padding:16px 44px;font-size:14px;font-weight:800;letter-spacing:.22em;text-decoration:none;margin-top:10px;animation:btnPulse 2.5s ease-in-out infinite;">⚡ COMPRAR BOLETOS</a>
+</div>
+
+<!-- NAVBAR -->
+<nav style="position:fixed;top:0;left:0;right:0;z-index:200;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(16px,4vw,52px);background:{{ navBg }};backdrop-filter:{{ navBlur }};box-shadow:{{ navShadow }};transition:background .3s,box-shadow .3s;">
+  <a href="#inicio" style="text-decoration:none;font-family:'Bebas Neue',sans-serif;font-size:clamp(18px,3.5vw,24px);letter-spacing:.08em;display:flex;gap:5px;align-items:baseline;flex-shrink:0;">
+    <span style="color:#FF0033;animation:textRed 3s ease-in-out infinite;">NOVA</span>
+    <span style="color:#fff;">STRIKE</span>
+    <span style="color:#00F0FF;animation:textCyan 3s ease-in-out infinite .8s;">SERIES</span>
+  </a>
+  <div style="display:{{ navLinksDisplay }};gap:clamp(12px,2vw,28px);align-items:center;">
+    <a href="#inicio" style="color:rgba(255,255,255,.6);font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;transition:color .2s;" style-hover="color:#fff;">INICIO</a>
+    <a href="#cartelera" style="color:rgba(255,255,255,.6);font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;transition:color .2s;" style-hover="color:#FF0033;">CARTELERA</a>
+    <a href="#vip" style="color:rgba(255,255,255,.6);font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;transition:color .2s;" style-hover="color:#D4A017;">VIP</a>
+    <a href="#nova-feed" style="color:rgba(255,255,255,.6);font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;transition:color .2s;" style-hover="color:#A855F7;">NOVA FEED</a>
+    <a href="#vip" style="background:#FF0033;color:#fff;padding:10px 18px;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;transition:all .2s;white-space:nowrap;" style-hover="background:#CC0029;transform:translateY(-1px);">BOLETOS</a>
+  </div>
+  <button style="display:{{ hamburgerDisplay }};flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:8px;flex-shrink:0;" onClick="{{ toggleMenu }}">
+    <span style="display:block;width:22px;height:2px;background:#fff;"></span>
+    <span style="display:block;width:16px;height:2px;background:#FF0033;"></span>
+    <span style="display:block;width:22px;height:2px;background:#fff;"></span>
+  </button>
+</nav>
+
+<!-- HERO SECTION -->
+<section id="inicio" style="position:relative;height:100vh;min-height:640px;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(ellipse 90% 80% at 50% 55%,#1B0B30 0%,#0C0518 50%,#050508 100%);">
+  <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(0,240,255,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,.022) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:1;"></div>
+  <div style="position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(0,240,255,.4),transparent);animation:scanH 6s linear infinite;pointer-events:none;z-index:3;"></div>
+  <sc-for list="{{ particles }}" as="p" hint-placeholder-count="0">
+    <div style="position:absolute;left:{{ p.left }};top:{{ p.top }};width:{{ p.size }};height:{{ p.size }};border-radius:50%;background:{{ p.color }};box-shadow:0 0 6px {{ p.color }};animation:particleRise {{ p.duration }} ease-in-out {{ p.delay }} infinite;pointer-events:none;will-change:transform;z-index:2;"></div>
+  </sc-for>
+  <svg viewBox="0 0 800 800" style="position:absolute;width:min(90vh,88vw);height:min(90vh,88vw);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:0;" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <radialGradient id="octaFill" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#1B0B30" stop-opacity=".65"></stop>
+        <stop offset="100%" stop-color="#050508" stop-opacity="0"></stop>
+      </radialGradient>
+    </defs>
+    <polygon points="400,20 669,131 780,400 669,669 400,780 131,669 20,400 131,131" fill="url(#octaFill)"></polygon>
+    <polygon points="400,20 669,131 780,400 669,669 400,780 131,669 20,400 131,131" fill="none" stroke="#FF0033" stroke-width="2" stroke-dasharray="2400" style="animation:strokeDraw 2.8s ease-out .3s both;"></polygon>
+    <polygon points="400,100 612,188 700,400 612,612 400,700 188,612 100,400 188,188" fill="none" stroke="#00F0FF" stroke-width="1" stroke-dasharray="1900" stroke-opacity=".5" style="animation:strokeDrawInner 2.8s ease-out .9s both;"></polygon>
+    <circle cx="400" cy="20" r="4" fill="#FF0033" style="animation:glowRed 2s ease-in-out infinite;"></circle>
+    <circle cx="669" cy="131" r="3" fill="#FF0033" style="animation:glowRed 2s ease-in-out infinite .25s;"></circle>
+    <circle cx="780" cy="400" r="4" fill="#FF0033" style="animation:glowRed 2s ease-in-out infinite .5s;"></circle>
+    <circle cx="669" cy="669" r="3" fill="#FF0033" style="animation:glowRed 2s ease-in-out infinite .75s;"></circle>
+    <circle cx="400" cy="780" r="4" fill="#FF0033" style="animation:glowRed 2s ease-in-out infinite 1s;"></circle>
+    <circle cx="131" cy="669" r="3" fill="#FF0033" style="animation:glowRed 2s ease-in-out infinite 1.25s;"></circle>
+    <circle cx="20" cy="400" r="4" fill="#FF0033" style="animation:glowRed 2s ease-in-out infinite 1.5s;"></circle>
+    <circle cx="131" cy="131" r="3" fill="#FF0033" style="animation:glowRed 2s ease-in-out infinite 1.75s;"></circle>
+    <line x1="400" y1="20" x2="400" y2="780" stroke="rgba(0,240,255,.05)" stroke-width="1"></line>
+    <line x1="20" y1="400" x2="780" y2="400" stroke="rgba(0,240,255,.05)" stroke-width="1"></line>
+    <line x1="131" y1="131" x2="669" y2="669" stroke="rgba(255,0,51,.04)" stroke-width="1"></line>
+    <line x1="669" y1="131" x2="131" y2="669" stroke="rgba(255,0,51,.04)" stroke-width="1"></line>
+  </svg>
+  <div style="position:relative;z-index:4;text-align:center;padding:0 clamp(16px,5vw,60px);animation:fadeUp 1s ease-out .2s both;width:100%;">
+    <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,0,51,.1);border:1px solid rgba(255,0,51,.3);padding:5px 14px;margin-bottom:18px;">
+      <span style="width:6px;height:6px;border-radius:50%;background:#FF0033;display:inline-block;animation:glowRed 1.5s ease-in-out infinite;flex-shrink:0;"></span>
+      <span style="font-size:clamp(9px,2.2vw,11px);font-weight:700;letter-spacing:clamp(.12em,.3em,.3em);color:#FF0033;white-space:nowrap;">NOVA STRIKE 47 · 19 JUL 2026 · CDMX</span>
+    </div>
+    <div style="font-family:'Bebas Neue',sans-serif;line-height:.9;margin-bottom:14px;animation:logoAnim 1.2s ease-out .4s both;">
+      <div style="font-size:clamp(52px,14vw,148px);color:#FF0033;display:block;animation:textRed 4s ease-in-out infinite;">NOVA</div>
+      <div style="font-size:clamp(52px,14vw,148px);color:#FFFFFF;display:block;letter-spacing:.1em;">STRIKE</div>
+      <div style="font-size:clamp(34px,9vw,96px);color:#00F0FF;display:block;letter-spacing:.3em;animation:textCyan 4s ease-in-out infinite 1s;">SERIES</div>
+    </div>
+    <p style="font-size:clamp(8px,2vw,11px);font-weight:700;letter-spacing:clamp(.2em,.5em,.5em);color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:clamp(24px,4vw,40px);">LA EXPERIENCIA MÁS BRUTAL DEL MMA PREMIUM</p>
+    <div style="display:flex;align-items:flex-start;justify-content:center;gap:{{ cdGap }};margin-bottom:clamp(30px,5vw,48px);">
+      <div style="text-align:center;">
+        <div style="width:{{ cdBox }};height:{{ cdBox }};background:rgba(0,0,0,.7);border:1px solid rgba(255,0,51,.35);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:{{ cdFont }};color:#fff;box-shadow:0 0 20px rgba(255,0,51,.12),inset 0 0 20px rgba(0,0,0,.5);animation:countPop 1s ease-in-out infinite;">{{ days }}</div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:.2em;color:rgba(255,0,51,.7);margin-top:5px;text-transform:uppercase;">Días</div>
+      </div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:{{ cdSep }};color:#FF0033;padding-top:{{ cdSepPad }};line-height:1;">:</div>
+      <div style="text-align:center;">
+        <div style="width:{{ cdBox }};height:{{ cdBox }};background:rgba(0,0,0,.7);border:1px solid rgba(255,0,51,.35);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:{{ cdFont }};color:#fff;box-shadow:0 0 20px rgba(255,0,51,.12),inset 0 0 20px rgba(0,0,0,.5);">{{ hours }}</div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:.2em;color:rgba(255,0,51,.7);margin-top:5px;text-transform:uppercase;">Horas</div>
+      </div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:{{ cdSep }};color:#FF0033;padding-top:{{ cdSepPad }};line-height:1;">:</div>
+      <div style="text-align:center;">
+        <div style="width:{{ cdBox }};height:{{ cdBox }};background:rgba(0,0,0,.7);border:1px solid rgba(0,240,255,.3);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:{{ cdFont }};color:#fff;box-shadow:0 0 20px rgba(0,240,255,.1),inset 0 0 20px rgba(0,0,0,.5);">{{ mins }}</div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:.2em;color:rgba(0,240,255,.7);margin-top:5px;text-transform:uppercase;">Min</div>
+      </div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:{{ cdSep }};color:#00F0FF;padding-top:{{ cdSepPad }};line-height:1;">:</div>
+      <div style="text-align:center;">
+        <div style="width:{{ cdBox }};height:{{ cdBox }};background:rgba(0,0,0,.7);border:1px solid rgba(0,240,255,.3);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:{{ cdFont }};color:#fff;box-shadow:0 0 20px rgba(0,240,255,.1),inset 0 0 20px rgba(0,0,0,.5);animation:countPop 1s ease-in-out infinite;">{{ secs }}</div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:.2em;color:rgba(0,240,255,.7);margin-top:5px;text-transform:uppercase;">Seg</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;">
+      <a href="#vip" style="background:#FF0033;color:#fff;padding:clamp(13px,2vw,16px) clamp(20px,4vw,44px);font-size:clamp(11px,2.5vw,13px);font-weight:800;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;animation:btnPulse 2.5s ease-in-out infinite;transition:background .2s,transform .2s;" style-hover="background:#CC0029;transform:translateY(-2px);">⚡ COMPRAR BOLETOS</a>
+      <a href="#cartelera" style="background:transparent;color:#fff;padding:clamp(13px,2vw,16px) clamp(20px,4vw,44px);font-size:clamp(11px,2.5vw,13px);font-weight:700;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;border:1px solid rgba(255,255,255,.3);transition:all .2s;" style-hover="border-color:rgba(0,240,255,.6);color:#00F0FF;transform:translateY(-2px);">VER CARTELERA</a>
+    </div>
+  </div>
+  <div style="position:absolute;bottom:22px;left:50%;transform:translateX(-50%);z-index:4;text-align:center;opacity:.3;">
+    <div style="font-size:9px;font-weight:700;letter-spacing:.4em;color:#fff;margin-bottom:5px;">SCROLL</div>
+    <div style="width:1px;height:30px;background:linear-gradient(to bottom,#FF0033,transparent);margin:0 auto;"></div>
+  </div>
+</section>
+
+<!-- FIGHT CARD -->
+<section id="cartelera" style="background:#09070F;padding-top:68px;overflow:hidden;">
+  <div style="text-align:center;padding:0 clamp(16px,4vw,40px);">
+    <div style="font-size:10px;font-weight:700;letter-spacing:.5em;color:#FF0033;margin-bottom:8px;text-transform:uppercase;">Nova Strike 47 · CDMX · 19 Julio 2026</div>
+    <h2 style="font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,8vw,80px);color:#fff;letter-spacing:.1em;">CARTELERA OFICIAL</h2>
+    <div style="width:80px;height:2px;background:linear-gradient(90deg,#FF0033,#00F0FF);margin:12px auto 44px;"></div>
+  </div>
+  <div style="border-top:1px solid rgba(212,160,23,.2);border-bottom:1px solid rgba(212,160,23,.12);background:rgba(212,160,23,.03);padding:10px 0;text-align:center;">
+    <span style="font-size:clamp(9px,2vw,11px);font-weight:700;letter-spacing:clamp(.2em,.45em,.45em);color:#D4A017;text-transform:uppercase;animation:textGold 3s ease-in-out infinite;">⭐ PELEA PRINCIPAL · PESO SEMICOMPLETO · 93 KG</span>
+  </div>
+  <div style="position:relative;display:flex;flex-direction:{{ fightDir }};min-height:{{ fightMainMinH }};">
+    <div style="flex:1;background:linear-gradient(135deg,#1C0008 0%,#130510 60%,#0D0510 100%);padding:clamp(28px,5vw,56px) clamp(20px,4vw,48px);display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:-60px;right:-60px;width:280px;height:280px;background:radial-gradient(circle,rgba(255,0,51,.12) 0%,transparent 70%);pointer-events:none;"></div>
+      <div style="position:absolute;font-family:'Bebas Neue',sans-serif;font-size:clamp(80px,22vw,300px);color:rgba(255,0,51,.04);right:-5px;bottom:-40px;line-height:1;pointer-events:none;user-select:none;">M</div>
+      <div style="position:absolute;top:18px;left:clamp(18px,4vw,48px);font-size:9px;font-weight:700;letter-spacing:.28em;color:#FF0033;border:1px solid rgba(255,0,51,.3);padding:3px 10px;text-transform:uppercase;">Esquina Roja</div>
+      <div style="position:relative;z-index:1;">
+        <div style="font-size:clamp(11px,1.5vw,14px);font-weight:600;letter-spacing:.1em;color:rgba(255,0,51,.7);margin-bottom:3px;">"EL TORO"</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,7vw,88px);color:#fff;line-height:.88;letter-spacing:.04em;animation:textRed 4s ease-in-out infinite;">
+          <div>CARLOS</div>
+          <div>MENDEZ</div>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+          <span style="font-family:'Bebas Neue',sans-serif;font-size:clamp(18px,3vw,26px);color:#FF0033;letter-spacing:.1em;">15-3-0</span>
+          <span style="font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.14em;text-transform:uppercase;">MMA · CDMX, MEX</span>
+        </div>
+      </div>
+    </div>
+    <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:10;text-align:center;">
+      <div style="width:clamp(52px,8vw,76px);height:clamp(52px,8vw,76px);border:2px solid #FF0033;background:#09070F;display:flex;align-items:center;justify-content:center;box-shadow:0 0 25px rgba(255,0,51,.5),0 0 55px rgba(255,0,51,.2);animation:vsFlash 2s ease-in-out infinite;">
+        <span style="transform:rotate(-45deg);display:block;font-family:'Bebas Neue',sans-serif;font-size:clamp(14px,2.5vw,20px);color:#FF0033;letter-spacing:.06em;">VS</span>
+      </div>
+    </div>
+    <div style="flex:1;background:linear-gradient(225deg,#001525 0%,#050F1A 60%,#050810 100%);padding:clamp(28px,5vw,56px) clamp(20px,4vw,48px);display:flex;flex-direction:column;justify-content:flex-end;align-items:{{ f2Align }};position:relative;overflow:hidden;">
+      <div style="position:absolute;top:-60px;left:-60px;width:280px;height:280px;background:radial-gradient(circle,rgba(0,240,255,.1) 0%,transparent 70%);pointer-events:none;"></div>
+      <div style="position:absolute;font-family:'Bebas Neue',sans-serif;font-size:clamp(80px,22vw,300px);color:rgba(0,240,255,.04);left:-5px;bottom:-40px;line-height:1;pointer-events:none;user-select:none;">V</div>
+      <div style="position:absolute;top:18px;right:clamp(18px,4vw,48px);font-size:9px;font-weight:700;letter-spacing:.28em;color:#00F0FF;border:1px solid rgba(0,240,255,.3);padding:3px 10px;text-transform:uppercase;">Esquina Azul</div>
+      <div style="position:relative;z-index:1;text-align:{{ f2TextAlign }};">
+        <div style="font-size:clamp(11px,1.5vw,14px);font-weight:600;letter-spacing:.1em;color:rgba(0,240,255,.7);margin-bottom:3px;">"IRON"</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,7vw,88px);color:#fff;line-height:.88;letter-spacing:.04em;animation:textCyan 4s ease-in-out infinite 1.5s;">
+          <div>DMITRI</div>
+          <div>VOLKOV</div>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:12px;align-items:center;justify-content:{{ f2Align }};flex-wrap:wrap;">
+          <span style="font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.14em;text-transform:uppercase;">MMA · MOSCÚ, RUS</span>
+          <span style="font-family:'Bebas Neue',sans-serif;font-size:clamp(18px,3vw,26px);color:#00F0FF;letter-spacing:.1em;">18-1-0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="border-top:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.015);padding:7px 0;text-align:center;">
+    <span style="font-size:clamp(9px,2vw,10px);font-weight:700;letter-spacing:clamp(.18em,.38em,.38em);color:rgba(255,255,255,.4);text-transform:uppercase;">CO-ESTELAR · PESO PAJA · 52 KG</span>
+  </div>
+  <div style="position:relative;display:flex;flex-direction:{{ fightDir }};min-height:{{ fightCoMinH }};background:#070510;">
+    <div style="flex:1;background:linear-gradient(135deg,#150008 0%,#100410 60%,#080410 100%);padding:clamp(22px,4vw,44px) clamp(18px,3.5vw,44px);display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;">
+      <div style="position:absolute;font-family:'Bebas Neue',sans-serif;font-size:clamp(80px,18vw,230px);color:rgba(255,0,51,.04);right:-5px;bottom:-30px;line-height:1;pointer-events:none;user-select:none;">A</div>
+      <div style="position:absolute;top:16px;left:clamp(16px,3.5vw,44px);font-size:9px;font-weight:700;letter-spacing:.24em;color:#FF0033;border:1px solid rgba(255,0,51,.25);padding:3px 9px;text-transform:uppercase;">Esquina Roja</div>
+      <div style="position:relative;z-index:1;">
+        <div style="font-size:12px;font-weight:600;letter-spacing:.1em;color:rgba(255,0,51,.65);margin-bottom:2px;">"FÉNIX"</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,5.5vw,60px);color:#fff;line-height:.9;letter-spacing:.04em;">ANA CASTILLO</div>
+        <div style="margin-top:8px;display:flex;gap:10px;align-items:center;">
+          <span style="font-family:'Bebas Neue',sans-serif;font-size:clamp(16px,2.5vw,22px);color:#FF0033;letter-spacing:.1em;">9-1-0</span>
+          <span style="font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.12em;text-transform:uppercase;">MTY, MEX</span>
+        </div>
+      </div>
+    </div>
+    <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:10;">
+      <div style="width:clamp(42px,6vw,56px);height:clamp(42px,6vw,56px);border:1.5px solid rgba(255,0,51,.55);background:#070510;display:flex;align-items:center;justify-content:center;box-shadow:0 0 18px rgba(255,0,51,.3);">
+        <span style="transform:rotate(-45deg);display:block;font-family:'Bebas Neue',sans-serif;font-size:clamp(11px,1.8vw,16px);color:#FF0033;">VS</span>
+      </div>
+    </div>
+    <div style="flex:1;background:linear-gradient(225deg,#001218 0%,#050D18 60%,#05080F 100%);padding:clamp(22px,4vw,44px) clamp(18px,3.5vw,44px);display:flex;flex-direction:column;justify-content:flex-end;align-items:{{ f2Align }};position:relative;overflow:hidden;">
+      <div style="position:absolute;font-family:'Bebas Neue',sans-serif;font-size:clamp(80px,18vw,230px);color:rgba(0,240,255,.04);left:-5px;bottom:-30px;line-height:1;pointer-events:none;user-select:none;">Y</div>
+      <div style="position:absolute;top:16px;right:clamp(16px,3.5vw,44px);font-size:9px;font-weight:700;letter-spacing:.24em;color:#00F0FF;border:1px solid rgba(0,240,255,.25);padding:3px 9px;text-transform:uppercase;">Esquina Azul</div>
+      <div style="position:relative;z-index:1;text-align:{{ f2TextAlign }};">
+        <div style="font-size:12px;font-weight:600;letter-spacing:.1em;color:rgba(0,240,255,.65);margin-bottom:2px;">"STORM"</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,5.5vw,60px);color:#fff;line-height:.9;letter-spacing:.04em;">YUKI TANAKA</div>
+        <div style="margin-top:8px;display:flex;gap:10px;align-items:center;justify-content:{{ f2Align }};">
+          <span style="font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.12em;text-transform:uppercase;">OSAKA, JPN</span>
+          <span style="font-family:'Bebas Neue',sans-serif;font-size:clamp(16px,2.5vw,22px);color:#00F0FF;letter-spacing:.1em;">11-2-0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="padding:40px clamp(16px,4vw,40px) 18px;text-align:center;">
+    <span style="font-size:10px;font-weight:700;letter-spacing:.45em;color:rgba(255,255,255,.28);text-transform:uppercase;">— Cartelera Preliminar —</span>
+  </div>
+  <div style="padding:0 clamp(16px,4vw,40px) 68px;max-width:1200px;margin:0 auto;">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2px;">
+      <sc-for list="{{ prelims }}" as="fight" hint-placeholder-count="6">
+        <div style="background:rgba(255,255,255,.018);border:1px solid rgba(255,255,255,.05);padding:clamp(13px,2vw,20px) clamp(14px,2.5vw,26px);display:flex;align-items:center;gap:10px;cursor:pointer;transition:background .2s,border-color .2s;" style-hover="background:rgba(255,0,51,.04);border-color:rgba(255,0,51,.18);">
+          <div style="flex:1;min-width:0;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(13px,2.2vw,19px);color:#fff;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ fight.r1 }}</div>
+            <div style="font-size:11px;color:#FF0033;letter-spacing:.1em;margin-top:2px;font-weight:700;">{{ fight.r1rec }}</div>
+          </div>
+          <div style="width:28px;height:28px;border:1px solid rgba(255,0,51,.4);display:flex;align-items:center;justify-content:center;transform:rotate(45deg);flex-shrink:0;background:rgba(0,0,0,.4);">
+            <span style="transform:rotate(-45deg);display:block;font-family:'Bebas Neue',sans-serif;font-size:9px;color:#FF0033;">VS</span>
+          </div>
+          <div style="flex:1;min-width:0;text-align:right;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(13px,2.2vw,19px);color:#fff;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ fight.r2 }}</div>
+            <div style="font-size:11px;color:#00F0FF;letter-spacing:.1em;margin-top:2px;font-weight:700;text-align:right;">{{ fight.r2rec }}</div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="text-align:center;margin-top:30px;">
+      <a href="#vip" style="display:inline-block;background:transparent;color:#fff;padding:12px 40px;font-size:12px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;text-decoration:none;border:1px solid rgba(255,0,51,.45);transition:all .2s;" style-hover="background:#FF0033;border-color:#FF0033;box-shadow:0 0 25px rgba(255,0,51,.5);">COMPRAR BOLETOS →</a>
+    </div>
+  </div>
+</section>
+
+<!-- VIP EXPERIENCE -->
+<section id="vip" style="background:radial-gradient(ellipse 80% 50% at 50% 0%,#140A22 0%,#070410 100%);padding:68px clamp(16px,4vw,40px);">
+  <div style="text-align:center;margin-bottom:44px;">
+    <div style="font-size:10px;font-weight:700;letter-spacing:.5em;color:#D4A017;margin-bottom:8px;text-transform:uppercase;animation:textGold 3s ease-in-out infinite;">Experiencia Exclusiva</div>
+    <h2 style="font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,8vw,80px);color:#fff;letter-spacing:.1em;">VIP EXPERIENCE</h2>
+    <div style="width:60px;height:2px;background:linear-gradient(90deg,transparent,#D4A017,transparent);margin:12px auto 0;"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:2px;max-width:1060px;margin:0 auto 28px;">
+    <sc-for list="{{ vipPackages }}" as="pkg" hint-placeholder-count="3">
+      <div style="background:{{ pkg.colorBg }};border:1px solid {{ pkg.colorBorder }};padding:clamp(22px,4vw,36px);display:flex;flex-direction:column;position:relative;transition:transform .3s,box-shadow .3s;" style-hover="transform:translateY(-6px);box-shadow:0 16px 50px rgba(0,0,0,.5);">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(24px,4vw,40px);color:#fff;letter-spacing:.12em;margin-bottom:5px;">{{ pkg.tier }}</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,6vw,58px);color:{{ pkg.color }};letter-spacing:.06em;line-height:1;margin-bottom:3px;">{{ pkg.price }}</div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.18em;color:rgba(255,255,255,.35);margin-bottom:20px;text-transform:uppercase;">MXN / persona</div>
+        <div style="height:1px;background:{{ pkg.colorBorder }};margin-bottom:18px;"></div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:9px;margin-bottom:22px;">
+          <sc-for list="{{ pkg.features }}" as="feat" hint-placeholder-count="5">
+            <div style="display:flex;align-items:flex-start;gap:8px;">
+              <span style="color:{{ pkg.color }};font-size:11px;margin-top:1px;flex-shrink:0;">✦</span>
+              <span style="font-size:13px;font-weight:500;color:rgba(255,255,255,.75);line-height:1.3;">{{ feat }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <a href="#" style="display:block;background:{{ pkg.color }};color:#050508;text-align:center;padding:13px;font-size:12px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;transition:opacity .2s,transform .2s;" style-hover="opacity:.85;transform:translateY(-1px);">RESERVAR AHORA</a>
+      </div>
+    </sc-for>
+  </div>
+  <div style="text-align:center;">
+    <p style="font-size:11px;color:rgba(255,255,255,.25);letter-spacing:.1em;text-transform:uppercase;">Capacidad limitada · Precios incluyen IVA · Evento +18</p>
+  </div>
+</section>
+
+<!-- NOVA FEED -->
+<section id="nova-feed" style="background:#060410;padding:68px 0 56px;overflow:hidden;">
+  <div style="text-align:center;margin-bottom:36px;padding:0 clamp(16px,4vw,40px);">
+    <div style="font-size:10px;font-weight:700;letter-spacing:.5em;color:#A855F7;margin-bottom:8px;text-transform:uppercase;">Contenido Exclusivo</div>
+    <h2 style="font-family:'Bebas Neue',sans-serif;font-size:clamp(44px,9vw,88px);color:#fff;letter-spacing:.1em;">NOVA <span style="color:#A855F7;">FEED</span></h2>
+    <p style="font-size:11px;color:rgba(255,255,255,.35);letter-spacing:.18em;margin-top:8px;text-transform:uppercase;">Careos · Knockouts · Highlights · Backstage</p>
+  </div>
+  <div style="overflow-x:auto;padding:0 clamp(16px,4vw,40px) 14px;-webkit-overflow-scrolling:touch;">
+    <div style="display:flex;gap:12px;width:max-content;padding-bottom:6px;">
+      <sc-for list="{{ feedItems }}" as="item" hint-placeholder-count="8">
+        <div style="width:192px;height:341px;flex-shrink:0;position:relative;overflow:hidden;background:{{ item.bg }};cursor:pointer;transition:transform .25s,box-shadow .25s;" style-hover="transform:scale(1.04) translateY(-4px);box-shadow:0 8px 32px rgba(168,85,247,.3),0 0 0 1px rgba(168,85,247,.35);">
+          <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.92) 0%,rgba(0,0,0,.2) 50%,transparent 100%);z-index:1;"></div>
+          <div style="position:absolute;top:10px;right:10px;z-index:2;background:rgba(0,0,0,.65);padding:3px 7px;font-size:10px;font-weight:700;color:#fff;">{{ item.dur }}</div>
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2;width:46px;height:46px;border:2px solid rgba(255,255,255,.65);border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.3);">
+            <span style="font-size:15px;margin-left:3px;opacity:.9;">▶</span>
+          </div>
+          <div style="position:absolute;bottom:0;left:0;right:0;z-index:2;padding:12px 10px;">
+            <div style="font-size:11px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:5px;text-wrap:pretty;">{{ item.title }}</div>
+            <div style="font-size:10px;color:rgba(255,255,255,.5);letter-spacing:.06em;">{{ item.views }} vistas</div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+  <div style="display:flex;gap:12px;justify-content:center;margin-top:28px;flex-wrap:wrap;padding:0 clamp(16px,4vw,40px);">
+    <a href="#" style="display:flex;align-items:center;gap:8px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.3);padding:11px 22px;text-decoration:none;color:#fff;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;transition:all .2s;" style-hover="background:rgba(168,85,247,.2);transform:translateY(-1px);">♪ VER EN TIKTOK</a>
+    <a href="#" style="display:flex;align-items:center;gap:8px;background:rgba(255,0,51,.1);border:1px solid rgba(255,0,51,.3);padding:11px 22px;text-decoration:none;color:#fff;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;transition:all .2s;" style-hover="background:rgba(255,0,51,.2);transform:translateY(-1px);">▶ VER EN YOUTUBE</a>
+  </div>
+</section>
+
+<!-- SPONSORS -->
+<section id="patrocinadores" style="background:#050508;padding:52px clamp(16px,4vw,40px);border-top:1px solid rgba(255,255,255,.04);">
+  <div style="text-align:center;margin-bottom:32px;">
+    <div style="font-size:10px;font-weight:700;letter-spacing:.45em;color:rgba(255,255,255,.28);text-transform:uppercase;">Sponsors &amp; Patrocinadores</div>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:clamp(14px,3.5vw,40px);max-width:960px;margin:0 auto;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(14px,3vw,24px);color:rgba(255,255,255,.22);letter-spacing:.1em;transition:color .25s;cursor:pointer;" style-hover="color:rgba(255,0,51,.8);">MONSTER ENERGY</div>
+    <div style="width:1px;height:18px;background:rgba(255,255,255,.07);flex-shrink:0;"></div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(14px,3vw,24px);color:rgba(255,255,255,.22);letter-spacing:.1em;transition:color .25s;cursor:pointer;" style-hover="color:rgba(255,255,255,.8);">REEBOK FIGHT</div>
+    <div style="width:1px;height:18px;background:rgba(255,255,255,.07);flex-shrink:0;"></div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(14px,3vw,24px);color:rgba(255,255,255,.22);letter-spacing:.1em;transition:color .25s;cursor:pointer;" style-hover="color:rgba(212,160,23,.8);">CHIVAS REGAL</div>
+    <div style="width:1px;height:18px;background:rgba(255,255,255,.07);flex-shrink:0;"></div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(14px,3vw,24px);color:rgba(255,255,255,.22);letter-spacing:.1em;transition:color .25s;cursor:pointer;" style-hover="color:rgba(0,240,255,.8);">TITAN SPORTS</div>
+    <div style="width:1px;height:18px;background:rgba(255,255,255,.07);flex-shrink:0;"></div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(14px,3vw,24px);color:rgba(255,255,255,.22);letter-spacing:.1em;transition:color .25s;cursor:pointer;" style-hover="color:rgba(255,0,51,.8);">ELITE GEAR</div>
+    <div style="width:1px;height:18px;background:rgba(255,255,255,.07);flex-shrink:0;"></div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(14px,3vw,24px);color:rgba(255,255,255,.22);letter-spacing:.1em;transition:color .25s;cursor:pointer;" style-hover="color:rgba(168,85,247,.8);">RED BULL</div>
+  </div>
+  <div style="text-align:center;margin-top:28px;">
+    <a href="#" style="font-size:11px;font-weight:600;letter-spacing:.24em;color:rgba(255,255,255,.28);text-decoration:none;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.12);padding-bottom:2px;transition:all .2s;" style-hover="color:#D4A017;border-bottom-color:#D4A017;">INFORMACIÓN PARA PATROCINADORES →</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="background:#030307;padding:52px clamp(16px,4vw,40px) 28px;border-top:1px solid rgba(255,0,51,.1);">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:32px;max-width:1080px;margin:0 auto 40px;">
+    <div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.08em;margin-bottom:12px;">
+        <span style="color:#FF0033;">NOVA</span>
+        <span style="color:#fff;"> STRIKE </span>
+        <span style="color:#00F0FF;">SERIES</span>
+      </div>
+      <p style="font-size:13px;color:rgba(255,255,255,.32);line-height:1.65;max-width:220px;">Productora itinerante de eventos premium de MMA.</p>
+    </div>
+    <div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:.4em;color:rgba(255,255,255,.35);margin-bottom:16px;text-transform:uppercase;">Navegación</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <a href="#inicio" style="font-size:13px;color:rgba(255,255,255,.45);text-decoration:none;transition:color .2s;" style-hover="color:#FF0033;">Inicio</a>
+        <a href="#cartelera" style="font-size:13px;color:rgba(255,255,255,.45);text-decoration:none;transition:color .2s;" style-hover="color:#FF0033;">Cartelera</a>
+        <a href="#vip" style="font-size:13px;color:rgba(255,255,255,.45);text-decoration:none;transition:color .2s;" style-hover="color:#D4A017;">VIP Experience</a>
+        <a href="#nova-feed" style="font-size:13px;color:rgba(255,255,255,.45);text-decoration:none;transition:color .2s;" style-hover="color:#A855F7;">Nova Feed</a>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:.4em;color:rgba(255,255,255,.35);margin-bottom:16px;text-transform:uppercase;">Redes Sociales</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <a href="#" style="font-size:13px;color:rgba(255,255,255,.45);text-decoration:none;transition:color .2s;display:flex;align-items:center;gap:8px;" style-hover="color:#A855F7;"><span>♪</span> TikTok</a>
+        <a href="#" style="font-size:13px;color:rgba(255,255,255,.45);text-decoration:none;transition:color .2s;display:flex;align-items:center;gap:8px;" style-hover="color:#FF0033;"><span>◎</span> Instagram</a>
+        <a href="#" style="font-size:13px;color:rgba(255,255,255,.45);text-decoration:none;transition:color .2s;display:flex;align-items:center;gap:8px;" style-hover="color:#FF4444;"><span>▶</span> YouTube</a>
+        <a href="#" style="font-size:13px;color:rgba(255,255,255,.45);text-decoration:none;transition:color .2s;display:flex;align-items:center;gap:8px;" style-hover="color:#1DA1F2;"><span>✦</span> X · Twitter</a>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:.4em;color:rgba(255,255,255,.35);margin-bottom:16px;text-transform:uppercase;">Contacto</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="font-size:12px;color:rgba(255,255,255,.38);">contacto@novastrikeseriesMX.com</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.38);">+52 55 1234 5678</div>
+        <a href="#" style="font-size:13px;color:rgba(255,255,255,.38);text-decoration:none;transition:color .2s;" style-hover="color:#25D366;">WhatsApp Empresarial</a>
+      </div>
+    </div>
+  </div>
+  <div style="border-top:1px solid rgba(255,255,255,.05);padding-top:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;max-width:1080px;margin:0 auto;">
+    <div style="font-size:11px;color:rgba(255,255,255,.2);letter-spacing:.06em;">© 2026 Nova Strike Series · Todos los derechos reservados</div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;">
+      <a href="#" style="font-size:11px;color:rgba(255,255,255,.2);text-decoration:none;transition:color .2s;" style-hover="color:rgba(255,255,255,.6);">Términos</a>
+      <a href="#" style="font-size:11px;color:rgba(255,255,255,.2);text-decoration:none;transition:color .2s;" style-hover="color:rgba(255,255,255,.6);">Privacidad</a>
+      <a href="#" style="font-size:11px;color:rgba(255,255,255,.2);text-decoration:none;transition:color .2s;" style-hover="color:rgba(255,255,255,.6);">Reembolsos</a>
+    </div>
+  </div>
+</footer>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    days: 0, hours: 0, mins: 0, secs: 0,
+    navScrolled: false, mobileMenuOpen: false,
+    windowWidth: window.innerWidth || 1440
+  };
+
+  componentDidMount() {
+    const eventDate = new Date('2026-07-19T21:00:00');
+    const tick = () => {
+      const diff = Math.max(0, eventDate - Date.now());
+      this.setState({
+        days: Math.floor(diff / 86400000),
+        hours: Math.floor((diff % 86400000) / 3600000),
+        mins: Math.floor((diff % 3600000) / 60000),
+        secs: Math.floor((diff % 60000) / 1000)
+      });
+    };
+    tick();
+    this._iv = setInterval(tick, 1000);
+    const onScroll = () => this.setState({ navScrolled: window.scrollY > 60 });
+    const onResize = () => this.setState({ windowWidth: window.innerWidth });
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onResize, { passive: true });
+    this._off = () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onResize);
+    };
+  }
+
+  componentWillUnmount() {
+    clearInterval(this._iv);
+    this._off && this._off();
+  }
+
+  renderVals() {
+    const pad = n => String(Math.floor(n)).padStart(2, '0');
+    const { days, hours, mins, secs, navScrolled, mobileMenuOpen, windowWidth } = this.state;
+    const isMobile = windowWidth < 700;
+
+    const prelims = [
+      { r1: 'MARCOS "RAYO" VÉLEZ', r1rec: '7-0-0', r2: 'PABLO "TITAN" REYES', r2rec: '8-2-0' },
+      { r1: 'SOFIA "COBRA" LUNA', r1rec: '6-1-0', r2: 'MIA "THUNDER" PARK', r2rec: '5-1-0' },
+      { r1: 'DIEGO "LOBO" FERRER', r1rec: '5-0-0', r2: 'TOMAS "ACE" NOVAK', r2rec: '4-1-0' },
+      { r1: 'JUAN "REL." CRUZ', r1rec: '3-0-0', r2: 'ALEX "BEAST" RAMOS', r2rec: '3-1-0' },
+      { r1: 'LAURA "FIERA" SOTO', r1rec: '4-0-0', r2: 'NORA "JADE" WU', r2rec: '3-1-0' },
+      { r1: 'ANDRES "SHADOW" RIOS', r1rec: '2-0-0', r2: 'MAX "VIPER" KLEIN', r2rec: '2-0-0' }
+    ];
+
+    const feedItems = [
+      { title: 'FACE-OFF: MENDEZ vs VOLKOV', views: '284K', dur: '0:45', bg: 'linear-gradient(180deg,#3a0008 0%,#1a0010 50%,#0a0008 100%)' },
+      { title: 'KO DEL AÑO — BEST MOMENTS', views: '1.2M', dur: '1:12', bg: 'linear-gradient(180deg,#001838 0%,#000f28 50%,#000810 100%)' },
+      { title: 'TRAINING: ANA CASTILLO', views: '156K', dur: '2:30', bg: 'linear-gradient(180deg,#150030 0%,#0d0020 50%,#06000f 100%)' },
+      { title: 'PESAJE NOVA STRIKE 46', views: '445K', dur: '1:58', bg: 'linear-gradient(180deg,#001830 0%,#000d20 50%,#000610 100%)' },
+      { title: 'BACKSTAGE FIGHT NIGHT', views: '678K', dur: '3:15', bg: 'linear-gradient(180deg,#200030 0%,#140020 50%,#08000e 100%)' },
+      { title: 'NOVA 46 FULL RECAP', views: '2.1M', dur: '5:42', bg: 'linear-gradient(180deg,#201400 0%,#140d00 50%,#080500 100%)' },
+      { title: 'KO COMPILATION 2026', views: '3.4M', dur: '4:20', bg: 'linear-gradient(180deg,#001f18 0%,#001210 50%,#000806 100%)' },
+      { title: 'VIP EXPERIENCE PREVIEW', views: '89K', dur: '1:05', bg: 'linear-gradient(180deg,#0f0020 0%,#0a0018 50%,#05000e 100%)' }
+    ];
+
+    const vipPackages = [
+      {
+        tier: 'GENERAL', price: '$850',
+        color: '#00F0FF', colorBg: 'rgba(0,240,255,0.04)', colorBorder: 'rgba(0,240,255,0.25)',
+        features: ['Acceso al evento', 'Área general con vista', 'Bar disponible', 'Pantallas LED gigantes', 'Estacionamiento incluido']
+      },
+      {
+        tier: 'PREMIUM', price: '$1,800',
+        color: '#A855F7', colorBg: 'rgba(168,85,247,0.07)', colorBorder: 'rgba(168,85,247,0.35)',
+        features: ['Todo en General +', 'Zona preferencial', 'Mesa reservada para 2', 'Botella de espirituosos', 'Meet & Greet peleadores', 'Foto con cartel oficial']
+      },
+      {
+        tier: 'VIP GOLD', price: '$3,500',
+        color: '#D4A017', colorBg: 'rgba(212,160,23,0.05)', colorBorder: 'rgba(212,160,23,0.35)',
+        features: ['Todo en Premium +', 'Ring side exclusivo', '2 botellas premium', 'Acceso backstage', 'Fotos con peleadores', 'Credencial acreditada', 'Lounge privado VIP']
+      }
+    ];
+
+    const particles = Array.from({ length: 12 }, (_, i) => ({
+      left: `${((i * 41 + 8) % 84) + 5}%`,
+      top: `${((i * 27 + 12) % 70) + 12}%`,
+      size: `${((i * 0.9 + 1) % 2.5) + 1.5}px`,
+      delay: `${((i * 0.7) % 4.5).toFixed(1)}s`,
+      duration: `${(((i * 1.1) % 3.5) + 3).toFixed(1)}s`,
+      color: i % 3 === 0 ? '#FF0033' : i % 3 === 1 ? '#00F0FF' : '#A855F7'
+    }));
+
+    return {
+      days: pad(days), hours: pad(hours), mins: pad(mins), secs: pad(secs),
+      navBg: navScrolled ? 'rgba(5,5,8,0.95)' : 'transparent',
+      navShadow: navScrolled ? '0 2px 30px rgba(0,0,0,.8)' : 'none',
+      navBlur: navScrolled ? 'blur(16px)' : 'none',
+      navLinksDisplay: isMobile ? 'none' : 'flex',
+      hamburgerDisplay: isMobile ? 'flex' : 'none',
+      mobileMenuDisplay: mobileMenuOpen ? 'flex' : 'none',
+      toggleMenu: () => this.setState(s => ({ mobileMenuOpen: !s.mobileMenuOpen })),
+      closeMenu: () => this.setState({ mobileMenuOpen: false }),
+      cdBox: isMobile ? '58px' : 'clamp(68px,10vw,94px)',
+      cdFont: isMobile ? '34px' : 'clamp(40px,6.5vw,60px)',
+      cdGap: isMobile ? '4px' : 'clamp(6px,1.5vw,14px)',
+      cdSep: isMobile ? '26px' : 'clamp(36px,5.5vw,54px)',
+      cdSepPad: isMobile ? '9px' : 'clamp(8px,1.5vw,16px)',
+      fightDir: isMobile ? 'column' : 'row',
+      fightMainMinH: isMobile ? '200px' : '370px',
+      fightCoMinH: isMobile ? '170px' : '240px',
+      f2TextAlign: isMobile ? 'left' : 'right',
+      f2Align: isMobile ? 'flex-start' : 'flex-end',
+      prelims, feedItems, vipPackages, particles
+    };
+  }
+}
+</script>
+</body>
+</html>
