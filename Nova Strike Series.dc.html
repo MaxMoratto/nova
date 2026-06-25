@@ -101,7 +101,7 @@
   <div style="position:relative;z-index:4;text-align:center;padding:0 clamp(16px,5vw,60px);animation:fadeUp 1s ease-out .2s both;width:100%;">
     <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,0,51,.1);border:1px solid rgba(255,0,51,.3);padding:5px 14px;margin-bottom:18px;">
       <span style="width:6px;height:6px;border-radius:50%;background:#FF0033;display:inline-block;animation:glowRed 1.5s ease-in-out infinite;flex-shrink:0;"></span>
-      <span style="font-size:clamp(9px,2.2vw,11px);font-weight:700;letter-spacing:clamp(.12em,.3em,.3em);color:#FF0033;white-space:nowrap;">NOVA STRIKE 47 · 19 JUL 2026 · CDMX</span>
+      <span style="font-size:clamp(9px,2.2vw,11px);font-weight:700;letter-spacing:clamp(.12em,.3em,.3em);color:#FF0033;white-space:nowrap;">NOVA STRIKE 47 · 12 SEP 2026 · CDMX</span>
     </div>
     <div style="font-family:'Bebas Neue',sans-serif;line-height:.9;margin-bottom:14px;animation:logoAnim 1.2s ease-out .4s both;">
       <div style="font-size:clamp(52px,14vw,148px);color:#FF0033;display:block;animation:textRed 4s ease-in-out infinite;">NOVA</div>
@@ -144,7 +144,7 @@
 <!-- FIGHT CARD -->
 <section id="cartelera" style="background:#09070F;padding-top:68px;overflow:hidden;">
   <div style="text-align:center;padding:0 clamp(16px,4vw,40px);">
-    <div style="font-size:10px;font-weight:700;letter-spacing:.5em;color:#FF0033;margin-bottom:8px;text-transform:uppercase;">Nova Strike 47 · CDMX · 19 Julio 2026</div>
+    <div style="font-size:10px;font-weight:700;letter-spacing:.5em;color:#FF0033;margin-bottom:8px;text-transform:uppercase;">Nova Strike 47 · CDMX · 12 Septiembre 2026</div>
     <h2 style="font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,8vw,80px);color:#fff;letter-spacing:.1em;">CARTELERA OFICIAL</h2>
     <div style="width:80px;height:2px;background:linear-gradient(90deg,#FF0033,#00F0FF);margin:12px auto 44px;"></div>
   </div>
@@ -392,7 +392,7 @@ class Component extends DCLogic {
   };
 
   componentDidMount() {
-    const eventDate = new Date('2026-07-19T21:00:00');
+    const eventDate = new Date('2026-09-12T21:00:00');
     const tick = () => {
       const diff = Math.max(0, eventDate - Date.now());
       this.setState({
