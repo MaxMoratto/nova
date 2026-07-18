@@ -29,6 +29,7 @@
     @keyframes strokeDraw { from{stroke-dashoffset:2400} to{stroke-dashoffset:0} }
     @keyframes strokeDrawInner { from{stroke-dashoffset:1900} to{stroke-dashoffset:0} }
     @keyframes scanH { 0%{top:0;opacity:.5} 100%{top:100%;opacity:0} }
+    @media (max-width:880px){ #hero-info{ display:none !important; } }
     @keyframes btnPulse { 0%,100%{box-shadow:0 0 15px rgba(255,0,51,.5),0 0 30px rgba(255,0,51,.2)} 50%{box-shadow:0 0 30px rgba(255,0,51,.9),0 0 60px rgba(255,0,51,.4)} }
     @keyframes logoAnim { from{opacity:0;letter-spacing:.4em;filter:blur(8px)} to{opacity:1;letter-spacing:.06em;filter:blur(0)} }
     @keyframes countPop { 0%,100%{transform:scaleY(1)} 45%{transform:scaleY(.88)} }
@@ -102,6 +103,14 @@
   <img src="uploads/hazul.png" alt="Equipo azul" style="position:absolute;bottom:0;left:-3%;height:105%;max-width:42%;object-fit:contain;object-position:bottom left;z-index:3;pointer-events:none;filter:drop-shadow(0 0 40px rgba(0,240,255,.4));-webkit-mask-image:linear-gradient(to right,#000 50%,transparent 90%);mask-image:linear-gradient(to right,#000 50%,transparent 90%);">
   <!-- Fighters hero: red team right -->
   <img src="uploads/hrojo.png" alt="Equipo rojo" style="position:absolute;bottom:0;right:-3%;height:105%;max-width:42%;object-fit:contain;object-position:bottom right;z-index:3;pointer-events:none;filter:drop-shadow(0 0 40px rgba(255,0,51,.4));-webkit-mask-image:linear-gradient(to left,#000 50%,transparent 90%);mask-image:linear-gradient(to left,#000 50%,transparent 90%);">
+  <!-- Bloque info izquierda (fecha + lugar) -->
+  <div id="hero-info" style="position:absolute;left:clamp(20px,3.2vw,56px);top:clamp(92px,15vh,150px);z-index:5;text-align:left;pointer-events:none;animation:fadeUp 1s ease-out .45s both;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,6.5vw,96px);color:#FF0033;line-height:.78;letter-spacing:.02em;text-shadow:0 0 26px rgba(255,0,51,.45);">12</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(19px,2.6vw,34px);color:#fff;line-height:1.02;letter-spacing:.06em;margin-top:4px;">SEPTIEMBRE</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(19px,2.6vw,34px);color:rgba(255,255,255,.75);line-height:1;letter-spacing:.2em;">2026</div>
+    <div style="width:48px;height:2px;background:#FF0033;margin:15px 0 12px;"></div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(24px,2.8vw,36px);color:#fff;letter-spacing:.16em;">CDMX</div>
+  </div>
   <div style="position:relative;z-index:4;text-align:center;padding:0 clamp(16px,5vw,60px);animation:fadeUp 1s ease-out .2s both;width:100%;">
     <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,0,51,.1);border:1px solid rgba(255,0,51,.3);padding:5px 14px;margin-bottom:18px;">
       <span style="width:6px;height:6px;border-radius:50%;background:#FF0033;display:inline-block;animation:glowRed 1.5s ease-in-out infinite;flex-shrink:0;"></span>
