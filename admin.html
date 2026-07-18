@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NOVA · Panel admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{--bg:#0a0c11;--panel:#12161f;--panel2:#161b26;--border:#232a38;--border2:#2d3547;--txt:#e8eaf0;--muted:#8a92a6;--muted2:#5f6779;--red:#e11d2a;--red2:#ff3646;--ok:#25d366;--blue:#00c2ff;--shadow:0 10px 40px rgba(0,0,0,.55)}
+  *{box-sizing:border-box}html,body{height:100%}
+  body{margin:0;background:radial-gradient(1000px 700px at 50% -10%,#171b26,#0a0c11) fixed,var(--bg);color:var(--txt);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:900px;margin:0 auto;padding:24px 18px 90px}
+  .logo{font-family:'Oswald',sans-serif;font-weight:700;font-style:italic;font-size:26px;color:#fff;letter-spacing:.5px}
+  .logo b{color:var(--red2)}
+  .sub{color:var(--muted);font-size:12px;letter-spacing:2px;text-transform:uppercase;margin-top:2px}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:22px;margin-top:16px}
+  h2{font-family:'Oswald',sans-serif;font-size:18px;margin:0 0 14px;text-transform:uppercase;letter-spacing:.4px}
+  label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px;text-transform:uppercase;letter-spacing:1px}
+  input,textarea,select{width:100%;background:var(--panel2);border:1px solid var(--border2);border-radius:10px;padding:11px;color:var(--txt);font-family:inherit;font-size:14px;outline:none;margin-bottom:12px}
+  input:focus,textarea:focus,select:focus{border-color:var(--red)}
+  textarea{min-height:80px;resize:vertical;font-family:'Oswald',monospace;letter-spacing:.5px}
+  .btn{border:none;border-radius:11px;padding:12px 18px;font-family:'Oswald',sans-serif;font-weight:600;font-size:14px;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;color:#fff;transition:.15s}
+  .btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
+  .btn.red{background:linear-gradient(180deg,var(--red2),var(--red))}
+  .btn.green{background:linear-gradient(180deg,#2bd576,#128c4b)}
+  .btn.ghost{background:transparent;border:1px solid var(--border2);color:var(--muted)}
+  .btn:disabled{opacity:.5;cursor:not-allowed;transform:none;filter:none}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 10px}
+  @media(max-width:600px){.grid2{grid-template-columns:1fr}}
+  .msg{font-size:13px;margin-top:10px;min-height:18px}
+  .msg.ok{color:var(--ok)} .msg.err{color:var(--red2)}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+  .pill{display:inline-flex;align-items:center;gap:7px;background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:6px 12px;font-size:12px;color:var(--muted)}
+  .pill b{color:var(--txt)}
+  .tabs{display:flex;gap:8px;margin-top:18px}
+  .tab{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:10px 20px;font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);cursor:pointer}
+  .tab.on{color:#fff;border-color:var(--red);background:rgba(225,29,42,.1)}
+  .sold-list{display:flex;flex-direction:column;gap:6px;max-height:340px;overflow:auto;margin-top:6px}
+  .sold-item{display:flex;align-items:center;gap:10px;background:var(--panel2);border:1px solid var(--border);border-radius:9px;padding:9px 11px}
+  .sold-item .sid{font-family:'Oswald',sans-serif;font-size:14px;flex:none}
+  .sold-item .sinfo{flex:1;min-width:0;color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sold-item .free,.mini{background:transparent;border:1px solid var(--border2);color:var(--muted);border-radius:7px;padding:5px 11px;font-size:11px;cursor:pointer;flex:none}
+  .sold-item .free:hover,.mini:hover{border-color:var(--red);color:var(--red2)}
+  .hint{font-size:12px;color:var(--muted2);margin-top:8px;line-height:1.5}
+  a.link{color:var(--muted);font-size:12px;text-decoration:none;border:1px solid var(--border2);padding:7px 12px;border-radius:8px}
+  a.link:hover{border-color:var(--red);color:var(--red2)}
+  #login{max-width:400px;margin:12vh auto 0}
+  .empty{color:var(--muted2);font-size:13px;text-align:center;padding:18px;border:1px dashed var(--border2);border-radius:10px}
+  .fight-item{display:flex;align-items:center;gap:12px;background:var(--panel2);border:1px solid var(--border);border-radius:11px;padding:11px 13px;margin-bottom:8px}
+  .fight-item .fdata{flex:1;min-width:0}
+  .fight-item .ft{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2)}
+  .fight-item .fn{font-family:'Oswald',sans-serif;font-size:15px}
+  .fight-item .fn .vs{color:var(--muted2);font-size:12px;margin:0 6px}
+  .corner-red{color:var(--red2)} .corner-blue{color:var(--blue)}
+  .sec-lbl{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin:2px 0 10px}
+  .cornerbox{border:1px solid var(--border);border-radius:12px;padding:14px;background:rgba(255,255,255,.012);margin-bottom:6px}
+  .photos{display:flex;flex-direction:column;gap:8px;margin-bottom:6px}
+  .pslot{display:flex;gap:9px;align-items:center}
+  .pslot .thumb{width:56px;height:56px;border-radius:8px;background:var(--panel2);border:1px dashed var(--border2);flex:none;background-size:cover;background-position:center;font-size:16px;color:var(--muted2);display:flex;align-items:center;justify-content:center;cursor:copy;transition:.12s}
+  .pslot .thumb.drop{border-color:var(--red);border-style:solid;box-shadow:0 0 0 3px rgba(225,29,42,.35);background-color:rgba(225,29,42,.08)}
+  .pslot input{margin:0}
+  .upbtn{position:relative;overflow:hidden;flex:none;border:1px solid var(--border2);color:var(--muted);border-radius:8px;padding:9px 12px;font-size:11px;cursor:pointer;white-space:nowrap}
+  .upbtn:hover{border-color:var(--red);color:var(--red2)}
+  .upbtn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="login" class="card" style="display:none">
+    <div class="logo">NO<b>V</b>A <span style="font-size:14px;color:#c9cede;font-style:normal">ADMIN</span></div>
+    <div class="sub" style="margin-bottom:18px">Panel de control</div>
+    <label>Correo</label><input id="email" type="email" autocomplete="username" placeholder="tucorreo@gmail.com"/>
+    <label>Contraseña</label><input id="pass" type="password" autocomplete="current-password" placeholder="••••••••"/>
+    <button class="btn red" id="loginBtn" style="width:100%">Entrar</button>
+    <div class="msg err" id="loginMsg"></div>
+  </div>
+
+  <div id="panel" style="display:none">
+    <div class="topbar">
+      <div><div class="logo">NO<b>V</b>A <span style="font-size:14px;color:#c9cede;font-style:normal">ADMIN</span></div><div class="sub">NOVA Fight Night · 12 SEP 2026</div></div>
+      <div class="row" style="align-items:center">
+        <a class="link" href="mapa-asientos.html" target="_blank">Ver mapa ↗</a>
+        <a class="link" href="index.html" target="_blank">Ver sitio ↗</a>
+        <button class="btn ghost" id="logoutBtn" style="padding:8px 14px">Salir</button>
+      </div>
+    </div>
+    <div class="tabs">
+      <div class="tab on" data-tab="lugares">Lugares</div>
+      <div class="tab" data-tab="peleas">Peleas</div>
+    </div>
+
+    <!-- LUGARES -->
+    <div id="tab-lugares">
+      <div class="card">
+        <div class="topbar" style="margin-bottom:12px"><h2 style="margin:0">Marcar asientos</h2><span class="pill">Vendidos: <b id="soldCount">0</b> / 3453</span></div>
+        <label>IDs de asiento (de la orden de WhatsApp) — separa por espacio, coma o salto de línea</label>
+        <textarea id="ids" placeholder="ORO-NE-A05  PLA-N-B03  GEN-SO-C02"></textarea>
+        <div class="row"><button class="btn red" id="markBtn">Marcar VENDIDO</button><button class="btn green" id="freeBtn">Liberar (disponible)</button></div>
+        <div class="msg" id="opMsg"></div>
+      </div>
+      <div class="card"><h2>Vendidos / apartados actuales</h2><div class="sold-list" id="soldList"><div class="empty">Cargando…</div></div></div>
+    </div>
+
+    <!-- PELEAS -->
+    <div id="tab-peleas" style="display:none">
+      <div class="card">
+        <div class="topbar" style="margin-bottom:14px"><h2 style="margin:0" id="formTitle">Nueva pelea</h2><button class="mini" id="seedBtn">Sembrar cartelera actual</button></div>
+        <div class="grid2">
+          <div>
+            <label>Tipo de pelea</label>
+            <select id="p_tipo">
+              <option value="principal">Pelea principal (estelar)</option>
+              <option value="coestelar">Co-estelar</option>
+              <option value="preliminar">Preliminar</option>
+            </select>
+          </div>
+          <div><label>Orden en cartelera (1 a 10)</label>
+            <select id="p_orden"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select>
+          </div>
+        </div>
+        <label>Banner / categoría (ej. PESO SEMICOMPLETO · 93 KG)</label><input id="p_banner" placeholder="PESO GALLO FEMENIL · 61 KG"/>
+        <div class="grid2" style="margin-top:6px">
+          <div class="cornerbox"><div class="sec-lbl corner-red">◆ ESQUINA ROJA</div><div id="rojoFields"></div></div>
+          <div class="cornerbox"><div class="sec-lbl corner-blue">◆ ESQUINA AZUL</div><div id="azulFields"></div></div>
+        </div>
+        <div class="row" style="margin-top:6px">
+          <button class="btn red" id="saveFightBtn">Guardar pelea</button>
+          <button class="btn ghost" id="cancelEditBtn" style="display:none">Cancelar edición</button>
+        </div>
+        <div class="msg" id="fightMsg"></div>
+        <div class="hint">Puedes tener hasta 10 peleas (usa el "Orden"). Cada peleador acepta hasta 4 fotos. El botón <b>Subir</b> requiere activar Firebase Storage; mientras, puedes pegar una ruta de <b>uploads/</b> o una URL.</div>
+      </div>
+      <div class="card"><h2>Cartelera (<span id="fightCount">0</span>/10)</h2><div id="fightList"><div class="empty">Cargando…</div></div></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAXxTUFo0CHFZnAs0wGrYHLTwwVzZ_ArZA",
+  authDomain: "nova-dd664.firebaseapp.com",
+  projectId: "nova-dd664",
+  storageBucket: "nova-dd664.firebasestorage.app",
+  messagingSenderId: "967862553249",
+  appId: "1:967862553249:web:3524af97999ce667bafee0"
+};
+const SEATS_COL="asientos_nova", FIGHTS_COL="peleas", MAX_FIGHTS=10;
+firebase.initializeApp(firebaseConfig);
+const auth=firebase.auth(), db=firebase.firestore();
+const $=id=>document.getElementById(id);
+
+auth.onAuthStateChanged(u=>{
+  if(u){ $('login').style.display='none'; $('panel').style.display='block'; watchSold(); watchFights(); }
+  else { $('panel').style.display='none'; $('login').style.display='block'; }
+});
+$('loginBtn').addEventListener('click', async ()=>{ const m=$('loginMsg'); m.textContent=''; const b=$('loginBtn'); b.disabled=true;
+  try{ await auth.signInWithEmailAndPassword($('email').value.trim(), $('pass').value); }
+  catch(e){ m.textContent=/invalid-credential|wrong-password|user-not-found/.test(e.code)?'Correo o contraseña incorrectos':('Error: '+e.message); } b.disabled=false; });
+$('pass').addEventListener('keydown',e=>{ if(e.key==='Enter') $('loginBtn').click(); });
+$('logoutBtn').addEventListener('click',()=>auth.signOut());
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{ document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on')); t.classList.add('on');
+  $('tab-lugares').style.display=t.dataset.tab==='lugares'?'block':'none'; $('tab-peleas').style.display=t.dataset.tab==='peleas'?'block':'none'; }));
+
+/* ===== LUGARES ===== */
+function parseIds(){ return [...new Set(($('ids').value.match(/[A-Za-z]+-[A-Za-z]+-[A-Za-z0-9]+/g)||[]).map(s=>s.toUpperCase()))]; }
+$('markBtn').addEventListener('click',()=>opSeats('vendido'));
+$('freeBtn').addEventListener('click',()=>opSeats('liberar'));
+async function opSeats(kind){ const ids=parseIds(); const m=$('opMsg'); m.className='msg';
+  if(!ids.length){ m.className='msg err'; m.textContent='No detecté IDs válidos (formato: ORO-NE-A05)'; return; }
+  const mk=$('markBtn'),fb=$('freeBtn'); mk.disabled=fb.disabled=true;
+  try{ const batch=db.batch();
+    for(const id of ids){ const ref=db.collection(SEATS_COL).doc(id); if(kind==='vendido') batch.set(ref,{status:'vendido',ts:Date.now(),by:auth.currentUser.email}); else batch.delete(ref); }
+    await batch.commit(); m.className='msg ok'; m.textContent=(kind==='vendido'?'✓ Vendidos: ':'✓ Liberados: ')+ids.length+' ('+ids.join(', ')+')'; $('ids').value='';
+  }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; } mk.disabled=fb.disabled=false; }
+function watchSold(){ db.collection(SEATS_COL).onSnapshot(snap=>{ const box=$('soldList'),now=Date.now(),rows=[];
+    snap.forEach(doc=>{ const d=doc.data(); if(d.status==='vendido'||(d.status==='reservado'&&d.expira&&d.expira>now)) rows.push({id:doc.id,d}); });
+    rows.sort((a,b)=>a.id.localeCompare(b.id)); $('soldCount').textContent=rows.length;
+    if(!rows.length){ box.innerHTML='<div class="empty">Aún no hay asientos vendidos.</div>'; return; } box.innerHTML='';
+    for(const r of rows){ const tag=r.d.status==='reservado'?'apartado':'vendido',who=r.d.buyer&&r.d.buyer.name?r.d.buyer.name:(r.d.by||'');
+      const el=document.createElement('div'); el.className='sold-item'; el.innerHTML='<span class="sid">'+r.id+'</span><span class="sinfo">'+tag+(who?' · '+who:'')+'</span><button class="free" data-id="'+r.id+'">Liberar</button>'; box.appendChild(el); }
+    box.querySelectorAll('.free').forEach(b=>b.addEventListener('click',async()=>{ b.disabled=true; try{ await db.collection(SEATS_COL).doc(b.dataset.id).delete(); }catch(e){ alert('Error: '+e.message); b.disabled=false; } }));
+  }, err=>{ $('soldList').innerHTML='<div class="empty">Error: '+err.message+'</div>'; }); }
+
+/* ===== PELEAS ===== */
+function cornerHTML(p){ // p = 'r' o 'a'
+  let h='<label>Nombre</label><input id="'+p+'_nombre"/>'+
+    '<label>Apodo</label><input id="'+p+'_apodo"/>'+
+    '<div class="grid3"><div><label>Edad</label><input id="'+p+'_edad" placeholder="28"/></div>'+
+    '<div><label>Altura</label><input id="'+p+'_altura" placeholder="1.75 m"/></div>'+
+    '<div><label>Peso</label><input id="'+p+'_peso" placeholder="93 kg"/></div></div>'+
+    '<label>Récord</label><input id="'+p+'_record" placeholder="15-3-0"/>'+
+    '<label>Ciudad / país</label><input id="'+p+'_ciudad" placeholder="CDMX, MEX"/>'+
+    '<label>Fotos (hasta 4) — arrastra una imagen al recuadro o usa Subir</label><div class="photos">';
+  for(let i=0;i<4;i++){ h+='<div class="pslot"><div class="thumb" id="'+p+'_thumb'+i+'" title="Arrastra una imagen aquí">&#8615;</div>'+
+    '<input id="'+p+'_foto'+i+'" placeholder="uploads/... o URL" oninput="refThumb(\''+p+'\','+i+')"/>'+
+    '<label class="upbtn">Subir<input type="file" accept="image/*" data-p="'+p+'" data-i="'+i+'"></label></div>'; }
+  return h+'</div>';
+}
+$('rojoFields').innerHTML=cornerHTML('r'); $('azulFields').innerHTML=cornerHTML('a');
+function refThumb(p,i){ const v=$(p+'_foto'+i).value.trim(); const t=$(p+'_thumb'+i); if(v){ t.style.backgroundImage='url("'+v+'")'; t.innerHTML=''; } else { t.style.backgroundImage=''; t.innerHTML='&#8615;'; } }
+window.refThumb=refThumb;
+
+/* ---- subir (Storage): botón + arrastrar ---- */
+async function uploadFile(file,p,i){
+  if(!file){ return; }
+  if(!file.type||!file.type.startsWith('image/')){ alert('Solo imágenes.'); return; }
+  const field=$(p+'_foto'+i), thumb=$(p+'_thumb'+i); const prev=thumb.innerHTML; thumb.innerHTML='…';
+  try{
+    const storage=firebase.storage();
+    const name='peleadores/'+Date.now()+'_'+Math.random().toString(36).slice(2)+'_'+file.name.replace(/[^a-zA-Z0-9._-]/g,'');
+    const ref=storage.ref().child(name); await ref.put(file); const url=await ref.getDownloadURL();
+    field.value=url; refThumb(p,i);
+  }catch(err){ thumb.innerHTML=prev; alert('No se pudo subir. Activa Firebase Storage (Build → Storage) y sus reglas.\n\n'+err.message); }
+}
+document.addEventListener('change', e=>{ const inp=e.target; if(inp.matches&&inp.matches('.upbtn input[type=file]')){ uploadFile(inp.files[0], inp.dataset.p, inp.dataset.i); inp.value=''; } });
+function attachDnD(){
+  document.querySelectorAll('.pslot').forEach(slot=>{
+    const t=slot.querySelector('.thumb'); const m=t.id.match(/^([ra])_thumb(\d)$/); if(!m)return; const p=m[1], i=+m[2];
+    ['dragenter','dragover'].forEach(ev=>slot.addEventListener(ev,e=>{ e.preventDefault(); e.stopPropagation(); t.classList.add('drop'); }));
+    ['dragleave','dragend'].forEach(ev=>slot.addEventListener(ev,e=>{ e.preventDefault(); t.classList.remove('drop'); }));
+    slot.addEventListener('drop',e=>{ e.preventDefault(); e.stopPropagation(); t.classList.remove('drop'); const f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0]; if(f) uploadFile(f,p,i); });
+  });
+}
+attachDnD();
+/* evita que el navegador abra la imagen si se suelta fuera del recuadro */
+window.addEventListener('dragover',e=>e.preventDefault());
+window.addEventListener('drop',e=>{ if(!e.target.closest('.pslot')) e.preventDefault(); });
+
+const F={editId:null};
+function readCorner(p){ return { nombre:$(p+'_nombre').value.trim(),apodo:$(p+'_apodo').value.trim(),edad:$(p+'_edad').value.trim(),altura:$(p+'_altura').value.trim(),peso:$(p+'_peso').value.trim(),record:$(p+'_record').value.trim(),ciudad:$(p+'_ciudad').value.trim(),fotos:[0,1,2,3].map(i=>$(p+'_foto'+i).value.trim()).filter(Boolean) }; }
+function readForm(){ return { tipo:$('p_tipo').value, orden:Number($('p_orden').value)||1, banner:$('p_banner').value.trim(), rojo:readCorner('r'), azul:readCorner('a'), activo:true }; }
+function fillCorner(p,c){ c=c||{}; $(p+'_nombre').value=c.nombre||''; $(p+'_apodo').value=c.apodo||''; $(p+'_edad').value=c.edad||''; $(p+'_altura').value=c.altura||''; $(p+'_peso').value=c.peso||''; $(p+'_record').value=c.record||''; $(p+'_ciudad').value=c.ciudad||''; const f=c.fotos||[]; for(let i=0;i<4;i++){ $(p+'_foto'+i).value=f[i]||''; refThumb(p,i); } }
+function fillForm(d){ $('p_tipo').value=d.tipo||'preliminar'; $('p_orden').value=String(d.orden||1); $('p_banner').value=d.banner||''; fillCorner('r',d.rojo); fillCorner('a',d.azul); }
+function clearForm(){ $('p_tipo').selectedIndex=0; $('p_orden').selectedIndex=0; $('p_banner').value=''; fillCorner('r',{}); fillCorner('a',{}); F.editId=null; $('formTitle').textContent='Nueva pelea'; $('cancelEditBtn').style.display='none'; }
+$('cancelEditBtn').addEventListener('click',clearForm);
+$('saveFightBtn').addEventListener('click',async()=>{ const m=$('fightMsg'); m.className='msg'; const data=readForm();
+  if(!data.rojo.nombre||!data.azul.nombre){ m.className='msg err'; m.textContent='Pon el nombre de los dos peleadores'; return; }
+  const b=$('saveFightBtn'); b.disabled=true;
+  try{ if(F.editId){ await db.collection(FIGHTS_COL).doc(F.editId).set(data); m.className='msg ok'; m.textContent='✓ Pelea actualizada'; }
+    else { const snap=await db.collection(FIGHTS_COL).get(); if(snap.size>=MAX_FIGHTS){ m.className='msg err'; m.textContent='Máximo '+MAX_FIGHTS+' peleas. Borra una para agregar otra.'; b.disabled=false; return; } await db.collection(FIGHTS_COL).add(data); m.className='msg ok'; m.textContent='✓ Pelea agregada'; }
+    clearForm();
+  }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; } b.disabled=false; });
+const TIPO_LBL={principal:'Pelea principal',coestelar:'Co-estelar',preliminar:'Preliminar'};
+function watchFights(){ db.collection(FIGHTS_COL).onSnapshot(snap=>{ const box=$('fightList'),rows=[]; snap.forEach(doc=>rows.push({id:doc.id,d:doc.data()}));
+    rows.sort((a,b)=>(a.d.orden||99)-(b.d.orden||99)); $('fightCount').textContent=rows.length;
+    if(!rows.length){ box.innerHTML='<div class="empty">Aún no hay peleas. Usa "Sembrar cartelera actual" o agrega una arriba.</div>'; return; } box.innerHTML='';
+    for(const r of rows){ const d=r.d; const el=document.createElement('div'); el.className='fight-item';
+      el.innerHTML='<div class="fdata"><div class="ft">#'+(d.orden||'?')+' · '+(TIPO_LBL[d.tipo]||d.tipo)+(d.banner?' · '+d.banner:'')+'</div><div class="fn"><span class="corner-red">'+(d.rojo?d.rojo.nombre:'')+'</span><span class="vs">vs</span><span class="corner-blue">'+(d.azul?d.azul.nombre:'')+'</span></div></div><div class="row"><button class="mini" data-edit="'+r.id+'">Editar</button><button class="mini" data-del="'+r.id+'">Borrar</button></div>'; box.appendChild(el); }
+    box.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>{ const row=rows.find(x=>x.id===b.dataset.edit); fillForm(row.d); F.editId=row.id; $('formTitle').textContent='Editar pelea'; $('cancelEditBtn').style.display='inline-block'; window.scrollTo({top:0,behavior:'smooth'}); }));
+    box.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',async()=>{ if(!confirm('¿Borrar esta pelea?'))return; b.disabled=true; try{ await db.collection(FIGHTS_COL).doc(b.dataset.del).delete(); }catch(e){ alert('Error: '+e.message); b.disabled=false; } }));
+  }, err=>{ $('fightList').innerHTML='<div class="empty">Error: '+err.message+'</div>'; }); }
+$('seedBtn').addEventListener('click',async()=>{ if(!confirm('Agregar las 2 peleas actuales a la base?'))return;
+  const seed=[
+    { tipo:'principal',orden:1,banner:'PESO SEMICOMPLETO · 93 KG', rojo:{nombre:'CARLOS MENDEZ',apodo:'EL TORO',edad:'',altura:'',peso:'93 kg',record:'15-3-0',ciudad:'CDMX, MEX',fotos:['uploads/toro2-cutout.png']}, azul:{nombre:'DMITRI VOLKOV',apodo:'IRON',edad:'',altura:'',peso:'93 kg',record:'18-1-0',ciudad:'MOSCÚ, RUS',fotos:['uploads/toro-cutout.png']}, activo:true },
+    { tipo:'coestelar',orden:2,banner:'PESO GALLO FEMENIL · 61 KG', rojo:{nombre:'AILIN PÉREZ',apodo:'FLUFFY',edad:'',altura:'',peso:'61 kg',record:'12-2-0',ciudad:'BUENOS AIRES, ARG',fotos:['uploads/ailin-cutout.png']}, azul:{nombre:'KAROL ROSA',apodo:'A FERA',edad:'',altura:'',peso:'61 kg',record:'18-5-0',ciudad:'SÃO PAULO, BRA',fotos:['uploads/ROSA_KAROL_L_04-22.png']}, activo:true }
+  ];
+  try{ for(const f of seed) await db.collection(FIGHTS_COL).add(f); alert('✓ Sembrado.'); }catch(e){ alert('Error: '+e.message); } });
+</script>
+</body>
+</html>

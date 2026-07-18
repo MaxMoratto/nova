@@ -7,6 +7,9 @@ nova-preview.html
 Thumbs.db
 desktop.ini
 
+# Herramientas locales
+.claude/
+
 # Dependencias y build (por si agregas Node/Next.js)
 node_modules/
 .next/
