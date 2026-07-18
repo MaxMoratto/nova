@@ -154,6 +154,55 @@
   </div>
 </section>
 
+<!-- ===== BANDA: LEYENDAS + STATS + TRAILER ===== -->
+<section id="leyendas" style="background:#09070F;border-top:1px solid rgba(255,0,51,.14);padding:clamp(26px,4vw,46px) clamp(16px,4vw,44px);">
+  <div style="max-width:1280px;margin:0 auto;display:flex;flex-wrap:wrap;gap:clamp(14px,1.6vw,20px);align-items:stretch;">
+
+    <!-- Leyendas -->
+    <div style="flex:1 1 300px;min-width:270px;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.07);background:linear-gradient(135deg,rgba(255,0,51,.07),rgba(5,5,8,.2)),#0C0812;padding:clamp(22px,3vw,32px);display:flex;flex-direction:column;justify-content:center;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(18px,2.4vw,26px);color:#fff;letter-spacing:.08em;line-height:1;">DONDE NACEN</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-style:italic;font-size:clamp(30px,4.4vw,46px);color:#FF0033;letter-spacing:.02em;line-height:.95;margin-bottom:14px;text-shadow:0 0 22px rgba(255,0,51,.35);">LAS LEYENDAS</div>
+      <p style="font-size:clamp(12px,1.35vw,14px);color:rgba(255,255,255,.6);line-height:1.65;max-width:330px;margin-bottom:16px;">Cada golpe, cada caída y cada victoria nos recuerdan por qué este deporte es puro corazón, disciplina y gloria.</p>
+      <a href="#cartelera" style="font-size:11px;font-weight:700;letter-spacing:.18em;color:#FF0033;text-decoration:none;text-transform:uppercase;" style-hover="color:#fff;">CONOCE MÁS →</a>
+    </div>
+
+    <!-- Stats -->
+    <div style="flex:2 1 440px;min-width:300px;border:1px solid rgba(255,255,255,.07);background:#0C0812;padding:clamp(18px,2.4vw,28px) clamp(12px,2vw,22px);display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(6px,1.4vw,16px);align-items:center;">
+      <div style="text-align:center;">
+        <svg width="36" height="36" viewBox="0 0 100 100" fill="none" stroke="#FF0033" stroke-width="6" style="margin-bottom:8px;"><polygon points="31,7 69,7 93,31 93,69 69,93 31,93 7,69 7,31"/></svg>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,3.6vw,44px);color:#fff;line-height:.9;">12+</div>
+        <div style="font-size:clamp(8px,.95vw,10px);color:rgba(255,255,255,.5);letter-spacing:.13em;text-transform:uppercase;margin-top:5px;line-height:1.3;">Peleas<br>Profesionales</div>
+      </div>
+      <div style="text-align:center;">
+        <svg width="34" height="36" viewBox="0 0 100 100" fill="#FF0033" style="margin-bottom:8px;"><circle cx="50" cy="22" r="14"/><path d="M50 40c-19 0-24 17-24 40h14l3 16h14l3-16h14c0-23-5-40-24-40z"/></svg>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,3.6vw,44px);color:#fff;line-height:.9;">24</div>
+        <div style="font-size:clamp(8px,.95vw,10px);color:rgba(255,255,255,.5);letter-spacing:.13em;text-transform:uppercase;margin-top:5px;line-height:1.3;">Peleadores<br>de Élite</div>
+      </div>
+      <div style="text-align:center;">
+        <svg width="44" height="30" viewBox="0 0 120 66" fill="none" stroke="#FF0033" stroke-width="6" style="margin-bottom:8px;"><rect x="6" y="22" width="108" height="22" rx="7"/><circle cx="60" cy="33" r="15" fill="#FF0033" stroke="none"/><path d="M60 25l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z" fill="#0C0812"/></svg>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,3.6vw,44px);color:#fff;line-height:.9;">1</div>
+        <div style="font-size:clamp(8px,.95vw,10px);color:rgba(255,255,255,.5);letter-spacing:.13em;text-transform:uppercase;margin-top:5px;line-height:1.3;">Cinturón<br>en Juego</div>
+      </div>
+      <div style="text-align:center;">
+        <svg width="36" height="36" viewBox="0 0 100 100" fill="#FF0033" style="margin-bottom:8px;"><path d="M50 6l11 30 32 1-25 20 9 31-27-19-27 19 9-31-25-20 32-1z"/></svg>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,3.6vw,44px);color:#fff;line-height:.9;">1</div>
+        <div style="font-size:clamp(8px,.95vw,10px);color:rgba(255,255,255,.5);letter-spacing:.13em;text-transform:uppercase;margin-top:5px;line-height:1.3;">Noche<br>Inolvidable</div>
+      </div>
+    </div>
+
+    <!-- Trailer (recuadro listo para el video) -->
+    <!-- TODO: reemplazar por el video cuando Max lo entregue (poster + <video> o iframe) -->
+    <a id="trailer-box" href="#" style="flex:1 1 280px;min-width:260px;min-height:190px;position:relative;overflow:hidden;border:1px solid rgba(255,0,51,.4);background:radial-gradient(circle at 50% 38%,#1b0d14,#0A0710);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-decoration:none;cursor:pointer;transition:border-color .2s,box-shadow .2s;" style-hover="border-color:#FF0033;box-shadow:0 0 30px rgba(255,0,51,.25);">
+      <div style="width:64px;height:64px;border-radius:50%;background:#FF0033;display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px rgba(255,0,51,.55);">
+        <div style="width:0;height:0;border-left:20px solid #fff;border-top:12px solid transparent;border-bottom:12px solid transparent;margin-left:6px;"></div>
+      </div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(18px,2.1vw,24px);color:#fff;letter-spacing:.06em;">SIENTE LA ADRENALINA</div>
+      <div style="font-size:11px;font-weight:700;letter-spacing:.18em;color:#FF0033;text-transform:uppercase;">VER TRÁILER</div>
+    </a>
+
+  </div>
+</section>
+
 <!-- FIGHT CARD -->
 <section id="cartelera" style="background:#09070F;padding-top:68px;overflow:hidden;">
   <div style="text-align:center;padding:0 clamp(16px,4vw,40px);">
