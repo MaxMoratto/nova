@@ -10,6 +10,9 @@ desktop.ini
 # Herramientas locales
 .claude/
 
+# Video original (se usa video.mp4; el .mov queda solo en local)
+teaser.mov
+
 # Dependencias y build (por si agregas Node/Next.js)
 node_modules/
 .next/

@@ -193,7 +193,7 @@
     <!-- Trailer (recuadro listo para el video) -->
     <!-- TODO: reemplazar por el video cuando Max lo entregue (poster + <video> o iframe) -->
     <a id="trailer-box" href="#" style="flex:1 1 280px;min-width:260px;min-height:190px;position:relative;overflow:hidden;border:1px solid rgba(255,0,51,.4);background:#0A0710;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-decoration:none;cursor:pointer;transition:border-color .2s,box-shadow .2s;" style-hover="border-color:#FF0033;box-shadow:0 0 30px rgba(255,0,51,.25);">
-      <video src="teaser.mov#t=0.5" preload="metadata" muted playsinline tabindex="-1" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.5;pointer-events:none;"></video>
+      <video src="video.mp4#t=0.5" preload="metadata" muted playsinline tabindex="-1" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55;pointer-events:none;"></video>
       <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(10,7,16,.9) 0%,rgba(10,7,16,.35) 60%,rgba(10,7,16,.55) 100%);pointer-events:none;"></div>
       <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:12px;">
         <div style="width:64px;height:64px;border-radius:50%;background:#FF0033;display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px rgba(255,0,51,.55);">
@@ -473,7 +473,7 @@
 <!-- TRAILER MODAL (fuera de x-dc para que DCLogic no lo toque) -->
 <div id="trailer-modal" style="position:fixed;inset:0;z-index:10000;background:rgba(3,2,6,.94);display:none;align-items:center;justify-content:center;padding:clamp(14px,3vw,44px);">
   <div style="position:relative;width:min(1180px,94vw);">
-    <video id="trailer-video" src="teaser.mov" controls preload="none" playsinline style="width:100%;aspect-ratio:16/9;max-height:82vh;display:block;background:#000;border:1px solid rgba(255,0,51,.45);box-shadow:0 0 60px rgba(255,0,51,.28);"></video>
+    <video id="trailer-video" src="video.mp4" controls preload="none" playsinline style="width:100%;aspect-ratio:16/9;max-height:82vh;display:block;background:#000;border:1px solid rgba(255,0,51,.45);box-shadow:0 0 60px rgba(255,0,51,.28);"></video>
     <div id="trailer-error" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;text-align:center;padding:24px;background:rgba(8,5,12,.92);color:#fff;font-size:14px;line-height:1.6;">
       <div>No se pudo reproducir este video en el navegador.<br><span style="color:#8a92a6;font-size:12px;">El archivo <b>.mov</b> usa un códec no compatible. Exporta el tráiler como <b>MP4 (H.264)</b> y lo conectamos.</span></div>
     </div>
