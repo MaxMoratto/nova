@@ -95,9 +95,9 @@
     <!-- LUGARES -->
     <div id="tab-lugares">
       <div class="card">
-        <div class="topbar" style="margin-bottom:12px"><h2 style="margin:0">Marcar asientos</h2><span class="pill">Vendidos: <b id="soldCount">0</b> / 3453</span></div>
+        <div class="topbar" style="margin-bottom:12px"><h2 style="margin:0">Marcar asientos</h2><span class="pill">Vendidos: <b id="soldCount">0</b> / 68</span></div>
         <label>IDs de asiento (de la orden de WhatsApp) — separa por espacio, coma o salto de línea</label>
-        <textarea id="ids" placeholder="ORO-NE-A05  PLA-N-B03  GEN-SO-C02"></textarea>
+        <textarea id="ids" placeholder="VIP-M07-S3  VIP-M07-S1  VIP-M12-S2"></textarea>
         <div class="row"><button class="btn red" id="markBtn">Marcar VENDIDO</button><button class="btn green" id="freeBtn">Liberar (disponible)</button></div>
         <div class="msg" id="opMsg"></div>
       </div>
@@ -169,11 +169,11 @@ document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{ do
   $('tab-lugares').style.display=t.dataset.tab==='lugares'?'block':'none'; $('tab-peleas').style.display=t.dataset.tab==='peleas'?'block':'none'; }));
 
 /* ===== LUGARES ===== */
-function parseIds(){ return [...new Set(($('ids').value.match(/[A-Za-z]+-[A-Za-z]+-[A-Za-z0-9]+/g)||[]).map(s=>s.toUpperCase()))]; }
+function parseIds(){ return [...new Set(($('ids').value.match(/[A-Za-z]+-[A-Za-z0-9]+-[A-Za-z0-9]+/g)||[]).map(s=>s.toUpperCase()))]; }
 $('markBtn').addEventListener('click',()=>opSeats('vendido'));
 $('freeBtn').addEventListener('click',()=>opSeats('liberar'));
 async function opSeats(kind){ const ids=parseIds(); const m=$('opMsg'); m.className='msg';
-  if(!ids.length){ m.className='msg err'; m.textContent='No detecté IDs válidos (formato: ORO-NE-A05)'; return; }
+  if(!ids.length){ m.className='msg err'; m.textContent='No detecté IDs válidos (formato: VIP-M07-S3)'; return; }
   const mk=$('markBtn'),fb=$('freeBtn'); mk.disabled=fb.disabled=true;
   try{ const batch=db.batch();
     for(const id of ids){ const ref=db.collection(SEATS_COL).doc(id); if(kind==='vendido') batch.set(ref,{status:'vendido',ts:Date.now(),by:auth.currentUser.email}); else batch.delete(ref); }
