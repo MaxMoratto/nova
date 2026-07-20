@@ -51,10 +51,8 @@
 
 <!-- NAVBAR -->
 <nav style="position:fixed;top:0;left:0;right:0;z-index:200;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(16px,4vw,52px);background:{{ navBg }};backdrop-filter:{{ navBlur }};box-shadow:{{ navShadow }};transition:background .3s,box-shadow .3s;">
-  <a href="#inicio" style="text-decoration:none;font-family:'Bebas Neue',sans-serif;font-size:clamp(18px,3.5vw,24px);letter-spacing:.08em;display:flex;gap:5px;align-items:baseline;flex-shrink:0;">
-    <span style="color:#FF0033;animation:textRed 3s ease-in-out infinite;">NOVA</span>
-    <span style="color:#fff;">STRIKE</span>
-    <span style="color:#00F0FF;animation:textCyan 3s ease-in-out infinite .8s;">SERIES</span>
+  <a href="#inicio" style="text-decoration:none;display:flex;align-items:center;flex-shrink:0;">
+    <img src="uploads/nss-logo.png" alt="NOVA Strike Series" style="height:clamp(38px,6vw,50px);width:auto;display:block;filter:drop-shadow(0 0 10px rgba(255,0,51,.25));">
   </a>
   <div style="display:{{ navLinksDisplay }};gap:clamp(12px,2vw,28px);align-items:center;">
     <a href="#inicio" style="color:rgba(255,255,255,.6);font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;transition:color .2s;" style-hover="color:#fff;">INICIO</a>
@@ -113,16 +111,13 @@
     <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(24px,2.8vw,36px);color:#fff;letter-spacing:.16em;">CDMX</div>
   </div>
   <div style="position:relative;z-index:4;text-align:center;padding:0 clamp(16px,5vw,60px);animation:fadeUp 1s ease-out .2s both;width:100%;">
-    <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,0,51,.1);border:1px solid rgba(255,0,51,.3);padding:5px 14px;margin-bottom:18px;">
-      <span style="width:6px;height:6px;border-radius:50%;background:#FF0033;display:inline-block;animation:glowRed 1.5s ease-in-out infinite;flex-shrink:0;"></span>
-      <span style="font-size:clamp(9px,2.2vw,11px);font-weight:700;letter-spacing:clamp(.12em,.3em,.3em);color:#FF0033;white-space:nowrap;">NOVA STRIKE 47 · 12 SEP 2026 · CDMX</span>
+    <div style="font-size:clamp(11px,2.4vw,15px);font-weight:700;letter-spacing:clamp(.3em,.55em,.55em);color:rgba(255,255,255,.85);text-transform:uppercase;margin-bottom:clamp(6px,1.4vw,14px);">IT'S FIGHT DAY</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-style:italic;line-height:.8;margin-bottom:clamp(14px,2.5vw,22px);animation:logoAnim 1.2s ease-out .4s both;">
+      <div style="font-size:clamp(58px,15vw,164px);color:#fff;letter-spacing:.02em;text-shadow:0 6px 34px rgba(0,0,0,.55);">NACE</div>
+      <div style="font-size:clamp(28px,7vw,76px);color:rgba(255,255,255,.9);letter-spacing:.14em;margin:-.04em 0;">LA</div>
+      <div style="font-size:clamp(58px,15vw,164px);color:#FF0033;letter-spacing:.02em;animation:textRed 4s ease-in-out infinite;text-shadow:0 0 46px rgba(255,0,51,.5);">LEYENDA</div>
     </div>
-    <div style="font-family:'Bebas Neue',sans-serif;line-height:.9;margin-bottom:14px;animation:logoAnim 1.2s ease-out .4s both;">
-      <div style="font-size:clamp(52px,14vw,148px);color:#FF0033;display:block;animation:textRed 4s ease-in-out infinite;">NOVA</div>
-      <div style="font-size:clamp(52px,14vw,148px);color:#FFFFFF;display:block;letter-spacing:.1em;">STRIKE</div>
-      <div style="font-size:clamp(34px,9vw,96px);color:#00F0FF;display:block;letter-spacing:.3em;animation:textCyan 4s ease-in-out infinite 1s;">SERIES</div>
-    </div>
-    <p style="font-size:clamp(8px,2vw,11px);font-weight:700;letter-spacing:clamp(.2em,.5em,.5em);color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:clamp(24px,4vw,40px);">LA EXPERIENCIA MÁS BRUTAL DEL MMA PREMIUM</p>
+    <p style="font-size:clamp(9px,2vw,12px);font-weight:700;letter-spacing:clamp(.2em,.5em,.5em);color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:clamp(14px,2.5vw,24px);">El combate comienza en</p>
     <div style="display:flex;align-items:flex-start;justify-content:center;gap:{{ cdGap }};margin-bottom:clamp(30px,5vw,48px);">
       <div style="text-align:center;">
         <div style="width:{{ cdBox }};height:{{ cdBox }};background:rgba(0,0,0,.7);border:1px solid rgba(255,0,51,.35);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:{{ cdFont }};color:#fff;box-shadow:0 0 20px rgba(255,0,51,.12),inset 0 0 20px rgba(0,0,0,.5);animation:countPop 1s ease-in-out infinite;">{{ days }}</div>
