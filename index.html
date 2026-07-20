@@ -155,8 +155,8 @@
 </section>
 
 <!-- ===== BANDA: LEYENDAS + STATS + TRAILER ===== -->
-<section id="leyendas" style="background:#09070F;border-top:1px solid rgba(255,0,51,.14);padding:clamp(26px,4vw,46px) clamp(16px,4vw,44px);">
-  <div style="max-width:1280px;margin:0 auto;display:flex;flex-wrap:wrap;gap:clamp(14px,1.6vw,20px);align-items:stretch;">
+<section id="leyendas" style="background:#09070F;border-top:1px solid rgba(255,0,51,.14);padding:clamp(18px,2.2vw,26px) clamp(10px,1.4vw,18px);">
+  <div style="width:100%;margin:0;display:flex;flex-wrap:wrap;gap:clamp(10px,1.2vw,14px);align-items:stretch;">
 
     <!-- Leyendas -->
     <div style="flex:1 1 300px;min-width:270px;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.07);background:linear-gradient(135deg,rgba(255,0,51,.07),rgba(5,5,8,.2)),#0C0812;padding:clamp(22px,3vw,32px);display:flex;flex-direction:column;justify-content:center;">
@@ -465,6 +465,30 @@
 
 
 </x-dc>
+
+<!-- TRAILER MODAL (fuera de x-dc para que DCLogic no lo toque) -->
+<div id="trailer-modal" style="position:fixed;inset:0;z-index:10000;background:rgba(3,2,6,.94);display:none;align-items:center;justify-content:center;padding:clamp(14px,3vw,44px);">
+  <div style="position:relative;width:min(1180px,94vw);">
+    <video id="trailer-video" src="teaser.mov" controls preload="none" playsinline style="width:100%;max-height:82vh;display:block;background:#000;border:1px solid rgba(255,0,51,.45);box-shadow:0 0 60px rgba(255,0,51,.28);"></video>
+    <button id="trailer-close" aria-label="Cerrar" style="position:absolute;top:-16px;right:-16px;width:40px;height:40px;border-radius:50%;background:#FF0033;color:#fff;border:none;font-size:17px;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.65);">✕</button>
+  </div>
+</div>
+<script>
+(function(){
+  var modal=document.getElementById('trailer-modal'),
+      vid=document.getElementById('trailer-video'),
+      btn=document.getElementById('trailer-close');
+  function abrir(){ modal.style.display='flex'; document.body.style.overflow='hidden'; try{ vid.play(); }catch(e){} }
+  function cerrar(){ modal.style.display='none'; document.body.style.overflow=''; try{ vid.pause(); }catch(e){} }
+  document.addEventListener('click', function(e){
+    var box = e.target.closest && e.target.closest('#trailer-box');
+    if(box){ e.preventDefault(); abrir(); return; }
+    if(e.target===modal) cerrar();
+  });
+  btn.addEventListener('click', cerrar);
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') cerrar(); });
+})();
+</script>
 
 <!-- FLOATING VIDEO: AILIN PÉREZ (fuera de x-dc para que DCLogic no lo toque) -->
 <div id="ailin-float" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999;width:clamp(240px,28vw,320px);display:none;border-radius:14px;overflow:hidden;border:1px solid rgba(255,0,51,.45);box-shadow:0 12px 48px rgba(0,0,0,.75);user-select:none;">
