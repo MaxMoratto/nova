@@ -87,6 +87,23 @@
   .maplegend .it{display:flex;align-items:center;gap:6px}
   .maplegend .dot{width:12px;height:12px;border-radius:50%;border:1px solid rgba(255,255,255,.15)}
   .dot.selm{background:#fff}.dot.sold{background:#2a2f3a}
+  #genpanel{position:absolute;left:50%;bottom:76px;transform:translateX(-50%);z-index:6;width:min(580px,88%);background:rgba(12,15,22,.92);border:1px solid #2d3547;border-radius:15px;padding:15px 20px;backdrop-filter:blur(10px);box-shadow:0 14px 44px rgba(0,0,0,.55)}
+  #genpanel .gp-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:11px}
+  #genpanel .gp-t{font-family:'Oswald',sans-serif;font-size:15px;letter-spacing:.6px;text-transform:uppercase;color:#fff;display:flex;align-items:center;gap:8px}
+  #genpanel .gp-t .gdot{width:10px;height:10px;border-radius:50%;background:#4f8df5;box-shadow:0 0 8px rgba(79,141,245,.7)}
+  #genpanel .gp-price{font-family:'Oswald',sans-serif;font-size:19px;color:#4f8df5;white-space:nowrap}
+  #genpanel .gp-price small{font-size:10px;color:var(--muted);letter-spacing:.5px}
+  #genpanel .gp-bar{height:9px;border-radius:6px;background:#1b2230;overflow:hidden;margin-bottom:10px;border:1px solid #232a38}
+  #genpanel .gp-fill{height:100%;background:linear-gradient(90deg,#3b82f6,#60a5fa);border-radius:6px;transition:width .35s}
+  #genpanel .gp-row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+  #genpanel .gp-avail{font-size:12.5px;color:var(--muted)}
+  #genpanel .gp-avail b{color:#fff;font-family:'Oswald',sans-serif;font-size:18px;margin-right:2px}
+  #genpanel .gp-avail.low b{color:#ff8f4a}
+  #genpanel .gp-step{display:flex;align-items:center;gap:11px}
+  #genpanel .gp-step .qb{width:30px;height:30px;font-size:18px}
+  #genpanel .gp-step b{font-family:'Oswald',sans-serif;font-size:18px;min-width:24px;text-align:center;color:#fff}
+  #genpanel.sold-out{opacity:.7}
+  @media(max-width:940px){#genpanel{bottom:14px;width:94%}}
   .modal-bg{position:fixed;inset:0;background:rgba(5,7,11,.74);z-index:80;display:none;align-items:center;justify-content:center;padding:20px}
   .modal-bg.on{display:flex}
   .modal{position:relative;background:var(--panel);border:1px solid var(--border2);border-radius:16px;max-width:450px;width:100%;box-shadow:var(--shadow);overflow:hidden}
@@ -120,6 +137,12 @@
       </svg>
       <div class="zoombar"><button id="zin">+</button><button id="zout">-</button><button id="zfit" style="font-size:14px">&#10530;</button></div>
       <div class="maplegend" id="maplegend"></div>
+      <div id="genpanel">
+        <div class="gp-top"><span class="gp-t"><span class="gdot"></span>General &#183; 1er piso</span><span class="gp-price">$450 <small>por boleto</small></span></div>
+        <div class="gp-bar"><div class="gp-fill" id="gpfill"></div></div>
+        <div class="gp-row"><span class="gp-avail" id="gpavailwrap"><b id="gpavail">250</b> de 250 disponibles</span>
+          <span class="gp-step"><button class="qb" id="gminus2">&#8722;</button><b id="gqty2">0</b><button class="qb" id="gplus2">+</button></span></div>
+      </div>
     </div>
   </section>
   <aside class="side">
@@ -183,6 +206,7 @@ async function initFirebase(){ if(!CONFIG.firebaseConfig)return;
     db.collection(FS_COLLECTION).onSnapshot(s=>{const now=Date.now();
       s.docChanges().forEach(c=>{const d=c.doc.data(); if(c.type==='removed'){unTake(c.doc.id);return;}
         if(d&&(d.status==='vendido'||(d.status==='reservado'&&d.expira>now)))markTaken(c.doc.id); else unTake(c.doc.id);}); refreshAvail();});
+    db.collection('config').doc('general').onSnapshot(d=>{ generalSold=(d&&d.exists&&(d.data().vendidos||0))||0; updateGenPanel(); }, ()=>{});
   }catch(e){console.warn('Firebase:',e);} }
 async function reservar(ids,buyer){ if(!db||!CONFIG.reservaAutomatica)return true;
   const now=Date.now(),expira=now+RESERVA_MIN*60000;
@@ -216,13 +240,17 @@ const zonesBox=document.getElementById('zones');
   const row=document.createElement('div');row.className='zrow';row.dataset.zone='VIP';
   row.innerHTML='<span class="sw" style="background:'+z.bright+'"></span><div class="zn"><b>'+z.label+'</b><small>'+total+' sillas · <span class="av">'+total+'</span> disp.</small></div><div class="zp"><b style="color:'+z.color+'">'+money(z.price)+'</b><small>por silla</small></div>';
   row.addEventListener('mouseenter',()=>hl('VIP'));row.addEventListener('mouseleave',()=>hl(null)); zonesBox.appendChild(row); })();
-(function(){ const z=ZONES.GENERAL;
-  const row=document.createElement('div');row.className='zrow';row.dataset.zone='GENERAL';
-  row.innerHTML='<span class="sw" style="background:'+z.bright+'"></span><div class="zn"><b>'+z.label+'</b><small>'+z.total+' lugares · admisión general</small></div><div class="gqty"><button class="qb" id="gminus">&#8722;</button><b id="gqty">0</b><button class="qb" id="gplus">+</button></div><div class="zp"><b style="color:'+z.color+'">'+money(z.price)+'</b><small>c/u</small></div>';
-  zonesBox.appendChild(row);
-  document.getElementById('gplus').onclick=()=>{ if(state.generalQty<z.total){state.generalQty++;document.getElementById('gqty').textContent=state.generalQty;renderCart();} };
-  document.getElementById('gminus').onclick=()=>{ if(state.generalQty>0){state.generalQty--;document.getElementById('gqty').textContent=state.generalQty;renderCart();} };
-})();
+/* ===== General: marcador con conteo (panel sobre el area general del mapa) ===== */
+let generalSold=0;
+function updateGenPanel(){ const total=ZONES.GENERAL.total; const used=Math.min(total,generalSold+state.generalQty); const avail=total-used;
+  document.getElementById('gpavailwrap').innerHTML='<b>'+avail+'</b> de '+total+' disponibles';
+  document.getElementById('gpavailwrap').classList.toggle('low', avail<=25);
+  document.getElementById('gpfill').style.width=(total?used/total*100:0)+'%';
+  document.getElementById('gqty2').textContent=state.generalQty;
+  document.getElementById('genpanel').classList.toggle('sold-out', avail<=0 && state.generalQty===0);
+}
+document.getElementById('gplus2').onclick=()=>{ if(generalSold+state.generalQty<ZONES.GENERAL.total){state.generalQty++;updateGenPanel();renderCart();} else flash('No quedan más boletos General'); };
+document.getElementById('gminus2').onclick=()=>{ if(state.generalQty>0){state.generalQty--;updateGenPanel();renderCart();} };
 function hl(z){seatsG.classList.toggle('dimmed',!!z);if(z){for(const s of SEATS)nodeOf(s.id).classList.toggle('hl',s.zone===z);}else seatsG.querySelectorAll('.hl').forEach(n=>n.classList.remove('hl'));}
 function refreshAvail(){zonesBox.querySelectorAll('.zrow').forEach(r=>{const av=r.querySelector('.av');if(av)av.textContent=avail(r.dataset.zone);});}
 document.getElementById('maplegend').innerHTML='<div class="it"><span class="dot" style="background:#b03437"></span>Silla VIP</div><div class="it"><span class="dot" style="background:#25d366"></span>Elegido</div><div class="it"><span class="dot sold"></span>Vendido</div>';
@@ -241,7 +269,7 @@ function renderCart(){const sel=[...state.selected].map(id=>SEAT_MAP.get(id)).so
   const sub=sel.reduce((t,s)=>t+ZONES[s.zone].price,0)+gq*ZONES.GENERAL.price,fee=Math.round(sub*0.12);
   document.getElementById('nq').textContent='('+count+')';document.getElementById('subt').textContent=money(sub);
   document.getElementById('fee').textContent=money(fee);document.getElementById('tot').textContent=money(sub+fee)+' MXN';
-  document.getElementById('buy').disabled=count===0;refreshAvail();}
+  document.getElementById('buy').disabled=count===0;refreshAvail();updateGenPanel();}
 pickbox.addEventListener('click',e=>{const b=e.target.closest('.rm');if(!b)return; if(b.dataset.gen){state.generalQty=0;const g=document.getElementById('gqty');if(g)g.textContent='0';renderCart();} else toggle(b.dataset.id);});
 document.getElementById('clear').addEventListener('click',()=>{state.selected.forEach(id=>{const n=nodeOf(id);if(n)n.classList.remove('sel');});state.selected.clear();renderCart();});
 let flashT;function flash(m){let f=document.getElementById('flashmsg');if(!f){f=document.createElement('div');f.id='flashmsg';f.style.cssText='position:fixed;left:50%;top:20px;transform:translateX(-50%);background:#2a1116;border:1px solid #e11d2a;color:#ff8f98;padding:10px 18px;border-radius:10px;z-index:90;font-size:13px';document.body.appendChild(f);}f.textContent=m;f.style.opacity='1';clearTimeout(flashT);flashT=setTimeout(()=>f.style.opacity='0',1800);}
