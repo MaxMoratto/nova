@@ -192,12 +192,16 @@
 
     <!-- Trailer (recuadro listo para el video) -->
     <!-- TODO: reemplazar por el video cuando Max lo entregue (poster + <video> o iframe) -->
-    <a id="trailer-box" href="#" style="flex:1 1 280px;min-width:260px;min-height:190px;position:relative;overflow:hidden;border:1px solid rgba(255,0,51,.4);background:radial-gradient(circle at 50% 38%,#1b0d14,#0A0710);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-decoration:none;cursor:pointer;transition:border-color .2s,box-shadow .2s;" style-hover="border-color:#FF0033;box-shadow:0 0 30px rgba(255,0,51,.25);">
-      <div style="width:64px;height:64px;border-radius:50%;background:#FF0033;display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px rgba(255,0,51,.55);">
-        <div style="width:0;height:0;border-left:20px solid #fff;border-top:12px solid transparent;border-bottom:12px solid transparent;margin-left:6px;"></div>
+    <a id="trailer-box" href="#" style="flex:1 1 280px;min-width:260px;min-height:190px;position:relative;overflow:hidden;border:1px solid rgba(255,0,51,.4);background:#0A0710;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-decoration:none;cursor:pointer;transition:border-color .2s,box-shadow .2s;" style-hover="border-color:#FF0033;box-shadow:0 0 30px rgba(255,0,51,.25);">
+      <video src="teaser.mov#t=0.5" preload="metadata" muted playsinline tabindex="-1" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.5;pointer-events:none;"></video>
+      <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(10,7,16,.9) 0%,rgba(10,7,16,.35) 60%,rgba(10,7,16,.55) 100%);pointer-events:none;"></div>
+      <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:12px;">
+        <div style="width:64px;height:64px;border-radius:50%;background:#FF0033;display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px rgba(255,0,51,.55);">
+          <div style="width:0;height:0;border-left:20px solid #fff;border-top:12px solid transparent;border-bottom:12px solid transparent;margin-left:6px;"></div>
+        </div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(18px,2.1vw,24px);color:#fff;letter-spacing:.06em;text-shadow:0 2px 12px rgba(0,0,0,.8);">SIENTE LA ADRENALINA</div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:.18em;color:#FF0033;text-transform:uppercase;">VER TRÁILER</div>
       </div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(18px,2.1vw,24px);color:#fff;letter-spacing:.06em;">SIENTE LA ADRENALINA</div>
-      <div style="font-size:11px;font-weight:700;letter-spacing:.18em;color:#FF0033;text-transform:uppercase;">VER TRÁILER</div>
     </a>
 
   </div>
