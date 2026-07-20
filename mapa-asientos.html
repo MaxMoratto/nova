@@ -58,6 +58,10 @@
   .zrow .zp b{font-size:15.5px;display:block}
   .zrow .zp small{color:var(--muted);font-size:10.5px}
   .badge-soon{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#0b0d12;background:var(--muted);border-radius:20px;padding:3px 8px}
+  .gqty{display:flex;align-items:center;gap:8px}
+  .qb{width:27px;height:27px;border-radius:7px;border:1px solid var(--border2);background:var(--panel2);color:var(--txt);font-size:16px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .qb:hover{border-color:var(--red);color:var(--red2)}
+  .gqty b{font-family:'Oswald',sans-serif;font-size:16px;min-width:20px;text-align:center}
   .empty{color:var(--muted);font-size:13px;text-align:center;padding:24px 10px;border:1px dashed var(--border2);border-radius:12px;line-height:1.5}
   .empty span{font-size:28px;display:block;margin-bottom:8px;opacity:.7}
   .picks{display:flex;flex-direction:column;gap:7px}
@@ -145,8 +149,8 @@
 <script>
 const SEATS = [{"id": "VIP-M01-S1", "zone": "VIP", "mesa": 1, "silla": 1, "x": 34823, "y": 22496}, {"id": "VIP-M01-S2", "zone": "VIP", "mesa": 1, "silla": 2, "x": 36773, "y": 24446}, {"id": "VIP-M01-S3", "zone": "VIP", "mesa": 1, "silla": 3, "x": 32873, "y": 24446}, {"id": "VIP-M01-S4", "zone": "VIP", "mesa": 1, "silla": 4, "x": 34823, "y": 26396}, {"id": "VIP-M02-S1", "zone": "VIP", "mesa": 2, "silla": 1, "x": 20041, "y": 22496}, {"id": "VIP-M02-S2", "zone": "VIP", "mesa": 2, "silla": 2, "x": 21991, "y": 24446}, {"id": "VIP-M02-S3", "zone": "VIP", "mesa": 2, "silla": 3, "x": 18091, "y": 24446}, {"id": "VIP-M02-S4", "zone": "VIP", "mesa": 2, "silla": 4, "x": 20041, "y": 26396}, {"id": "VIP-M03-S1", "zone": "VIP", "mesa": 3, "silla": 1, "x": 34803, "y": 33700}, {"id": "VIP-M03-S2", "zone": "VIP", "mesa": 3, "silla": 2, "x": 36753, "y": 35650}, {"id": "VIP-M03-S3", "zone": "VIP", "mesa": 3, "silla": 3, "x": 32853, "y": 35650}, {"id": "VIP-M03-S4", "zone": "VIP", "mesa": 3, "silla": 4, "x": 34803, "y": 37600}, {"id": "VIP-M04-S1", "zone": "VIP", "mesa": 4, "silla": 1, "x": 20034, "y": 33730}, {"id": "VIP-M04-S2", "zone": "VIP", "mesa": 4, "silla": 2, "x": 21984, "y": 35680}, {"id": "VIP-M04-S3", "zone": "VIP", "mesa": 4, "silla": 3, "x": 18084, "y": 35680}, {"id": "VIP-M04-S4", "zone": "VIP", "mesa": 4, "silla": 4, "x": 20034, "y": 37630}, {"id": "VIP-M05-S1", "zone": "VIP", "mesa": 5, "silla": 1, "x": 34816, "y": 44822}, {"id": "VIP-M05-S2", "zone": "VIP", "mesa": 5, "silla": 2, "x": 36766, "y": 46772}, {"id": "VIP-M05-S3", "zone": "VIP", "mesa": 5, "silla": 3, "x": 32866, "y": 46772}, {"id": "VIP-M05-S4", "zone": "VIP", "mesa": 5, "silla": 4, "x": 34816, "y": 48722}, {"id": "VIP-M06-S1", "zone": "VIP", "mesa": 6, "silla": 1, "x": 19816, "y": 44739}, {"id": "VIP-M06-S2", "zone": "VIP", "mesa": 6, "silla": 2, "x": 21766, "y": 46689}, {"id": "VIP-M06-S3", "zone": "VIP", "mesa": 6, "silla": 3, "x": 17866, "y": 46689}, {"id": "VIP-M06-S4", "zone": "VIP", "mesa": 6, "silla": 4, "x": 19816, "y": 48639}, {"id": "VIP-M07-S1", "zone": "VIP", "mesa": 7, "silla": 1, "x": 38862, "y": 51620}, {"id": "VIP-M07-S2", "zone": "VIP", "mesa": 7, "silla": 2, "x": 40812, "y": 53570}, {"id": "VIP-M07-S3", "zone": "VIP", "mesa": 7, "silla": 3, "x": 36912, "y": 53570}, {"id": "VIP-M07-S4", "zone": "VIP", "mesa": 7, "silla": 4, "x": 38862, "y": 55520}, {"id": "VIP-M08-S1", "zone": "VIP", "mesa": 8, "silla": 1, "x": 45324, "y": 56050}, {"id": "VIP-M08-S2", "zone": "VIP", "mesa": 8, "silla": 2, "x": 47274, "y": 58000}, {"id": "VIP-M08-S3", "zone": "VIP", "mesa": 8, "silla": 3, "x": 43374, "y": 58000}, {"id": "VIP-M08-S4", "zone": "VIP", "mesa": 8, "silla": 4, "x": 45324, "y": 59950}, {"id": "VIP-M09-S1", "zone": "VIP", "mesa": 9, "silla": 1, "x": 55760, "y": 56085}, {"id": "VIP-M09-S2", "zone": "VIP", "mesa": 9, "silla": 2, "x": 57710, "y": 58035}, {"id": "VIP-M09-S3", "zone": "VIP", "mesa": 9, "silla": 3, "x": 53810, "y": 58035}, {"id": "VIP-M09-S4", "zone": "VIP", "mesa": 9, "silla": 4, "x": 55760, "y": 59985}, {"id": "VIP-M10-S1", "zone": "VIP", "mesa": 10, "silla": 1, "x": 66117, "y": 56003}, {"id": "VIP-M10-S2", "zone": "VIP", "mesa": 10, "silla": 2, "x": 68067, "y": 57953}, {"id": "VIP-M10-S3", "zone": "VIP", "mesa": 10, "silla": 3, "x": 64167, "y": 57953}, {"id": "VIP-M10-S4", "zone": "VIP", "mesa": 10, "silla": 4, "x": 66117, "y": 59903}, {"id": "VIP-M11-S1", "zone": "VIP", "mesa": 11, "silla": 1, "x": 72424, "y": 51457}, {"id": "VIP-M11-S2", "zone": "VIP", "mesa": 11, "silla": 2, "x": 74374, "y": 53407}, {"id": "VIP-M11-S3", "zone": "VIP", "mesa": 11, "silla": 3, "x": 70474, "y": 53407}, {"id": "VIP-M11-S4", "zone": "VIP", "mesa": 11, "silla": 4, "x": 72424, "y": 55357}, {"id": "VIP-M12-S1", "zone": "VIP", "mesa": 12, "silla": 1, "x": 76624, "y": 44671}, {"id": "VIP-M12-S2", "zone": "VIP", "mesa": 12, "silla": 2, "x": 78574, "y": 46621}, {"id": "VIP-M12-S3", "zone": "VIP", "mesa": 12, "silla": 3, "x": 74674, "y": 46621}, {"id": "VIP-M12-S4", "zone": "VIP", "mesa": 12, "silla": 4, "x": 76624, "y": 48571}, {"id": "VIP-M13-S1", "zone": "VIP", "mesa": 13, "silla": 1, "x": 91620, "y": 44782}, {"id": "VIP-M13-S2", "zone": "VIP", "mesa": 13, "silla": 2, "x": 93570, "y": 46732}, {"id": "VIP-M13-S3", "zone": "VIP", "mesa": 13, "silla": 3, "x": 89670, "y": 46732}, {"id": "VIP-M13-S4", "zone": "VIP", "mesa": 13, "silla": 4, "x": 91620, "y": 48682}, {"id": "VIP-M14-S1", "zone": "VIP", "mesa": 14, "silla": 1, "x": 76549, "y": 33699}, {"id": "VIP-M14-S2", "zone": "VIP", "mesa": 14, "silla": 2, "x": 78499, "y": 35649}, {"id": "VIP-M14-S3", "zone": "VIP", "mesa": 14, "silla": 3, "x": 74599, "y": 35649}, {"id": "VIP-M14-S4", "zone": "VIP", "mesa": 14, "silla": 4, "x": 76549, "y": 37599}, {"id": "VIP-M15-S1", "zone": "VIP", "mesa": 15, "silla": 1, "x": 91330, "y": 33728}, {"id": "VIP-M15-S2", "zone": "VIP", "mesa": 15, "silla": 2, "x": 93280, "y": 35678}, {"id": "VIP-M15-S3", "zone": "VIP", "mesa": 15, "silla": 3, "x": 89380, "y": 35678}, {"id": "VIP-M15-S4", "zone": "VIP", "mesa": 15, "silla": 4, "x": 91330, "y": 37628}, {"id": "VIP-M16-S1", "zone": "VIP", "mesa": 16, "silla": 1, "x": 76623, "y": 22494}, {"id": "VIP-M16-S2", "zone": "VIP", "mesa": 16, "silla": 2, "x": 78573, "y": 24444}, {"id": "VIP-M16-S3", "zone": "VIP", "mesa": 16, "silla": 3, "x": 74673, "y": 24444}, {"id": "VIP-M16-S4", "zone": "VIP", "mesa": 16, "silla": 4, "x": 76623, "y": 26394}, {"id": "VIP-M17-S1", "zone": "VIP", "mesa": 17, "silla": 1, "x": 91407, "y": 22496}, {"id": "VIP-M17-S2", "zone": "VIP", "mesa": 17, "silla": 2, "x": 93357, "y": 24446}, {"id": "VIP-M17-S3", "zone": "VIP", "mesa": 17, "silla": 3, "x": 89457, "y": 24446}, {"id": "VIP-M17-S4", "zone": "VIP", "mesa": 17, "silla": 4, "x": 91407, "y": 26396}];
 const ZONES = {
-  VIP:     { label:'VIP (Planta baja)', color:'#e6b325', bright:'#f0c24a', price:8000, disabled:false },
-  GENERAL: { label:'General (1er piso)', color:'#3b82f6', bright:'#4f8df5', price:0, disabled:true, total:250 }
+  VIP:     { label:'VIP (Planta baja)', color:'#e6b325', bright:'#f0c24a', price:850 },
+  GENERAL: { label:'General (1er piso)', color:'#3b82f6', bright:'#4f8df5', price:450, general:true, total:250 }
 };
 /* ===== CONFIG - LLENA ESTO ===== */
 const CONFIG = {
@@ -189,7 +193,7 @@ async function reservar(ids,buyer){ if(!db||!CONFIG.reservaAutomatica)return tru
   }catch(e){const m=''+e; if(m.indexOf('OCUPADO')>=0)markTaken(m.split('OCUPADO:')[1]); return false;} }
 initFirebase();
 
-const state={selected:new Set(),scale:1,tx:0,ty:0}; const MAX=12;
+const state={selected:new Set(),generalQty:0,scale:1,tx:0,ty:0}; const MAX=12;
 const svg=document.getElementById('map'),viewport=document.getElementById('viewport'),tip=document.getElementById('tip');
 function toggle(id){const s=SEAT_MAP.get(id); if(!s||taken.has(id))return; const n=nodeOf(id);
   if(state.selected.has(id)){state.selected.delete(id);n.classList.remove('sel');}
@@ -207,37 +211,44 @@ seatsG.addEventListener('mouseleave',()=>tip.classList.remove('on'));
 
 function avail(z){let a=0;for(const s of SEATS)if(s.zone===z&&!state.selected.has(s.id)&&!taken.has(s.id))a++;return a;}
 const zonesBox=document.getElementById('zones');
-Object.entries(ZONES).forEach(([k,z])=>{
-  const total = z.disabled ? (z.total||0) : SEATS.filter(s=>s.zone===k).length;
-  const row=document.createElement('div');row.className='zrow'+(z.disabled?' dis':'');row.dataset.zone=k;
-  const right = z.disabled ? '<span class="badge-soon">Próximamente</span>' : '<div class="zp"><b style="color:'+z.color+'">'+money(z.price)+'</b><small>MXN</small></div>';
-  const sub = z.disabled ? total+' lugares · venta no disponible' : total+' lugares · <span class="av">'+total+'</span> disp.';
-  row.innerHTML='<span class="sw" style="background:'+z.bright+'"></span><div class="zn"><b>'+z.label+'</b><small>'+sub+'</small></div>'+right;
-  if(!z.disabled){row.addEventListener('mouseenter',()=>hl(k));row.addEventListener('mouseleave',()=>hl(null));}
-  zonesBox.appendChild(row);});
+(function(){ const z=ZONES.VIP, total=SEATS.length;
+  const row=document.createElement('div');row.className='zrow';row.dataset.zone='VIP';
+  row.innerHTML='<span class="sw" style="background:'+z.bright+'"></span><div class="zn"><b>'+z.label+'</b><small>'+total+' sillas · <span class="av">'+total+'</span> disp.</small></div><div class="zp"><b style="color:'+z.color+'">'+money(z.price)+'</b><small>por silla</small></div>';
+  row.addEventListener('mouseenter',()=>hl('VIP'));row.addEventListener('mouseleave',()=>hl(null)); zonesBox.appendChild(row); })();
+(function(){ const z=ZONES.GENERAL;
+  const row=document.createElement('div');row.className='zrow';row.dataset.zone='GENERAL';
+  row.innerHTML='<span class="sw" style="background:'+z.bright+'"></span><div class="zn"><b>'+z.label+'</b><small>'+z.total+' lugares · admisión general</small></div><div class="gqty"><button class="qb" id="gminus">&#8722;</button><b id="gqty">0</b><button class="qb" id="gplus">+</button></div><div class="zp"><b style="color:'+z.color+'">'+money(z.price)+'</b><small>c/u</small></div>';
+  zonesBox.appendChild(row);
+  document.getElementById('gplus').onclick=()=>{ if(state.generalQty<z.total){state.generalQty++;document.getElementById('gqty').textContent=state.generalQty;renderCart();} };
+  document.getElementById('gminus').onclick=()=>{ if(state.generalQty>0){state.generalQty--;document.getElementById('gqty').textContent=state.generalQty;renderCart();} };
+})();
 function hl(z){seatsG.classList.toggle('dimmed',!!z);if(z){for(const s of SEATS)nodeOf(s.id).classList.toggle('hl',s.zone===z);}else seatsG.querySelectorAll('.hl').forEach(n=>n.classList.remove('hl'));}
 function refreshAvail(){zonesBox.querySelectorAll('.zrow').forEach(r=>{const av=r.querySelector('.av');if(av)av.textContent=avail(r.dataset.zone);});}
 document.getElementById('maplegend').innerHTML='<div class="it"><span class="dot" style="background:#b03437"></span>Silla VIP</div><div class="it"><span class="dot" style="background:#25d366"></span>Elegido</div><div class="it"><span class="dot sold"></span>Vendido</div>';
 
 const pickbox=document.getElementById('pickbox');
 function renderCart(){const sel=[...state.selected].map(id=>SEAT_MAP.get(id)).sort((a,b)=>a.mesa-b.mesa||a.silla-b.silla);
-  document.getElementById('pickcount').textContent=sel.length?'('+sel.length+')':'';
-  if(!sel.length){pickbox.innerHTML='<div class="empty"><span>&#127915;</span>Toca las sillas VIP en el mapa para agregarlas.</div>';}
+  const gq=state.generalQty, count=sel.length+gq;
+  document.getElementById('pickcount').textContent=count?'('+count+')':'';
+  if(!count){pickbox.innerHTML='<div class="empty"><span>&#127915;</span>Toca sillas VIP en el mapa, o suma boletos General.</div>';}
   else{const w=document.createElement('div');w.className='picks';
     for(const s of sel){const z=ZONES[s.zone];const d=document.createElement('div');d.className='pick';
       d.innerHTML='<span class="pw" style="background:'+z.bright+'"></span><div class="pi"><b>Mesa '+s.mesa+' · Silla '+s.silla+'</b><small>'+z.label+' · '+s.id+'</small></div><span class="pp">'+money(z.price)+'</span><button class="rm" data-id="'+s.id+'">&times;</button>';w.appendChild(d);}
+    if(gq>0){const z=ZONES.GENERAL;const d=document.createElement('div');d.className='pick';
+      d.innerHTML='<span class="pw" style="background:'+z.bright+'"></span><div class="pi"><b>General × '+gq+'</b><small>'+z.label+' · admisión general</small></div><span class="pp">'+money(z.price*gq)+'</span><button class="rm" data-gen="1">&times;</button>';w.appendChild(d);}
     pickbox.innerHTML='';pickbox.appendChild(w);}
-  const sub=sel.reduce((t,s)=>t+ZONES[s.zone].price,0),fee=Math.round(sub*0.12);
-  document.getElementById('nq').textContent='('+sel.length+')';document.getElementById('subt').textContent=money(sub);
+  const sub=sel.reduce((t,s)=>t+ZONES[s.zone].price,0)+gq*ZONES.GENERAL.price,fee=Math.round(sub*0.12);
+  document.getElementById('nq').textContent='('+count+')';document.getElementById('subt').textContent=money(sub);
   document.getElementById('fee').textContent=money(fee);document.getElementById('tot').textContent=money(sub+fee)+' MXN';
-  document.getElementById('buy').disabled=sel.length===0;refreshAvail();}
-pickbox.addEventListener('click',e=>{const b=e.target.closest('.rm');if(b)toggle(b.dataset.id);});
+  document.getElementById('buy').disabled=count===0;refreshAvail();}
+pickbox.addEventListener('click',e=>{const b=e.target.closest('.rm');if(!b)return; if(b.dataset.gen){state.generalQty=0;const g=document.getElementById('gqty');if(g)g.textContent='0';renderCart();} else toggle(b.dataset.id);});
 document.getElementById('clear').addEventListener('click',()=>{state.selected.forEach(id=>{const n=nodeOf(id);if(n)n.classList.remove('sel');});state.selected.clear();renderCart();});
 let flashT;function flash(m){let f=document.getElementById('flashmsg');if(!f){f=document.createElement('div');f.id='flashmsg';f.style.cssText='position:fixed;left:50%;top:20px;transform:translateX(-50%);background:#2a1116;border:1px solid #e11d2a;color:#ff8f98;padding:10px 18px;border-radius:10px;z-index:90;font-size:13px';document.body.appendChild(f);}f.textContent=m;f.style.opacity='1';clearTimeout(flashT);flashT=setTimeout(()=>f.style.opacity='0',1800);}
 const modalbg=document.getElementById('modalbg');
-document.getElementById('buy').addEventListener('click',()=>{const sel=[...state.selected].map(id=>SEAT_MAP.get(id)).sort((a,b)=>a.mesa-b.mesa||a.silla-b.silla);if(!sel.length)return;
+document.getElementById('buy').addEventListener('click',()=>{const sel=[...state.selected].map(id=>SEAT_MAP.get(id)).sort((a,b)=>a.mesa-b.mesa||a.silla-b.silla);if(!sel.length&&!state.generalQty)return;
   const ml=document.getElementById('mlist');ml.innerHTML='';let sub=0;
   for(const s of sel){sub+=ZONES[s.zone].price;const r=document.createElement('div');r.className='mrow';r.innerHTML='<span>Mesa '+s.mesa+' · Silla '+s.silla+'</span><b>'+money(ZONES[s.zone].price)+'</b>';ml.appendChild(r);}
+  if(state.generalQty>0){sub+=state.generalQty*ZONES.GENERAL.price;const r=document.createElement('div');r.className='mrow';r.innerHTML='<span>General × '+state.generalQty+'</span><b>'+money(state.generalQty*ZONES.GENERAL.price)+'</b>';ml.appendChild(r);}
   document.getElementById('mtot').textContent=money(sub+Math.round(sub*0.12))+' MXN';
   const sb=document.getElementById('speibox'); if(CONFIG.spei&&CONFIG.spei.clabe){sb.style.display='block';sb.innerHTML='• O paga por transferencia/SPEI:<br><b>'+CONFIG.spei.beneficiario+'</b> - '+CONFIG.spei.banco+'<br>CLABE: <b>'+CONFIG.spei.clabe+'</b>';}else sb.style.display='none';
   modalbg.classList.add('on');});
@@ -246,13 +257,14 @@ modalbg.addEventListener('click',e=>{if(e.target===modalbg)modalbg.classList.rem
 document.getElementById('mpay').addEventListener('click',async()=>{
   const name=document.getElementById('bname').value.trim(),phone=document.getElementById('bphone').value.trim(),mail=document.getElementById('bmail').value.trim();
   if(!name||!phone){flash('Pon tu nombre y WhatsApp/telefono');return;}
-  const sel=[...state.selected].map(id=>SEAT_MAP.get(id)).sort((a,b)=>a.mesa-b.mesa||a.silla-b.silla); if(!sel.length)return;
+  const sel=[...state.selected].map(id=>SEAT_MAP.get(id)).sort((a,b)=>a.mesa-b.mesa||a.silla-b.silla); if(!sel.length&&!state.generalQty)return;
   const b=document.getElementById('mpay');b.disabled=true;const old=b.textContent;b.textContent='Apartando...';
   const ok=await reservar(sel.map(s=>s.id),{name,phone,mail}); b.disabled=false;b.textContent=old;
-  if(!ok){flash('Un lugar se acaba de apartar. Elige otro.');modalbg.classList.remove('on');return;}
-  const sub=sel.reduce((t,s)=>t+ZONES[s.zone].price,0),fee=Math.round(sub*0.12);
-  let msg='Hola! Quiero apartar estos lugares VIP para '+CONFIG.evento+':\n';
-  for(const s of sel){msg+='• Mesa '+s.mesa+' · Silla '+s.silla+' ('+s.id+') - '+money(ZONES[s.zone].price)+'\n';}
+  if(!ok){flash('Una silla se acaba de apartar. Elige otra.');modalbg.classList.remove('on');return;}
+  const vipSub=sel.reduce((t,s)=>t+ZONES[s.zone].price,0),genSub=state.generalQty*ZONES.GENERAL.price,sub=vipSub+genSub,fee=Math.round(sub*0.12);
+  let msg='Hola! Quiero apartar para '+CONFIG.evento+':\n';
+  for(const s of sel){msg+='• VIP Mesa '+s.mesa+' · Silla '+s.silla+' ('+s.id+') - '+money(ZONES[s.zone].price)+'\n';}
+  if(state.generalQty>0){msg+='• General × '+state.generalQty+' - '+money(genSub)+'\n';}
   msg+='\nSubtotal: '+money(sub)+'\nServicio 12%: '+money(fee)+'\nTotal: '+money(sub+fee)+' MXN\n\nNombre: '+name+'\nTel: '+phone+(mail?'\nEmail: '+mail:'');
   window.open('https://wa.me/'+CONFIG.whatsapp+'?text='+encodeURIComponent(msg),'_blank');
   modalbg.classList.remove('on');flash('Te mandamos a WhatsApp para confirmar');});
