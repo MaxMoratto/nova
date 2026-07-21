@@ -120,12 +120,13 @@
         <div class="grid2">
           <div><label>Tipo</label><select id="b_tipo"><option value="VIP">VIP (mesa y asiento)</option><option value="GENERAL">General (admisión de pie)</option></select></div>
           <div id="b_seatfields"><div class="grid2"><div><label>Mesa</label><select id="b_mesa"></select></div><div><label>Asiento</label><select id="b_asiento"><option>1</option><option>2</option><option>3</option><option>4</option></select></div></div></div>
+          <div id="b_cantwrap" style="display:none"><label>Cantidad de boletos</label><input id="b_cant" type="number" min="1" max="20" value="1"/></div>
         </div>
         <label>Nombre del comprador</label><input id="b_nombre" placeholder="Nombre completo"/>
         <div class="grid2"><div><label>WhatsApp / tel</label><input id="b_tel" placeholder="55..."/></div><div><label>Email (opcional)</label><input id="b_mail" placeholder="correo@..."/></div></div>
         <button class="btn red" id="emitBtn">Emitir boleto</button>
         <div class="msg" id="bMsg"></div>
-        <div class="hint">Al emitir se genera folio + QR, se marca el lugar como vendido y se abre el boleto para descargar. En VIP se valida que el asiento esté libre.</div>
+        <div class="hint">Cada boleto genera su propio <b>folio consecutivo</b> + QR. En General puedes emitir <b>varios a la vez</b> (cada uno con su folio y QR). VIP valida que el asiento esté libre y lo bloquea.</div>
       </div>
       <div class="card">
         <div class="topbar" style="margin-bottom:10px"><h2 style="margin:0">Boletos emitidos</h2><input id="bSearch" placeholder="Buscar folio o nombre" style="max-width:230px;margin:0"/></div>
@@ -295,33 +296,56 @@ $('seedBtn').addEventListener('click',async()=>{ if(!confirm('Agregar las 2 pele
 
 /* ===== BOLETOS ===== */
 (function(){ const sel=$('b_mesa'); for(let i=1;i<=17;i++){ const o=document.createElement('option'); o.value=i; o.textContent='Mesa '+i; sel.appendChild(o); } })();
-$('b_tipo').addEventListener('change',()=>{ $('b_seatfields').style.display = $('b_tipo').value==='VIP'?'block':'none'; });
+function syncEmitFields(){ const vip=$('b_tipo').value==='VIP'; $('b_seatfields').style.display=vip?'block':'none'; $('b_cantwrap').style.display=vip?'none':'block'; }
+$('b_tipo').addEventListener('change', syncEmitFields); syncEmitFields();
 function genToken(){ const a=new Uint8Array(16); (window.crypto||window.msCrypto).getRandomValues(a); return Array.from(a).map(b=>b.toString(16).padStart(2,'0')).join(''); }
+const fmtFolio=n=>'NSS-'+String(n).padStart(5,'0');
+function showEmitted(list){ const m=$('bMsg'); m.className='msg ok';
+  m.innerHTML='✓ '+list.length+' boleto'+(list.length>1?'s':'')+' emitido'+(list.length>1?'s':'')+': '+list.map(x=>'<a class="link" href="boleto.html?t='+x.token+'" target="_blank" style="padding:2px 7px;display:inline-block;margin:2px">'+x.folio+' ↗</a>').join('');
+  $('b_nombre').value=''; $('b_tel').value=''; $('b_mail').value=''; $('b_cant').value='1';
+  if(list[0]) window.open('boleto.html?t='+list[0].token,'_blank');
+}
 $('emitBtn').addEventListener('click', emitBoleto);
 async function emitBoleto(){
   const tipo=$('b_tipo').value, nombre=$('b_nombre').value.trim(), tel=$('b_tel').value.trim(), mail=$('b_mail').value.trim();
   const m=$('bMsg'); m.className='msg';
   if(!nombre){ m.className='msg err'; m.textContent='Pon al menos el nombre del comprador'; return; }
-  const token=genToken();
-  const base={ tipo, comprador:{nombre,tel,mail}, estado:'valido', canal:'manual', emitidoAt:Date.now(), emitidoBy:auth.currentUser.email, evento:'NOVA-11SEP2026' };
+  const meta={ comprador:{nombre,tel,mail}, estado:'valido', canal:'manual', emitidoAt:Date.now(), emitidoBy:auth.currentUser.email, evento:'NOVA-11SEP2026' };
+  const foliosRef=db.collection('config').doc('folios');
   const btn=$('emitBtn'); btn.disabled=true;
-  try{ let folio;
-    if(tipo==='VIP'){ const mesa=Number($('b_mesa').value), asiento=Number($('b_asiento').value);
-      const seatId='VIP-M'+String(mesa).padStart(2,'0')+'-S'+asiento; folio='NSS-VIP-M'+String(mesa).padStart(2,'0')+'-S'+asiento;
-      await db.runTransaction(async tx=>{ const seatRef=db.collection(SEATS_COL).doc(seatId); const seatSnap=await tx.get(seatRef); const sd=seatSnap.data();
-        if(sd && sd.status==='vendido') throw new Error('El asiento '+seatId+' ya está vendido');
-        tx.set(db.collection(BOLETOS_COL).doc(token), Object.assign({}, base, {mesa, asiento, folio}));
-        tx.set(seatRef, {status:'vendido', ts:Date.now(), by:auth.currentUser.email, folio}); });
+  try{
+    if(tipo==='VIP'){
+      const mesa=Number($('b_mesa').value), asiento=Number($('b_asiento').value);
+      const seatId='VIP-M'+String(mesa).padStart(2,'0')+'-S'+asiento;
+      const token=genToken(); let folio;
+      await db.runTransaction(async tx=>{
+        const seatRef=db.collection(SEATS_COL).doc(seatId);
+        const [seatSnap, folioSnap]=await Promise.all([tx.get(seatRef), tx.get(foliosRef)]);
+        const sd=seatSnap.data(); if(sd && sd.status==='vendido') throw new Error('El asiento '+seatId+' ya está vendido');
+        const n=((folioSnap.exists&&folioSnap.data().n)||0)+1; folio=fmtFolio(n);
+        tx.set(foliosRef,{n},{merge:true});
+        tx.set(db.collection(BOLETOS_COL).doc(token), Object.assign({tipo:'VIP', mesa, asiento, folio, orden:token}, meta));
+        tx.set(seatRef, {status:'vendido', ts:Date.now(), by:auth.currentUser.email, folio});
+      });
+      showEmitted([{token, folio}]);
     } else {
-      await db.runTransaction(async tx=>{ const gRef=db.collection('config').doc('general'); const g=await tx.get(gRef); const v=(g.exists && g.data().vendidos)||0;
-        if(v>=250) throw new Error('General agotado (250 boletos)'); folio='NSS-GEN-'+String(v+1).padStart(4,'0');
-        tx.set(db.collection(BOLETOS_COL).doc(token), Object.assign({}, base, {folio}));
-        tx.set(gRef, {vendidos:v+1}, {merge:true}); });
+      const qty=Math.min(20, Math.max(1, parseInt($('b_cant').value||'1',10)));
+      const tokens=Array.from({length:qty},()=>genToken()); const orden=genToken(); let out=[];
+      await db.runTransaction(async tx=>{
+        const gRef=db.collection('config').doc('general');
+        const [gSnap, folioSnap]=await Promise.all([tx.get(gRef), tx.get(foliosRef)]);
+        const v=(gSnap.exists&&gSnap.data().vendidos)||0;
+        if(v+qty>250) throw new Error('No hay '+qty+' lugares General (quedan '+(250-v)+')');
+        let n=(folioSnap.exists&&folioSnap.data().n)||0; out=[];
+        for(let i=0;i<qty;i++){ n++; const folio=fmtFolio(n); out.push({token:tokens[i], folio});
+          tx.set(db.collection(BOLETOS_COL).doc(tokens[i]), Object.assign({tipo:'GENERAL', folio, orden}, meta)); }
+        tx.set(foliosRef,{n},{merge:true});
+        tx.set(gRef,{vendidos:v+qty},{merge:true});
+      });
+      showEmitted(out);
     }
-    m.className='msg ok'; m.innerHTML='✓ Emitido <b>'+folio+'</b> — <a class="link" href="boleto.html?t='+token+'" target="_blank" style="padding:3px 8px">Ver / descargar ↗</a>';
-    $('b_nombre').value=''; $('b_tel').value=''; $('b_mail').value='';
-    window.open('boleto.html?t='+token,'_blank');
-  }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; } btn.disabled=false;
+  }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; }
+  btn.disabled=false;
 }
 let BOLETOS=[];
 function watchBoletos(){ db.collection(BOLETOS_COL).onSnapshot(snap=>{ BOLETOS=[]; let inV=0,inG=0,emV=0,emG=0;
