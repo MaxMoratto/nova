@@ -35,21 +35,26 @@ module.exports = async (req, res) => {
     const expira = now + RESERVA_MIN * 60000;
 
     // Reserva atómica de asientos VIP + crea la orden
-    await firestore.runTransaction(async (tx) => {
-      const refs = vipSeats.map(id => firestore.collection('asientos_nova').doc(id));
-      const snaps = await Promise.all(refs.map(r => tx.get(r)));
-      snaps.forEach((s, i) => {
-        const d = s.data();
-        if (d && (d.status === 'vendido' || (d.status === 'reservado' && d.expira > now && d.orderId !== orderId)))
-          throw new Error('El asiento ' + vipSeats[i] + ' ya no está disponible');
+    try {
+      await firestore.runTransaction(async (tx) => {
+        const refs = vipSeats.map(id => firestore.collection('asientos_nova').doc(id));
+        const snaps = await Promise.all(refs.map(r => tx.get(r)));
+        snaps.forEach((s, i) => {
+          const d = s.data();
+          if (d && (d.status === 'vendido' || (d.status === 'reservado' && d.expira > now && d.orderId !== orderId)))
+            throw new Error('El asiento ' + vipSeats[i] + ' ya no está disponible');
+        });
+        refs.forEach((r) => tx.set(r, { status: 'reservado', expira, orderId, ts: now }, { merge: true }));
+        tx.set(orderRef, {
+          estado: 'pendiente', seats: vipSeats, general: genQty,
+          comprador: { nombre: buyer.name || '', tel: buyer.phone || '', mail: buyer.mail || '' },
+          items, creado: now, expira, evento: 'NOVA-11SEP2026'
+        });
       });
-      refs.forEach((r) => tx.set(r, { status: 'reservado', expira, orderId, ts: now }, { merge: true }));
-      tx.set(orderRef, {
-        estado: 'pendiente', seats: vipSeats, general: genQty,
-        comprador: { nombre: buyer.name || '', tel: buyer.phone || '', mail: buyer.mail || '' },
-        items, creado: now, expira, evento: 'NOVA-11SEP2026'
-      });
-    });
+    } catch (e) {
+      console.error('RESERVA_ERR', e && (e.message || e));
+      return res.status(400).json({ error: 'Reserva/Firebase: ' + (e && (e.message || e)) });
+    }
 
     const origin = req.headers.origin || (req.headers.host ? `https://${req.headers.host}` : 'https://nova-kappa-dusky.vercel.app');
     const mpItems = items.map(i => ({
@@ -81,6 +86,7 @@ module.exports = async (req, res) => {
     });
     const data = await r.json();
     if (!r.ok) {
+      console.error('MP_ERR', r.status, JSON.stringify(data).slice(0, 900));
       // libera la reserva si falló crear el pago
       try {
         const batch = firestore.batch();
@@ -88,7 +94,9 @@ module.exports = async (req, res) => {
         batch.update(orderRef, { estado: 'error' });
         await batch.commit();
       } catch (_) {}
-      return res.status(500).json({ error: (data && (data.message || data.error)) || 'Error creando el pago en Mercado Pago' });
+      const detail = (data && (data.message || data.error)) || 'error';
+      const cause = data && data.cause && data.cause[0] && (data.cause[0].description || data.cause[0].code);
+      return res.status(500).json({ error: 'MP(' + r.status + '): ' + detail + (cause ? ' — ' + cause : '') });
     }
     await orderRef.update({ prefId: data.id });
     return res.status(200).json({ url: data.init_point, orderId });
