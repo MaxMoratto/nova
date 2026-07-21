@@ -12,6 +12,11 @@ desktop.ini
 
 # Video original (se usa video.mp4; el .mov queda solo en local)
 teaser.mov
+"Teaser n1.mov"
+
+# Imagenes crudas de los boletos (55MB) - el sitio usa vip_ticket.webp / general_ticket.webp aplanados
+vip_Images/
+general_Images/
 
 # Dependencias y build (por si agregas Node/Next.js)
 node_modules/
