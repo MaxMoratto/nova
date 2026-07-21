@@ -24,12 +24,27 @@
 <body>
   <div class="card">
     <div class="brand"><b>NOVA</b> STRIKE <i>SERIES</i></div>
-    <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
-    <h1>¡Pago confirmado!</h1>
-    <p>Gracias por tu compra. Tu pago se procesó correctamente.</p>
+    <div class="check" id="gcheck"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+    <h1 id="gtitle">¡Pago confirmado!</h1>
+    <p id="gmsg">Gracias por tu compra. Tu pago se procesó correctamente.</p>
     <p>En breve recibirás la confirmación de tus lugares en tu correo. Nos vemos el <b style="color:#e8eaf0">11 de septiembre</b> en CDMX.</p>
     <a class="btn" href="index.html">Volver al sitio</a>
     <div class="muted">Si tienes dudas, escríbenos por WhatsApp.</div>
   </div>
+  <script>
+    (function(){
+      var q=new URLSearchParams(location.search);
+      var st=(q.get('status')||'').toLowerCase();
+      var pending = q.get('pending')==='1' || st==='pending' || st==='in_process';
+      if(pending){
+        document.getElementById('gtitle').textContent='Pago en proceso';
+        document.getElementById('gmsg').textContent='Tu pago quedó pendiente. Si elegiste OXXO o transferencia, tienes hasta la fecha del comprobante para pagarlo; en cuanto se acredite te confirmamos tus lugares.';
+        var c=document.getElementById('gcheck');
+        c.style.background='linear-gradient(180deg,#f4b942,#c8860a)';
+        c.style.boxShadow='0 0 34px rgba(244,185,66,.4)';
+        c.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+      }
+    })();
+  </script>
 </body>
 </html>
