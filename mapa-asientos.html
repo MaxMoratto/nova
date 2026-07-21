@@ -240,6 +240,10 @@ const zonesBox=document.getElementById('zones');
   const row=document.createElement('div');row.className='zrow';row.dataset.zone='VIP';
   row.innerHTML='<span class="sw" style="background:'+z.bright+'"></span><div class="zn"><b>'+z.label+'</b><small>'+total+' sillas · <span class="av">'+total+'</span> disp.</small></div><div class="zp"><b style="color:'+z.color+'">'+money(z.price)+'</b><small>por silla</small></div>';
   row.addEventListener('mouseenter',()=>hl('VIP'));row.addEventListener('mouseleave',()=>hl(null)); zonesBox.appendChild(row); })();
+(function(){ const z=ZONES.GENERAL;
+  const row=document.createElement('div');row.className='zrow';row.dataset.zone='GENERAL';
+  row.innerHTML='<span class="sw" style="background:'+z.bright+'"></span><div class="zn"><b>'+z.label+'</b><small>admisión general · <span id="genavailside">'+z.total+'</span> disp.</small></div><div class="zp"><b style="color:'+z.color+'">'+money(z.price)+'</b><small>c/u</small></div>';
+  zonesBox.appendChild(row); })();
 /* ===== General: marcador con conteo (panel sobre el area general del mapa) ===== */
 let generalSold=0;
 function updateGenPanel(){ const total=ZONES.GENERAL.total; const used=Math.min(total,generalSold+state.generalQty); const avail=total-used;
@@ -248,6 +252,7 @@ function updateGenPanel(){ const total=ZONES.GENERAL.total; const used=Math.min(
   document.getElementById('gpfill').style.width=(total?used/total*100:0)+'%';
   document.getElementById('gqty2').textContent=state.generalQty;
   document.getElementById('genpanel').classList.toggle('sold-out', avail<=0 && state.generalQty===0);
+  const side=document.getElementById('genavailside'); if(side) side.textContent=avail;
 }
 document.getElementById('gplus2').onclick=()=>{ if(generalSold+state.generalQty<ZONES.GENERAL.total){state.generalQty++;updateGenPanel();renderCart();} else flash('No quedan más boletos General'); };
 document.getElementById('gminus2').onclick=()=>{ if(state.generalQty>0){state.generalQty--;updateGenPanel();renderCart();} };
