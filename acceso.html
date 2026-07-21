@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>NOVA Strike Series · Control de acceso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  *{box-sizing:border-box;margin:0}
+  body{min-height:100vh;background:#080a0e;color:#e8eaf0;font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:520px;margin:0 auto;padding:14px 14px 40px}
+  .logo{font-family:'Oswald',sans-serif;font-weight:700;font-style:italic;font-size:20px;letter-spacing:.5px}
+  .logo .r{color:#FF0033}.logo .b{color:#fff}.logo .c{color:#00F0FF}
+  .sub{color:#5f6779;font-size:11px;letter-spacing:2px;text-transform:uppercase}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 2px 10px}
+  .card{background:#12161f;border:1px solid #232a38;border-radius:16px;padding:18px;margin-top:12px}
+  label{display:block;font-size:12px;color:#8a92a6;margin:0 0 6px;text-transform:uppercase;letter-spacing:1px}
+  input{width:100%;background:#161b26;border:1px solid #2d3547;border-radius:10px;padding:12px;color:#e8eaf0;font-family:inherit;font-size:15px;outline:none;margin-bottom:12px}
+  input:focus{border-color:#e11d2a}
+  .btn{border:none;border-radius:11px;padding:13px 18px;font-family:'Oswald',sans-serif;font-weight:600;font-size:14px;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;color:#fff;background:linear-gradient(180deg,#ff3646,#e11d2a);width:100%}
+  .btn.ghost{background:transparent;border:1px solid #2d3547;color:#8a92a6}
+  .btn:disabled{opacity:.5}
+  #login{max-width:400px;margin:10vh auto 0}
+  .msg{font-size:13px;margin-top:8px;min-height:16px} .msg.err{color:#ff8f98}
+  #reader{width:100%;border-radius:14px;overflow:hidden;background:#000;min-height:240px}
+  #reader video{border-radius:14px}
+  .counters{display:flex;gap:8px;margin:12px 0 2px}
+  .counter{flex:1;background:#161b26;border:1px solid #232a38;border-radius:12px;padding:10px;text-align:center}
+  .counter .k{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#5f6779}
+  .counter .v{font-family:'Oswald',sans-serif;font-size:22px;margin-top:2px}
+  .counter.vip .v{color:#ff6b76}.counter.gen .v{color:#cfd6e2}
+  /* Resultado */
+  #result{display:none;position:fixed;inset:0;z-index:50;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px}
+  #result.on{display:flex}
+  #result.ok{background:linear-gradient(180deg,#0b3a22,#07130c)}
+  #result.warn{background:linear-gradient(180deg,#4a3410,#160f04)}
+  #result.bad{background:linear-gradient(180deg,#4a1015,#160406)}
+  #result .icon{width:110px;height:110px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:18px}
+  #result.ok .icon{background:#1db954}#result.warn .icon{background:#f4b942}#result.bad .icon{background:#e11d2a}
+  #result .icon svg{width:64px;height:64px;stroke:#fff;stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  #result .big{font-family:'Oswald',sans-serif;font-size:40px;letter-spacing:2px;text-transform:uppercase;line-height:1}
+  #result .det{margin-top:14px;font-size:16px;color:#e8eaf0}
+  #result .det b{font-family:'Oswald',sans-serif}
+  #result .sub2{margin-top:6px;font-size:13px;color:rgba(255,255,255,.7)}
+  #result .btn{max-width:280px;margin-top:26px}
+  .manual{display:flex;gap:8px;margin-top:12px}
+  .manual input{margin:0}
+  .manual .btn{width:auto;white-space:nowrap;padding:12px 16px}
+  .hint{font-size:11px;color:#5f6779;margin-top:10px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div><div class="logo"><span class="r">NOVA</span> <span class="b">STRIKE</span> <span class="c">SERIES</span></div><div class="sub">Control de acceso</div></div>
+    <button class="btn ghost" id="logoutBtn" style="width:auto;padding:9px 14px;display:none">Salir</button>
+  </div>
+
+  <div id="login" class="card">
+    <label>Correo del staff</label><input id="email" type="email" autocomplete="username" placeholder="staff@correo.com"/>
+    <label>Contraseña</label><input id="pass" type="password" autocomplete="current-password" placeholder="••••••••"/>
+    <button class="btn" id="loginBtn">Entrar</button>
+    <div class="msg err" id="loginMsg"></div>
+    <div class="hint">Usa una cuenta autorizada (la misma del admin, o una de staff que crees en Firebase Auth).</div>
+  </div>
+
+  <div id="panel" style="display:none">
+    <div class="card">
+      <div id="reader"></div>
+      <button class="btn ghost" id="camBtn" style="margin-top:10px">Activar / reintentar cámara</button>
+      <div class="counters">
+        <div class="counter vip"><div class="k">Ingresados VIP</div><div class="v"><span id="inV">0</span>/<span id="emV">0</span></div></div>
+        <div class="counter gen"><div class="k">Ingresados General</div><div class="v"><span id="inG">0</span>/<span id="emG">0</span></div></div>
+      </div>
+      <div class="manual">
+        <input id="folioInput" placeholder="Buscar por folio (NSS-...)" autocapitalize="characters"/>
+        <button class="btn" id="folioBtn">Validar</button>
+      </div>
+      <div class="msg err" id="scanMsg"></div>
+      <div class="hint">Apunta la cámara al QR del boleto. Si la cámara no abre, da permiso al navegador y recarga. También puedes validar escribiendo el folio.</div>
+    </div>
+  </div>
+</div>
+
+<div id="result">
+  <div class="icon" id="rIcon"></div>
+  <div class="big" id="rBig"></div>
+  <div class="det" id="rDet"></div>
+  <div class="sub2" id="rSub"></div>
+  <button class="btn" id="nextBtn">Siguiente ▸</button>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script>
+const firebaseConfig = { apiKey:"AIzaSyAXxTUFo0CHFZnAs0wGrYHLTwwVzZ_ArZA", authDomain:"nova-dd664.firebaseapp.com", projectId:"nova-dd664", storageBucket:"nova-dd664.firebasestorage.app", messagingSenderId:"967862553249", appId:"1:967862553249:web:3524af97999ce667bafee0" };
+firebase.initializeApp(firebaseConfig);
+const auth=firebase.auth(), db=firebase.firestore();
+const $=id=>document.getElementById(id);
+let scanner=null, scanning=false, busy=false, lastTok='', lastAt=0;
+
+auth.onAuthStateChanged(u=>{
+  if(u){ $('login').style.display='none'; $('panel').style.display='block'; $('logoutBtn').style.display='inline-block'; startScanner(); watchCounters(); }
+  else { $('panel').style.display='none'; $('login').style.display='block'; $('logoutBtn').style.display='none'; if(scanner&&scanning){ scanner.stop().catch(()=>{}); scanning=false; } }
+});
+$('loginBtn').addEventListener('click', async ()=>{ const m=$('loginMsg'); m.textContent=''; const b=$('loginBtn'); b.disabled=true;
+  try{ await auth.signInWithEmailAndPassword($('email').value.trim(), $('pass').value); }
+  catch(e){ m.textContent=/invalid-credential|wrong-password|user-not-found/.test(e.code||'')?'Correo o contraseña incorrectos':('Error: '+e.message); } b.disabled=false; });
+$('pass').addEventListener('keydown',e=>{ if(e.key==='Enter') $('loginBtn').click(); });
+$('logoutBtn').addEventListener('click',()=>auth.signOut());
+$('camBtn').addEventListener('click',()=>{ $('scanMsg').textContent=''; startScanner(); });
+
+/* ===== Cámara ===== */
+function startScanner(){
+  if(scanning) return;
+  scanner = scanner || new Html5Qrcode("reader",{ verbose:false });
+  scanner.start({ facingMode:"environment" }, { fps:10, qrbox:{width:240,height:240} }, onScan, ()=>{})
+    .then(()=>{ scanning=true; })
+    .catch(err=>{ $('scanMsg').textContent='No se pudo abrir la cámara: '+err+'. Puedes validar por folio.'; });
+}
+function onScan(text){
+  const tok=extractToken(text);
+  const now=Date.now();
+  if(busy) return;
+  if(tok===lastTok && now-lastAt<3500) return; // evita re-escaneo inmediato
+  lastTok=tok; lastAt=now;
+  validate(tok);
+}
+function extractToken(text){
+  if(!text) return '';
+  try{ const u=new URL(text); const t=u.searchParams.get('t'); if(t) return t; }catch(e){}
+  const m=String(text).match(/[?&]t=([^&]+)/); if(m) return decodeURIComponent(m[1]);
+  return String(text).trim();
+}
+
+/* ===== Validación / check-in ===== */
+async function validate(token){
+  if(!token){ return; }
+  busy=true; $('scanMsg').textContent='';
+  const ref=db.collection('boletos').doc(token);
+  try{
+    const s=await ref.get();
+    if(!s.exists){ return show('bad','Inválido','Este código no corresponde a ningún boleto.',''); }
+    const d=s.data();
+    if(d.estado==='cancelado'){ return show('bad','Cancelado', ticketLine(d), 'Boleto cancelado.'); }
+    if(d.estado==='usado'){ return show('warn','Ya ingresó', ticketLine(d), 'Entrada registrada '+fmtTime(d.checkinAt)); }
+    // reclamar entrada (transacción anti doble-scan)
+    try{
+      await db.runTransaction(async tx=>{ const s2=await tx.get(ref); if(s2.data().estado==='usado') throw new Error('RACE');
+        tx.update(ref,{ estado:'usado', checkinAt:Date.now(), checkinBy:auth.currentUser.email }); });
+      show('ok','Válido', ticketLine(d), (d.comprador&&d.comprador.nombre)?d.comprador.nombre:'Acceso permitido');
+    }catch(e){ const s3=await ref.get(); const d3=s3.data(); show('warn','Ya ingresó', ticketLine(d3), 'Entrada registrada '+fmtTime(d3.checkinAt)); }
+  }catch(e){ $('scanMsg').textContent='Error: '+e.message; busy=false; }
+}
+function ticketLine(d){ if(d.tipo==='VIP'){ return 'VIP · Mesa <b>'+(d.mesa??'?')+'</b> · Asiento <b>'+(d.asiento??'?')+'</b> · '+(d.folio||''); } return 'General · Admisión de pie · '+(d.folio||''); }
+function fmtTime(ts){ if(!ts) return''; const dt=new Date(ts); return dt.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'}); }
+
+const ICONS={ ok:'<svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>', warn:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16h.01"/></svg>', bad:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6"/><path d="M9 9l6 6"/></svg>' };
+function show(kind,big,det,sub){
+  $('rIcon').innerHTML=ICONS[kind]; $('rBig').textContent=big; $('rDet').innerHTML=det; $('rSub').textContent=sub||'';
+  const r=$('result'); r.className='on '+kind; beep(kind); if(navigator.vibrate) navigator.vibrate(kind==='ok'?90:[70,60,70]);
+}
+$('nextBtn').addEventListener('click',()=>{ $('result').className=''; busy=false; $('folioInput').value=''; });
+
+/* Beep con Web Audio */
+let ac=null;
+function beep(kind){ try{ ac=ac||new (window.AudioContext||window.webkitAudioContext)(); const o=ac.createOscillator(),g=ac.createGain();
+  o.connect(g); g.connect(ac.destination); o.type='sine'; o.frequency.value=kind==='ok'?880:300; g.gain.value=.15;
+  o.start(); o.stop(ac.currentTime+ (kind==='ok'?0.14:0.3)); }catch(e){} }
+
+/* Validar por folio (fallback manual) */
+$('folioBtn').addEventListener('click', async ()=>{ const f=$('folioInput').value.trim().toUpperCase(); if(!f) return;
+  if(busy) return; busy=true;
+  try{ const q=await db.collection('boletos').where('folio','==',f).limit(1).get();
+    if(q.empty){ busy=false; return show('bad','Inválido','No hay boleto con folio '+f,''); }
+    const doc=q.docs[0]; busy=false; validate(doc.id);
+  }catch(e){ busy=false; $('scanMsg').textContent='Error: '+e.message; } });
+$('folioInput').addEventListener('keydown',e=>{ if(e.key==='Enter') $('folioBtn').click(); });
+
+/* ===== Contadores en vivo ===== */
+function watchCounters(){ db.collection('boletos').onSnapshot(snap=>{ let inV=0,inG=0,emV=0,emG=0;
+    snap.forEach(doc=>{ const d=doc.data(); if(d.estado==='cancelado') return;
+      if(d.tipo==='VIP'){ emV++; if(d.estado==='usado') inV++; } else { emG++; if(d.estado==='usado') inG++; } });
+    $('inV').textContent=inV; $('emV').textContent=emV; $('inG').textContent=inG; $('emG').textContent=emG;
+  }, ()=>{}); }
+</script>
+</body>
+</html>

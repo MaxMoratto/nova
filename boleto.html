@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NOVA Strike Series · Boleto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  *{box-sizing:border-box;margin:0}
+  body{min-height:100vh;background:radial-gradient(900px 600px at 50% -10%,#171b26,#080a0e) fixed,#080a0e;color:#e8eaf0;font-family:'Inter',system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;padding:22px 14px 40px;-webkit-font-smoothing:antialiased}
+  .state{font-size:14px;color:#8a92a6;margin-top:40px}
+  .state.err{color:#ff8f98}
+  /* ===== BOLETO (skin provisional; se reemplaza con el diseño final) ===== */
+  #ticket{width:360px;max-width:100%;border-radius:20px;overflow:hidden;background:#0c0e13;border:1px solid #232a38;box-shadow:0 20px 60px rgba(0,0,0,.6);position:relative}
+  #ticket.vip{--acc:#e11d2a;--acc2:#ff3646;--accSoft:rgba(225,29,42,.16)}
+  #ticket.general{--acc:#9aa3b2;--acc2:#cfd6e2;--accSoft:rgba(154,163,178,.16)}
+  .t-head{position:relative;padding:16px 18px 12px;text-align:center;background:linear-gradient(180deg,#12161f,#0c0e13);border-bottom:1px solid #1c2230}
+  .t-logo{font-family:'Oswald',sans-serif;font-weight:700;font-style:italic;font-size:23px;letter-spacing:.5px;line-height:1}
+  .t-logo .r{color:#FF0033}.t-logo .b{color:#fff}.t-logo .c{color:#00F0FF}
+  .t-band{background:linear-gradient(180deg,var(--acc2),var(--acc));color:#fff;text-align:center;font-family:'Oswald',sans-serif;font-weight:700;letter-spacing:.22em;text-transform:uppercase;font-size:13px;padding:7px 6px}
+  #ticket.general .t-band{color:#0c0e13;background:linear-gradient(180deg,#e9edf4,#aab3c2)}
+  .t-info{display:flex;border-bottom:1px solid #1c2230}
+  .t-info .c1{flex:1;padding:9px 6px;text-align:center;border-right:1px solid #1c2230}
+  .t-info .c1:last-child{border-right:none}
+  .t-info .k{font-size:8.5px;letter-spacing:1.5px;text-transform:uppercase;color:#5f6779}
+  .t-info .v{font-family:'Oswald',sans-serif;font-size:14px;margin-top:2px;color:#fff}
+  .t-cat{text-align:center;padding:16px 10px 6px}
+  .t-cat .lbl{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#5f6779}
+  .t-cat .big{font-family:'Bebas Neue',sans-serif;font-size:64px;line-height:.9;letter-spacing:2px;background:linear-gradient(180deg,#fff,var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 3px 10px var(--accSoft))}
+  #ticket.general .t-cat .big{background:linear-gradient(180deg,#fff,#8b94a3);-webkit-background-clip:text;background-clip:text}
+  .t-seat{display:flex;gap:10px;justify-content:center;padding:6px 18px 4px}
+  .t-seat .box{flex:1;max-width:130px;border:1px solid var(--acc);border-radius:10px;padding:7px 6px;text-align:center;background:var(--accSoft)}
+  .t-seat .box .k{font-size:8.5px;letter-spacing:2px;text-transform:uppercase;color:#8a92a6}
+  .t-seat .box .v{font-family:'Oswald',sans-serif;font-size:22px;color:#fff;line-height:1}
+  .t-standing{margin:6px 18px 4px;border:1px solid #2d3547;border-radius:10px;padding:9px;text-align:center;font-family:'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;font-size:13px;color:#cfd6e2}
+  .t-qr{display:flex;justify-content:center;padding:16px}
+  .t-qr .qrbox{background:#fff;padding:12px;border-radius:14px;line-height:0}
+  .t-qr .qrbox canvas,.t-qr .qrbox img{display:block;width:190px;height:190px}
+  .t-folio{text-align:center;padding:0 10px 8px}
+  .t-folio .k{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#5f6779}
+  .t-folio .v{font-family:'Oswald',sans-serif;font-size:15px;letter-spacing:1px;color:#e8eaf0;margin-top:1px}
+  .t-foot{border-top:1px dashed #232a38;padding:9px 10px;text-align:center;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#5f6779}
+  .t-name{text-align:center;font-size:11px;color:#8a92a6;padding:0 10px 10px}
+  .used-flag{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(8,10,14,.72);backdrop-filter:blur(2px)}
+  .used-flag span{border:2px solid #ff3646;color:#ff8f98;font-family:'Oswald',sans-serif;font-size:22px;letter-spacing:3px;text-transform:uppercase;padding:8px 22px;border-radius:10px;transform:rotate(-11deg)}
+  .actions{display:flex;gap:10px;margin-top:18px}
+  .btn{border:none;border-radius:12px;padding:12px 22px;font-family:'Oswald',sans-serif;font-weight:600;font-size:14px;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;color:#fff;background:linear-gradient(180deg,#ff3646,#e11d2a)}
+  .btn.ghost{background:transparent;border:1px solid #2d3547;color:#8a92a6}
+  .btn:hover{filter:brightness(1.08)}
+  .tip{font-size:11px;color:#5f6779;margin-top:12px;text-align:center;max-width:320px;line-height:1.5}
+</style>
+</head>
+<body>
+  <div id="state" class="state">Cargando boleto…</div>
+  <div id="ticketWrap" style="display:none">
+    <div id="ticket">
+      <div class="t-head"><div class="t-logo"><span class="r">NOVA</span> <span class="b">STRIKE</span> <span class="c">SERIES</span></div></div>
+      <div class="t-band">NOVA STRIKE SERIES</div>
+      <div class="t-info">
+        <div class="c1"><div class="k">Lugar</div><div class="v" id="t_lugar">CDMX</div></div>
+        <div class="c1"><div class="k">Fecha</div><div class="v" id="t_fecha">11·SEP·2026</div></div>
+        <div class="c1"><div class="k">Hora</div><div class="v" id="t_hora">19:00</div></div>
+      </div>
+      <div class="t-cat"><div class="lbl">Categoría</div><div class="big" id="t_cat">VIP</div></div>
+      <div class="t-seat" id="t_seatwrap">
+        <div class="box"><div class="k">Mesa</div><div class="v" id="t_mesa">—</div></div>
+        <div class="box"><div class="k">Asiento</div><div class="v" id="t_asiento">—</div></div>
+      </div>
+      <div class="t-standing" id="t_standing" style="display:none">Admisión de pie</div>
+      <div class="t-qr"><div class="qrbox" id="qr"></div></div>
+      <div class="t-name" id="t_name"></div>
+      <div class="t-folio"><div class="k">Folio</div><div class="v" id="t_folio">—</div></div>
+      <div class="t-foot">Presenta este código en la entrada · No lo compartas</div>
+      <div class="used-flag" id="usedFlag"><span id="usedTxt">Ya ingresó</span></div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="dlBtn">Descargar</button>
+      <a class="btn ghost" href="index.html" style="text-decoration:none;display:inline-flex;align-items:center">Sitio</a>
+    </div>
+    <div class="tip">Guarda o descarga tu boleto. Es válido una sola vez: al escanearlo en la entrada queda registrado.</div>
+  </div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+const firebaseConfig = { apiKey:"AIzaSyAXxTUFo0CHFZnAs0wGrYHLTwwVzZ_ArZA", authDomain:"nova-dd664.firebaseapp.com", projectId:"nova-dd664", storageBucket:"nova-dd664.firebasestorage.app", messagingSenderId:"967862553249", appId:"1:967862553249:web:3524af97999ce667bafee0" };
+const EVENTO = { lugar:"CDMX", fecha:"11·SEP·2026", hora:"19:00" };
+firebase.initializeApp(firebaseConfig);
+const db=firebase.firestore();
+const $=id=>document.getElementById(id);
+const token=new URLSearchParams(location.search).get('t');
+
+function fail(msg){ const s=$('state'); s.className='state err'; s.textContent=msg; }
+
+async function load(){
+  if(!token){ fail('Boleto no válido (falta el código).'); return; }
+  let snap;
+  try{ snap=await db.collection('boletos').doc(token).get(); }
+  catch(e){ fail('No se pudo cargar el boleto. '+e.message); return; }
+  if(!snap.exists){ fail('Este boleto no existe o fue cancelado.'); return; }
+  const d=snap.data();
+  if(d.estado==='cancelado'){ fail('Este boleto fue cancelado.'); return; }
+  render(d);
+}
+
+function render(d){
+  const isVip = d.tipo==='VIP';
+  const t=$('ticket'); t.className = isVip?'vip':'general';
+  $('t_lugar').textContent=EVENTO.lugar; $('t_fecha').textContent=EVENTO.fecha; $('t_hora').textContent=EVENTO.hora;
+  $('t_cat').textContent=isVip?'VIP':'GENERAL';
+  if(isVip){ $('t_seatwrap').style.display='flex'; $('t_standing').style.display='none';
+    $('t_mesa').textContent=d.mesa!=null?d.mesa:'—'; $('t_asiento').textContent=d.asiento!=null?d.asiento:'—'; }
+  else { $('t_seatwrap').style.display='none'; $('t_standing').style.display='block'; }
+  $('t_folio').textContent=d.folio||'—';
+  $('t_name').textContent=(d.comprador&&d.comprador.nombre)?d.comprador.nombre:'';
+  if(d.estado==='usado'){ $('usedFlag').style.display='flex'; $('usedTxt').textContent='Ya ingresó'; }
+  // QR -> URL a este mismo boleto (sirve para escanear en la puerta y para reabrirlo)
+  const url=location.origin+'/boleto.html?t='+encodeURIComponent(token);
+  new QRCode($('qr'), { text:url, width:190, height:190, correctLevel:QRCode.CorrectLevel.H });
+  $('state').style.display='none'; $('ticketWrap').style.display='flex'; $('ticketWrap').style.flexDirection='column'; $('ticketWrap').style.alignItems='center';
+}
+
+$('dlBtn').addEventListener('click',async()=>{
+  const b=$('dlBtn'); const old=b.textContent; b.textContent='Generando…'; b.disabled=true;
+  try{ const canvas=await html2canvas($('ticket'),{backgroundColor:null,scale:2,useCORS:true});
+    const a=document.createElement('a'); a.download='NSS-'+($('t_folio').textContent||'boleto')+'.png'; a.href=canvas.toDataURL('image/png'); a.click();
+  }catch(e){ alert('No se pudo descargar: '+e.message); } b.textContent=old; b.disabled=false;
+});
+
+load();
+</script>
+</body>
+</html>
