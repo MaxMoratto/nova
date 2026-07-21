@@ -3,20 +3,28 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>NOVA Strike Series · Pago confirmado</title>
+<title>NOVA Strike Series · Pago</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
   *{box-sizing:border-box;margin:0}
   body{min-height:100vh;background:radial-gradient(900px 600px at 50% -10%,#171b26,#080a0e) fixed,#080a0e;color:#e8eaf0;font-family:'Inter',system-ui,sans-serif;display:flex;align-items:center;justify-content:center;padding:24px;-webkit-font-smoothing:antialiased}
-  .card{max-width:460px;width:100%;background:#11151d;border:1px solid #212836;border-radius:18px;padding:38px 30px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5)}
-  .check{width:76px;height:76px;border-radius:50%;background:linear-gradient(180deg,#2bd576,#128c4b);display:flex;align-items:center;justify-content:center;margin:0 auto 22px;box-shadow:0 0 34px rgba(37,211,102,.4)}
-  .check svg{width:38px;height:38px}
-  h1{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:1px;margin-bottom:10px}
-  p{color:#8a92a6;font-size:14px;line-height:1.65;margin-bottom:8px}
+  .card{max-width:480px;width:100%;background:#11151d;border:1px solid #212836;border-radius:18px;padding:38px 30px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5)}
   .brand{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:3px;color:#5f6779;margin-bottom:26px}
   .brand b{color:#ff3646} .brand i{color:#00c2ff;font-style:normal}
-  a.btn{display:inline-block;margin-top:22px;background:linear-gradient(180deg,#ff3646,#e11d2a);color:#fff;text-decoration:none;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;padding:13px 30px;border-radius:12px}
+  .check{width:76px;height:76px;border-radius:50%;background:linear-gradient(180deg,#2bd576,#128c4b);display:flex;align-items:center;justify-content:center;margin:0 auto 22px;box-shadow:0 0 34px rgba(37,211,102,.4)}
+  .check svg{width:38px;height:38px}
+  .check.wait{background:linear-gradient(180deg,#3a4356,#232a38);box-shadow:none}
+  .check.wait .spin{width:34px;height:34px;border:3px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:sp 0.9s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  h1{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:1px;margin-bottom:10px}
+  p{color:#8a92a6;font-size:14px;line-height:1.65;margin-bottom:8px}
+  .tickets{display:flex;flex-direction:column;gap:9px;margin:20px 0 6px;text-align:left}
+  .tk{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#161b26;border:1px solid #232a38;border-radius:11px;padding:12px 14px;text-decoration:none}
+  .tk .n{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.5px;color:#fff}
+  .tk .s{font-size:11px;color:#8a92a6}
+  .tk .go{font-size:12px;color:#ff6b76;font-weight:700;white-space:nowrap}
+  a.btn{display:inline-block;margin-top:20px;background:linear-gradient(180deg,#ff3646,#e11d2a);color:#fff;text-decoration:none;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;padding:13px 30px;border-radius:12px}
   a.btn:hover{filter:brightness(1.08)}
   .muted{font-size:12px;color:#5f6779;margin-top:18px}
 </style>
@@ -26,25 +34,55 @@
     <div class="brand"><b>NOVA</b> STRIKE <i>SERIES</i></div>
     <div class="check" id="gcheck"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
     <h1 id="gtitle">¡Pago confirmado!</h1>
-    <p id="gmsg">Gracias por tu compra. Tu pago se procesó correctamente.</p>
-    <p>En breve recibirás la confirmación de tus lugares en tu correo. Nos vemos el <b style="color:#e8eaf0">11 de septiembre</b> en CDMX.</p>
+    <p id="gmsg">Gracias por tu compra.</p>
+    <div class="tickets" id="tickets" style="display:none"></div>
+    <p id="gsub">Nos vemos el <b style="color:#e8eaf0">11 de septiembre</b> en CDMX.</p>
     <a class="btn" href="index.html">Volver al sitio</a>
     <div class="muted">Si tienes dudas, escríbenos por WhatsApp.</div>
   </div>
-  <script>
-    (function(){
-      var q=new URLSearchParams(location.search);
-      var st=(q.get('status')||'').toLowerCase();
-      var pending = q.get('pending')==='1' || st==='pending' || st==='in_process';
-      if(pending){
-        document.getElementById('gtitle').textContent='Pago en proceso';
-        document.getElementById('gmsg').textContent='Tu pago quedó pendiente. Si elegiste OXXO o transferencia, tienes hasta la fecha del comprobante para pagarlo; en cuanto se acredite te confirmamos tus lugares.';
-        var c=document.getElementById('gcheck');
-        c.style.background='linear-gradient(180deg,#f4b942,#c8860a)';
-        c.style.boxShadow='0 0 34px rgba(244,185,66,.4)';
-        c.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
-      }
-    })();
-  </script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = { apiKey:"AIzaSyAXxTUFo0CHFZnAs0wGrYHLTwwVzZ_ArZA", authDomain:"nova-dd664.firebaseapp.com", projectId:"nova-dd664", storageBucket:"nova-dd664.firebasestorage.app", messagingSenderId:"967862553249", appId:"1:967862553249:web:3524af97999ce667bafee0" };
+const $=id=>document.getElementById(id);
+const q=new URLSearchParams(location.search);
+const orderId=q.get('order');
+
+function setWait(title,msg){ $('gtitle').textContent=title; $('gmsg').textContent=msg; const c=$('gcheck'); c.className='check wait'; c.innerHTML='<div class="spin"></div>'; }
+function setOk(){ const c=$('gcheck'); c.className='check'; c.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>'; }
+function setPending(){ const c=$('gcheck'); c.className='check'; c.style.background='linear-gradient(180deg,#f4b942,#c8860a)'; c.style.boxShadow='0 0 34px rgba(244,185,66,.4)'; c.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'; }
+
+function renderTickets(tokens){
+  const box=$('tickets'); box.style.display='flex'; box.innerHTML='';
+  tokens.forEach((t,i)=>{ const a=document.createElement('a'); a.className='tk'; a.href='boleto.html?t='+t; a.target='_blank';
+    a.innerHTML='<div><div class="n">Boleto '+(i+1)+'</div><div class="s">Toca para ver el QR y descargar</div></div><div class="go">Ver / descargar ↗</div>'; box.appendChild(a); });
+}
+
+if(!orderId){
+  // Sin orden (retorno genérico): respeta estado pending de MP
+  const st=(q.get('status')||'').toLowerCase();
+  if(q.get('pending')==='1'||st==='pending'||st==='in_process'){ setPending(); $('gtitle').textContent='Pago en proceso'; $('gmsg').textContent='Tu pago quedó pendiente. Si elegiste OXXO o transferencia, en cuanto se acredite te confirmamos tus lugares.'; }
+} else {
+  firebase.initializeApp(firebaseConfig);
+  const db=firebase.firestore();
+  setWait('Procesando tu pago…','Estamos confirmando tu compra. No cierres esta ventana.');
+  let done=false;
+  db.collection('ordenes').doc(orderId).onSnapshot(snap=>{
+    if(!snap.exists) return;
+    const d=snap.data();
+    if(d.estado==='pagado' && Array.isArray(d.boletos) && d.boletos.length){
+      done=true; setOk(); $('gtitle').textContent='¡Pago confirmado!';
+      $('gmsg').textContent='Tus boletos están listos. Ábrelos para ver el QR y descargarlos:';
+      renderTickets(d.boletos);
+    } else if(d.estado==='cancelado' || d.estado==='error'){
+      done=true; $('gtitle').textContent='Pago no completado'; $('gmsg').textContent='No se completó el pago o se liberaron tus lugares. Puedes intentar de nuevo.';
+      const c=$('gcheck'); c.className='check'; c.style.background='linear-gradient(180deg,#ff6b76,#c8202c)'; c.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>';
+    }
+  }, ()=>{});
+  // Si tras 40s sigue pendiente (ej. OXXO), muestra mensaje de "en proceso"
+  setTimeout(()=>{ if(!done){ setPending(); $('gtitle').textContent='Pago en proceso'; $('gmsg').textContent='Tu pago aún se está acreditando (OXXO/transferencia pueden tardar). En cuanto entre, tus boletos aparecen aquí y te llegan por correo.'; } }, 40000);
+}
+</script>
 </body>
 </html>
