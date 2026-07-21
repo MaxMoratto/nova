@@ -52,7 +52,7 @@
 <!-- NAVBAR -->
 <nav style="position:fixed;top:0;left:0;right:0;z-index:200;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(16px,4vw,52px);background:{{ navBg }};backdrop-filter:{{ navBlur }};box-shadow:{{ navShadow }};transition:background .3s,box-shadow .3s;">
   <a href="#inicio" style="text-decoration:none;display:flex;align-items:center;flex-shrink:0;">
-    <img src="uploads/nss-logo.png" alt="NOVA Strike Series" style="height:clamp(38px,6vw,50px);width:auto;display:block;filter:drop-shadow(0 0 10px rgba(255,0,51,.25));">
+    <img src="uploads/nss-logo.png" alt="NOVA Strike Series" style="height:clamp(52px,8vw,76px);width:auto;display:block;filter:drop-shadow(0 0 12px rgba(255,0,51,.3));">
   </a>
   <div style="display:{{ navLinksDisplay }};gap:clamp(12px,2vw,28px);align-items:center;">
     <a href="#inicio" style="color:rgba(255,255,255,.6);font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;transition:color .2s;" style-hover="color:#fff;">INICIO</a>
@@ -103,8 +103,8 @@
   <!-- Fighters hero: red team right -->
   <img src="uploads/hrojo.png" alt="Equipo rojo" style="position:absolute;bottom:0;right:-3%;height:105%;max-width:42%;object-fit:contain;object-position:bottom right;z-index:3;pointer-events:none;filter:drop-shadow(0 0 40px rgba(255,0,51,.4));-webkit-mask-image:linear-gradient(to left,#000 50%,transparent 90%);mask-image:linear-gradient(to left,#000 50%,transparent 90%);">
   <!-- Bloque info izquierda (fecha + lugar) -->
-  <div id="hero-info" style="position:absolute;left:clamp(20px,3.2vw,56px);top:clamp(92px,15vh,150px);z-index:5;text-align:left;pointer-events:none;animation:fadeUp 1s ease-out .45s both;">
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,6.5vw,96px);color:#FF0033;line-height:.78;letter-spacing:.02em;text-shadow:0 0 26px rgba(255,0,51,.45);">12</div>
+  <div id="hero-info" style="position:absolute;left:clamp(20px,3.2vw,56px);top:clamp(92px,15vh,150px);z-index:5;text-align:left;pointer-events:none;animation:fadeUp 1s ease-out .45s both;text-shadow:0 2px 18px rgba(0,0,0,.95),0 1px 4px rgba(0,0,0,.9);">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,6.5vw,96px);color:#FF0033;line-height:.78;letter-spacing:.02em;text-shadow:0 3px 20px rgba(0,0,0,.92),0 0 26px rgba(255,0,51,.5);">11</div>
     <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(19px,2.6vw,34px);color:#fff;line-height:1.02;letter-spacing:.06em;margin-top:4px;">SEPTIEMBRE</div>
     <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(19px,2.6vw,34px);color:rgba(255,255,255,.75);line-height:1;letter-spacing:.2em;">2026</div>
     <div style="width:48px;height:2px;background:#FF0033;margin:15px 0 12px;"></div>
@@ -202,7 +202,7 @@
 <!-- FIGHT CARD -->
 <section id="cartelera" style="background:#09070F;padding-top:68px;overflow:hidden;">
   <div style="text-align:center;padding:0 clamp(16px,4vw,40px);">
-    <div style="font-size:10px;font-weight:700;letter-spacing:.5em;color:#FF0033;margin-bottom:8px;text-transform:uppercase;">Nova Strike 47 · CDMX · 12 Septiembre 2026</div>
+    <div style="font-size:10px;font-weight:700;letter-spacing:.5em;color:#FF0033;margin-bottom:8px;text-transform:uppercase;">Nova Strike 47 · CDMX · 11 Septiembre 2026</div>
     <h2 style="font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,8vw,80px);color:#fff;letter-spacing:.1em;">CARTELERA OFICIAL</h2>
     <div style="width:80px;height:2px;background:linear-gradient(90deg,#FF0033,#00F0FF);margin:12px auto 44px;"></div>
   </div>
@@ -575,7 +575,7 @@ class Component extends DCLogic {
   };
 
   componentDidMount() {
-    const eventDate = new Date('2026-09-12T21:00:00');
+    const eventDate = new Date('2026-09-11T21:00:00');
     const tick = () => {
       const diff = Math.max(0, eventDate - Date.now());
       this.setState({

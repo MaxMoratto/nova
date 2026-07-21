@@ -36,7 +36,7 @@ module.exports = async (req, res) => {
       customer_email: buyer.mail || undefined,
       locale: 'es',
       metadata: {
-        evento: 'NOVA Strike Series - 12 SEP 2026',
+        evento: 'NOVA Strike Series - 11 SEP 2026',
         seats: (seats || []).join(','),
         nombre: (buyer.name || '').slice(0, 200),
         tel: (buyer.phone || '').slice(0, 40)
