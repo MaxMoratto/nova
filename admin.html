@@ -35,6 +35,16 @@
   .topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
   .pill{display:inline-flex;align-items:center;gap:7px;background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:6px 12px;font-size:12px;color:var(--muted)}
   .pill b{color:var(--txt)}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:4px}
+  @media(max-width:620px){.stats{grid-template-columns:repeat(2,1fr)}}
+  .stat{background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:12px 14px}
+  .stat .k{font-size:10px;letter-spacing:.4px;text-transform:uppercase;color:var(--muted2);line-height:1.3}
+  .stat .v{font-family:'Oswald',sans-serif;font-size:26px;margin-top:4px;color:#fff;line-height:1}
+  .stat .sub{font-size:11px;color:var(--muted);margin-top:2px}
+  .stat.money{border-color:rgba(37,211,102,.4)}.stat.money .v{color:var(--ok)}
+  .stat.warn .v{color:#f4b942}
+  .chk{display:flex;align-items:center;gap:9px;cursor:pointer;font-size:13px;color:var(--txt);text-transform:none;letter-spacing:0;margin:2px 0 12px}
+  .chk input{width:18px;height:18px;margin:0;flex:none}
   .tabs{display:flex;gap:8px;margin-top:18px}
   .tab{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:10px 20px;font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);cursor:pointer}
   .tab.on{color:#fff;border-color:var(--red);background:rgba(225,29,42,.1)}
@@ -108,11 +118,18 @@
     <!-- BOLETOS -->
     <div id="tab-boletos" style="display:none">
       <div class="card">
-        <div class="topbar" style="margin-bottom:12px"><h2 style="margin:0">Cupos y accesos</h2>
+        <div class="topbar" style="margin-bottom:14px"><h2 style="margin:0">Resumen</h2>
           <a class="link" href="acceso.html" target="_blank">Abrir escáner de acceso ↗</a></div>
-        <div class="row">
-          <span class="pill">VIP emitidos: <b id="cVip">0</b> / 68 · ingresados <b id="cVipIn">0</b></span>
-          <span class="pill">General emitidos: <b id="cGen">0</b> / 250 · ingresados <b id="cGenIn">0</b></span>
+        <div class="stats">
+          <div class="stat"><div class="k">Boletos vendidos</div><div class="v" id="sVend">0</div></div>
+          <div class="stat"><div class="k">VIP vendidos</div><div class="v" id="sVip">0</div><div class="sub">de 68</div></div>
+          <div class="stat"><div class="k">General vendidos</div><div class="v" id="sGen">0</div><div class="sub">de 250</div></div>
+          <div class="stat"><div class="k">Ingresos registrados</div><div class="v" id="sIn">0</div></div>
+          <div class="stat warn"><div class="k">Pendientes por ingresar</div><div class="v" id="sPend">0</div></div>
+          <div class="stat"><div class="k">Boletos cancelados</div><div class="v" id="sCanc">0</div></div>
+          <div class="stat"><div class="k">Cortesías</div><div class="v" id="sCort">0</div></div>
+          <div class="stat"><div class="k">Capacidad disponible</div><div class="v" id="sCap">318</div><div class="sub">de 318</div></div>
+          <div class="stat money"><div class="k">Ventas totales</div><div class="v" id="sMoney">$0</div></div>
         </div>
       </div>
       <div class="card">
@@ -124,6 +141,7 @@
         </div>
         <label>Nombre del comprador</label><input id="b_nombre" placeholder="Nombre completo"/>
         <div class="grid2"><div><label>WhatsApp / tel</label><input id="b_tel" placeholder="55..."/></div><div><label>Email (opcional)</label><input id="b_mail" placeholder="correo@..."/></div></div>
+        <label class="chk"><input type="checkbox" id="b_cortesia"/> Cortesía — boleto gratis (no cuenta como venta $)</label>
         <button class="btn red" id="emitBtn">Emitir boleto</button>
         <div class="msg" id="bMsg"></div>
         <div class="hint">Cada boleto genera su propio <b>folio consecutivo</b> + QR. En General puedes emitir <b>varios a la vez</b> (cada uno con su folio y QR). VIP valida que el asiento esté libre y lo bloquea.</div>
@@ -302,7 +320,7 @@ function genToken(){ const a=new Uint8Array(16); (window.crypto||window.msCrypto
 const fmtFolio=n=>'NSS-'+String(n).padStart(5,'0');
 function showEmitted(list){ const m=$('bMsg'); m.className='msg ok';
   m.innerHTML='✓ '+list.length+' boleto'+(list.length>1?'s':'')+' emitido'+(list.length>1?'s':'')+': '+list.map(x=>'<a class="link" href="boleto.html?t='+x.token+'" target="_blank" style="padding:2px 7px;display:inline-block;margin:2px">'+x.folio+' ↗</a>').join('');
-  $('b_nombre').value=''; $('b_tel').value=''; $('b_mail').value=''; $('b_cant').value='1';
+  $('b_nombre').value=''; $('b_tel').value=''; $('b_mail').value=''; $('b_cant').value='1'; $('b_cortesia').checked=false;
   if(list[0]) window.open('boleto.html?t='+list[0].token,'_blank');
 }
 $('emitBtn').addEventListener('click', emitBoleto);
@@ -310,7 +328,8 @@ async function emitBoleto(){
   const tipo=$('b_tipo').value, nombre=$('b_nombre').value.trim(), tel=$('b_tel').value.trim(), mail=$('b_mail').value.trim();
   const m=$('bMsg'); m.className='msg';
   if(!nombre){ m.className='msg err'; m.textContent='Pon al menos el nombre del comprador'; return; }
-  const meta={ comprador:{nombre,tel,mail}, estado:'valido', canal:'manual', emitidoAt:Date.now(), emitidoBy:auth.currentUser.email, evento:'NOVA-11SEP2026' };
+  const cortesia=$('b_cortesia').checked; const precio=cortesia?0:(tipo==='VIP'?850:450);
+  const meta={ comprador:{nombre,tel,mail}, estado:'valido', canal:cortesia?'cortesia':'manual', cortesia, precio, emitidoAt:Date.now(), emitidoBy:auth.currentUser.email, evento:'NOVA-11SEP2026' };
   const foliosRef=db.collection('config').doc('folios');
   const btn=$('emitBtn'); btn.disabled=true;
   try{
@@ -348,9 +367,19 @@ async function emitBoleto(){
   btn.disabled=false;
 }
 let BOLETOS=[];
-function watchBoletos(){ db.collection(BOLETOS_COL).onSnapshot(snap=>{ BOLETOS=[]; let inV=0,inG=0,emV=0,emG=0;
-    snap.forEach(doc=>{ const d=doc.data(); if(d.estado!=='cancelado'){ if(d.tipo==='VIP'){ emV++; if(d.estado==='usado') inV++; } else { emG++; if(d.estado==='usado') inG++; } } BOLETOS.push({token:doc.id,d}); });
-    $('cVip').textContent=emV; $('cVipIn').textContent=inV; $('cGen').textContent=emG; $('cGenIn').textContent=inG;
+function watchBoletos(){ db.collection(BOLETOS_COL).onSnapshot(snap=>{ BOLETOS=[];
+    let vipVend=0,genVend=0,ingresados=0,pendientes=0,cancelados=0,cortesias=0,occVIP=0,occGEN=0,ventas=0;
+    snap.forEach(doc=>{ const d=doc.data(); BOLETOS.push({token:doc.id,d});
+      if(d.estado==='cancelado'){ cancelados++; return; }
+      const vip=d.tipo==='VIP'; if(vip) occVIP++; else occGEN++;
+      if(d.estado==='usado') ingresados++; else pendientes++;
+      if(d.cortesia){ cortesias++; }
+      else { if(vip) vipVend++; else genVend++; ventas += (d.precio!=null?Number(d.precio):(vip?850:450)); }
+    });
+    const money=v=>'$'+Number(v).toLocaleString('es-MX');
+    $('sVend').textContent=vipVend+genVend; $('sVip').textContent=vipVend; $('sGen').textContent=genVend;
+    $('sIn').textContent=ingresados; $('sPend').textContent=pendientes; $('sCanc').textContent=cancelados;
+    $('sCort').textContent=cortesias; $('sCap').textContent=(68-occVIP)+(250-occGEN); $('sMoney').textContent=money(ventas);
     BOLETOS.sort((a,b)=>(b.d.emitidoAt||0)-(a.d.emitidoAt||0)); renderBoletos();
   }, err=>{ $('boletoList').innerHTML='<div class="empty">Error: '+err.message+'</div>'; }); }
 $('bSearch').addEventListener('input', renderBoletos);
@@ -360,8 +389,8 @@ function renderBoletos(){ const q=($('bSearch').value||'').trim().toUpperCase();
   if(!rows.length){ box.innerHTML='<div class="empty">Sin boletos aún. Emite uno arriba.</div>'; return; } box.innerHTML='';
   for(const r of rows){ const d=r.d; const seat=d.tipo==='VIP'?('Mesa '+d.mesa+' · As '+d.asiento):'de pie';
     const st=d.estado==='usado'?'<span style="color:#f4b942">ingresó</span>':(d.estado==='cancelado'?'<span style="color:#ff6b76">cancelado</span>':'<span style="color:#25d366">válido</span>');
-    const who=(d.comprador&&d.comprador.nombre)||''; const el=document.createElement('div'); el.className='sold-item';
-    el.innerHTML='<span class="sid">'+(d.folio||'')+'</span><span class="sinfo">'+d.tipo+' · '+seat+(who?' · '+who:'')+' · '+st+'</span>'+
+    const who=(d.comprador&&d.comprador.nombre)||''; const cort=d.cortesia?' · <span style="color:#f4b942">cortesía</span>':''; const el=document.createElement('div'); el.className='sold-item';
+    el.innerHTML='<span class="sid">'+(d.folio||'')+'</span><span class="sinfo">'+d.tipo+' · '+seat+(who?' · '+who:'')+cort+' · '+st+'</span>'+
       '<button class="mini" data-see="'+r.token+'">Ver</button>'+(d.estado!=='cancelado'?'<button class="mini" data-cancel="'+r.token+'">Cancelar</button>':'');
     box.appendChild(el); }
   box.querySelectorAll('[data-see]').forEach(b=>b.addEventListener('click',()=>window.open('boleto.html?t='+b.dataset.see,'_blank')));
