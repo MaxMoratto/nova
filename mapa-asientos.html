@@ -242,7 +242,7 @@ const zonesBox=document.getElementById('zones');
   row.addEventListener('mouseenter',()=>hl('VIP'));row.addEventListener('mouseleave',()=>hl(null)); zonesBox.appendChild(row); })();
 (function(){ const z=ZONES.GENERAL;
   const row=document.createElement('div');row.className='zrow';row.dataset.zone='GENERAL';
-  row.innerHTML='<span class="sw" style="background:'+z.bright+'"></span><div class="zn"><b>'+z.label+'</b><small>admisión general · <span id="genavailside">'+z.total+'</span> disp.</small></div><div class="zp"><b style="color:'+z.color+'">'+money(z.price)+'</b><small>c/u</small></div>';
+  row.innerHTML='<span class="sw" style="background:'+z.bright+'"></span><div class="zn"><b>'+z.label+'</b><small>'+z.total+' lugares · admisión general</small></div><div class="gqty"><button class="qb" id="gminus">&#8722;</button><b id="gqty">0</b><button class="qb" id="gplus">+</button></div><div class="zp"><b style="color:'+z.color+'">'+money(z.price)+'</b><small>c/u</small></div>';
   zonesBox.appendChild(row); })();
 /* ===== General: marcador con conteo (panel sobre el area general del mapa) ===== */
 let generalSold=0;
@@ -250,12 +250,13 @@ function updateGenPanel(){ const total=ZONES.GENERAL.total; const used=Math.min(
   document.getElementById('gpavailwrap').innerHTML='<b>'+avail+'</b> de '+total+' disponibles';
   document.getElementById('gpavailwrap').classList.toggle('low', avail<=25);
   document.getElementById('gpfill').style.width=(total?used/total*100:0)+'%';
-  document.getElementById('gqty2').textContent=state.generalQty;
+  ['gqty','gqty2'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=state.generalQty;});
   document.getElementById('genpanel').classList.toggle('sold-out', avail<=0 && state.generalQty===0);
-  const side=document.getElementById('genavailside'); if(side) side.textContent=avail;
 }
-document.getElementById('gplus2').onclick=()=>{ if(generalSold+state.generalQty<ZONES.GENERAL.total){state.generalQty++;updateGenPanel();renderCart();} else flash('No quedan más boletos General'); };
-document.getElementById('gminus2').onclick=()=>{ if(state.generalQty>0){state.generalQty--;updateGenPanel();renderCart();} };
+function genInc(){ if(generalSold+state.generalQty<ZONES.GENERAL.total){state.generalQty++;updateGenPanel();renderCart();} else flash('No quedan más boletos General'); }
+function genDec(){ if(state.generalQty>0){state.generalQty--;updateGenPanel();renderCart();} }
+['gplus','gplus2'].forEach(id=>{const e=document.getElementById(id);if(e)e.onclick=genInc;});
+['gminus','gminus2'].forEach(id=>{const e=document.getElementById(id);if(e)e.onclick=genDec;});
 function hl(z){seatsG.classList.toggle('dimmed',!!z);if(z){for(const s of SEATS)nodeOf(s.id).classList.toggle('hl',s.zone===z);}else seatsG.querySelectorAll('.hl').forEach(n=>n.classList.remove('hl'));}
 function refreshAvail(){zonesBox.querySelectorAll('.zrow').forEach(r=>{const av=r.querySelector('.av');if(av)av.textContent=avail(r.dataset.zone);});}
 document.getElementById('maplegend').innerHTML='<div class="it"><span class="dot" style="background:#b03437"></span>Silla VIP</div><div class="it"><span class="dot" style="background:#25d366"></span>Elegido</div><div class="it"><span class="dot sold"></span>Vendido</div>';
