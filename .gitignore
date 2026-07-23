@@ -32,3 +32,5 @@ build/
 .env
 .env.local
 .env*.local
+PB_Images/
+1PISO_Images/
