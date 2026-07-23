@@ -14,9 +14,12 @@ desktop.ini
 teaser.mov
 "Teaser n1.mov"
 
-# Imagenes crudas de los boletos (55MB) - el sitio usa vip_ticket.webp / general_ticket.webp aplanados
+# Imagenes crudas de los boletos/mapas - el sitio usa los .webp aplanados
 vip_Images/
 general_Images/
+bvip1_Images/
+bvip2_Images/
+preferente_Images/
 
 # Dependencias y build (por si agregas Node/Next.js)
 node_modules/
