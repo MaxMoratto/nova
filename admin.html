@@ -106,9 +106,9 @@
     <!-- LUGARES -->
     <div id="tab-lugares">
       <div class="card">
-        <div class="topbar" style="margin-bottom:12px"><h2 style="margin:0">Marcar asientos</h2><span class="pill">Vendidos: <b id="soldCount">0</b> / 68</span></div>
+        <div class="topbar" style="margin-bottom:12px"><h2 style="margin:0">Marcar asientos</h2><span class="pill">Ocupados: <b id="soldCount">0</b> / 186</span></div>
         <label>IDs de asiento (de la orden de WhatsApp) — separa por espacio, coma o salto de línea</label>
-        <textarea id="ids" placeholder="VIP-M07-S3  VIP-M07-S1  VIP-M12-S2"></textarea>
+        <textarea id="ids" placeholder="VIP-M07-S3   VIPA-12   PREF-A-05"></textarea>
         <div class="row"><button class="btn red" id="markBtn">Marcar VENDIDO</button><button class="btn green" id="freeBtn">Liberar (disponible)</button></div>
         <div class="msg" id="opMsg"></div>
       </div>
@@ -122,22 +122,31 @@
           <a class="link" href="acceso.html" target="_blank">Abrir escáner de acceso ↗</a></div>
         <div class="stats">
           <div class="stat"><div class="k">Boletos vendidos</div><div class="v" id="sVend">0</div></div>
-          <div class="stat"><div class="k">VIP vendidos</div><div class="v" id="sVip">0</div><div class="sub">de 68</div></div>
-          <div class="stat"><div class="k">General vendidos</div><div class="v" id="sGen">0</div><div class="sub">de 250</div></div>
+          <div class="stat"><div class="k">VIP mesa</div><div class="v" id="sVip">0</div><div class="sub">de 72</div></div>
+          <div class="stat"><div class="k">VIP asiento</div><div class="v" id="sVipa">0</div><div class="sub">de 40</div></div>
+          <div class="stat"><div class="k">Preferente</div><div class="v" id="sPref">0</div><div class="sub">de 74</div></div>
+          <div class="stat"><div class="k">General</div><div class="v" id="sGen">0</div><div class="sub">de 250</div></div>
           <div class="stat"><div class="k">Ingresos registrados</div><div class="v" id="sIn">0</div></div>
           <div class="stat warn"><div class="k">Pendientes por ingresar</div><div class="v" id="sPend">0</div></div>
           <div class="stat"><div class="k">Boletos cancelados</div><div class="v" id="sCanc">0</div></div>
           <div class="stat"><div class="k">Cortesías</div><div class="v" id="sCort">0</div></div>
-          <div class="stat"><div class="k">Capacidad disponible</div><div class="v" id="sCap">318</div><div class="sub">de 318</div></div>
+          <div class="stat"><div class="k">Capacidad disponible</div><div class="v" id="sCap">436</div><div class="sub">de 436</div></div>
           <div class="stat money"><div class="k">Ventas totales</div><div class="v" id="sMoney">$0</div></div>
         </div>
       </div>
       <div class="card">
         <h2>Emitir boleto</h2>
         <div class="grid2">
-          <div><label>Tipo</label><select id="b_tipo"><option value="VIP">VIP (mesa y asiento)</option><option value="GENERAL">General (admisión de pie)</option></select></div>
-          <div id="b_seatfields"><div class="grid2"><div><label>Mesa</label><select id="b_mesa"></select></div><div><label>Asiento</label><select id="b_asiento"><option>1</option><option>2</option><option>3</option><option>4</option></select></div></div></div>
-          <div id="b_cantwrap" style="display:none"><label>Cantidad de boletos</label><input id="b_cant" type="number" min="1" max="20" value="1"/></div>
+          <div><label>Tipo</label><select id="b_tipo">
+            <option value="VIP">VIP mesa ($850)</option>
+            <option value="VIPA">VIP asiento ($850)</option>
+            <option value="PREF">Preferente ($650)</option>
+            <option value="GENERAL">General · admisión ($450)</option>
+          </select></div>
+          <div id="f_vip"><div class="grid2"><div><label>Mesa</label><select id="b_mesa"></select></div><div><label>Asiento</label><select id="b_asiento"><option>1</option><option>2</option><option>3</option><option>4</option></select></div></div></div>
+          <div id="f_vipa" style="display:none"><label>Asiento VIP (1–40)</label><select id="b_vipa_n"></select></div>
+          <div id="f_pref" style="display:none"><div class="grid2"><div><label>Sección</label><select id="b_pref_sec"><option>A</option><option>B</option><option>C</option></select></div><div><label>Número</label><select id="b_pref_n"></select></div></div></div>
+          <div id="f_gen" style="display:none"><label>Cantidad de boletos</label><input id="b_cant" type="number" min="1" max="20" value="1"/></div>
         </div>
         <label>Nombre del comprador</label><input id="b_nombre" placeholder="Nombre completo"/>
         <div class="grid2"><div><label>WhatsApp / tel</label><input id="b_tel" placeholder="55..."/></div><div><label>Email (opcional)</label><input id="b_mail" placeholder="correo@..."/></div></div>
@@ -201,6 +210,13 @@ const firebaseConfig = {
   appId: "1:967862553249:web:3524af97999ce667bafee0"
 };
 const SEATS_COL="asientos_nova", FIGHTS_COL="peleas", BOLETOS_COL="boletos", MAX_FIGHTS=10;
+// Zonas: capacidad real y precio por tipo
+const CAP={VIP:72,VIPA:40,PREF:74,GENERAL:250};           // VIP mesa 18x4, VIP asiento 40, Preferente A25+B25+C24
+const PRECIO={VIP:850,VIPA:850,PREF:650,GENERAL:450};
+const TOTAL_CAP=CAP.VIP+CAP.VIPA+CAP.PREF+CAP.GENERAL;     // 436
+const TIPO_LBL_B={VIP:'VIP mesa',VIPA:'VIP asiento',PREF:'Preferente',GENERAL:'General'};
+const PREF_MAX={A:25,B:25,C:24};
+const pad2=n=>String(n).padStart(2,'0');
 firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth(), db=firebase.firestore();
 const $=id=>document.getElementById(id);
@@ -219,7 +235,7 @@ document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{ do
   TABS.forEach(name=>{ const el=$('tab-'+name); if(el) el.style.display=(t.dataset.tab===name)?'block':'none'; }); }));
 
 /* ===== LUGARES ===== */
-function parseIds(){ return [...new Set(($('ids').value.match(/[A-Za-z]+-[A-Za-z0-9]+-[A-Za-z0-9]+/g)||[]).map(s=>s.toUpperCase()))]; }
+function parseIds(){ return [...new Set(($('ids').value.toUpperCase().match(/VIP-M\d+-S\d+|VIPA-\d+|PREF-[ABC]-\d+/g)||[]))]; }
 $('markBtn').addEventListener('click',()=>opSeats('vendido'));
 $('freeBtn').addEventListener('click',()=>opSeats('liberar'));
 async function opSeats(kind){ const ids=parseIds(); const m=$('opMsg'); m.className='msg';
@@ -314,8 +330,17 @@ $('seedBtn').addEventListener('click',async()=>{ if(!confirm('Agregar las 2 pele
   try{ for(const f of seed) await db.collection(FIGHTS_COL).add(f); alert('✓ Sembrado.'); }catch(e){ alert('Error: '+e.message); } });
 
 /* ===== BOLETOS ===== */
-(function(){ const sel=$('b_mesa'); for(let i=1;i<=17;i++){ const o=document.createElement('option'); o.value=i; o.textContent='Mesa '+i; sel.appendChild(o); } })();
-function syncEmitFields(){ const vip=$('b_tipo').value==='VIP'; $('b_seatfields').style.display=vip?'block':'none'; $('b_cantwrap').style.display=vip?'none':'block'; if(!$('b_cortesia').checked) $('b_precio').value=vip?850:450; }
+function fillNums(sel,max,pre){ sel.innerHTML=''; for(let i=1;i<=max;i++){ const o=document.createElement('option'); o.value=i; o.textContent=(pre||'')+i; sel.appendChild(o); } }
+(function(){ const sel=$('b_mesa'); for(let i=1;i<=18;i++){ const o=document.createElement('option'); o.value=i; o.textContent='Mesa '+i; sel.appendChild(o); } })();
+fillNums($('b_vipa_n'),CAP.VIPA,'Asiento ');
+function fillPrefNums(){ fillNums($('b_pref_n'),PREF_MAX[$('b_pref_sec').value]||25); }
+fillPrefNums(); $('b_pref_sec').addEventListener('change',fillPrefNums);
+function syncEmitFields(){ const t=$('b_tipo').value;
+  $('f_vip').style.display=t==='VIP'?'block':'none';
+  $('f_vipa').style.display=t==='VIPA'?'block':'none';
+  $('f_pref').style.display=t==='PREF'?'block':'none';
+  $('f_gen').style.display=t==='GENERAL'?'block':'none';
+  if(!$('b_cortesia').checked) $('b_precio').value=PRECIO[t]||450; }
 $('b_tipo').addEventListener('change', syncEmitFields);
 $('b_cortesia').addEventListener('change',()=>{ if($('b_cortesia').checked){ $('b_precio').value=0; $('b_precio').disabled=true; } else { $('b_precio').disabled=false; syncEmitFields(); } });
 syncEmitFields();
@@ -336,9 +361,12 @@ async function emitBoleto(){
   const foliosRef=db.collection('config').doc('folios');
   const btn=$('emitBtn'); btn.disabled=true;
   try{
-    if(tipo==='VIP'){
-      const mesa=Number($('b_mesa').value), asiento=Number($('b_asiento').value);
-      const seatId='VIP-M'+String(mesa).padStart(2,'0')+'-S'+asiento;
+    if(tipo!=='GENERAL'){
+      let seatId, extra;
+      if(tipo==='VIP'){ const mesa=Number($('b_mesa').value), asiento=Number($('b_asiento').value);
+        seatId='VIP-M'+pad2(mesa)+'-S'+asiento; extra={mesa,asiento}; }
+      else if(tipo==='VIPA'){ const nn=Number($('b_vipa_n').value); seatId='VIPA-'+pad2(nn); extra={asiento:nn}; }
+      else { const sec=$('b_pref_sec').value, nn=Number($('b_pref_n').value); seatId='PREF-'+sec+'-'+pad2(nn); extra={sec,num:nn}; }
       const token=genToken(); let folio;
       await db.runTransaction(async tx=>{
         const seatRef=db.collection(SEATS_COL).doc(seatId);
@@ -346,7 +374,7 @@ async function emitBoleto(){
         const sd=seatSnap.data(); if(sd && sd.status==='vendido') throw new Error('El asiento '+seatId+' ya está vendido');
         const n=((folioSnap.exists&&folioSnap.data().n)||0)+1; folio=fmtFolio(n);
         tx.set(foliosRef,{n},{merge:true});
-        tx.set(db.collection(BOLETOS_COL).doc(token), Object.assign({tipo:'VIP', mesa, asiento, folio, orden:token}, meta));
+        tx.set(db.collection(BOLETOS_COL).doc(token), Object.assign({tipo, folio, asientoId:seatId, orden:token}, extra, meta));
         tx.set(seatRef, {status:'vendido', ts:Date.now(), by:auth.currentUser.email, folio});
       });
       showEmitted([{token, folio}]);
@@ -371,18 +399,22 @@ async function emitBoleto(){
 }
 let BOLETOS=[];
 function watchBoletos(){ db.collection(BOLETOS_COL).onSnapshot(snap=>{ BOLETOS=[];
-    let vipVend=0,genVend=0,ingresados=0,pendientes=0,cancelados=0,cortesias=0,occVIP=0,occGEN=0,ventas=0;
+    let ingresados=0,pendientes=0,cancelados=0,cortesias=0,ventas=0;
+    const occ={VIP:0,VIPA:0,PREF:0,GENERAL:0}, sold={VIP:0,VIPA:0,PREF:0,GENERAL:0};
     snap.forEach(doc=>{ const d=doc.data(); BOLETOS.push({token:doc.id,d});
       if(d.estado==='cancelado'){ cancelados++; return; }
-      const vip=d.tipo==='VIP'; if(vip) occVIP++; else occGEN++;
+      const t=(d.tipo in occ)?d.tipo:'GENERAL'; occ[t]++;
       if(d.estado==='usado') ingresados++; else pendientes++;
       if(d.cortesia){ cortesias++; }
-      else { if(vip) vipVend++; else genVend++; ventas += (d.precio!=null?Number(d.precio):(vip?850:450)); }
+      else { sold[t]++; ventas += (d.precio!=null?Number(d.precio):PRECIO[t]); }
     });
     const money=v=>'$'+Number(v).toLocaleString('es-MX');
-    $('sVend').textContent=vipVend+genVend; $('sVip').textContent=vipVend; $('sGen').textContent=genVend;
+    $('sVend').textContent=sold.VIP+sold.VIPA+sold.PREF+sold.GENERAL;
+    $('sVip').textContent=sold.VIP; $('sVipa').textContent=sold.VIPA; $('sPref').textContent=sold.PREF; $('sGen').textContent=sold.GENERAL;
     $('sIn').textContent=ingresados; $('sPend').textContent=pendientes; $('sCanc').textContent=cancelados;
-    $('sCort').textContent=cortesias; $('sCap').textContent=(68-occVIP)+(250-occGEN); $('sMoney').textContent=money(ventas);
+    $('sCort').textContent=cortesias;
+    $('sCap').textContent=(CAP.VIP-occ.VIP)+(CAP.VIPA-occ.VIPA)+(CAP.PREF-occ.PREF)+(CAP.GENERAL-occ.GENERAL);
+    $('sMoney').textContent=money(ventas);
     BOLETOS.sort((a,b)=>(b.d.emitidoAt||0)-(a.d.emitidoAt||0)); renderBoletos();
   }, err=>{ $('boletoList').innerHTML='<div class="empty">Error: '+err.message+'</div>'; }); }
 $('bSearch').addEventListener('input', renderBoletos);
@@ -390,10 +422,14 @@ function renderBoletos(){ const q=($('bSearch').value||'').trim().toUpperCase();
   let rows=BOLETOS; if(q) rows=rows.filter(r=>((r.d.folio||'').toUpperCase().includes(q))||(((r.d.comprador&&r.d.comprador.nombre)||'').toUpperCase().includes(q)));
   rows=rows.slice(0,150);
   if(!rows.length){ box.innerHTML='<div class="empty">Sin boletos aún. Emite uno arriba.</div>'; return; } box.innerHTML='';
-  for(const r of rows){ const d=r.d; const seat=d.tipo==='VIP'?('Mesa '+d.mesa+' · As '+d.asiento):'de pie';
+  for(const r of rows){ const d=r.d;
+    const seat=d.tipo==='VIP'?('Mesa '+d.mesa+' · As '+d.asiento)
+             :d.tipo==='VIPA'?('Asiento '+d.asiento)
+             :d.tipo==='PREF'?('Pref '+d.sec+'-'+pad2(d.num))
+             :'de pie';
     const st=d.estado==='usado'?'<span style="color:#f4b942">ingresó</span>':(d.estado==='cancelado'?'<span style="color:#ff6b76">cancelado</span>':'<span style="color:#25d366">válido</span>');
     const who=(d.comprador&&d.comprador.nombre)||''; const cort=d.cortesia?' · <span style="color:#f4b942">cortesía</span>':''; const el=document.createElement('div'); el.className='sold-item';
-    el.innerHTML='<span class="sid">'+(d.folio||'')+'</span><span class="sinfo">'+d.tipo+' · '+seat+(who?' · '+who:'')+cort+' · '+st+'</span>'+
+    el.innerHTML='<span class="sid">'+(d.folio||'')+'</span><span class="sinfo">'+(TIPO_LBL_B[d.tipo]||d.tipo)+' · '+seat+(who?' · '+who:'')+cort+' · '+st+'</span>'+
       '<button class="mini" data-see="'+r.token+'">Ver</button>'+(d.estado!=='cancelado'?'<button class="mini" data-cancel="'+r.token+'">Cancelar</button>':'');
     box.appendChild(el); }
   box.querySelectorAll('[data-see]').forEach(b=>b.addEventListener('click',()=>window.open('boleto.html?t='+b.dataset.see,'_blank')));
@@ -401,7 +437,8 @@ function renderBoletos(){ const q=($('bSearch').value||'').trim().toUpperCase();
 }
 async function cancelBoleto(token){ const r=BOLETOS.find(x=>x.token===token); if(!r) return; const d=r.d;
   if(!confirm('¿Cancelar el boleto '+(d.folio||'')+'? Se libera el lugar.')) return;
-  try{ if(d.tipo==='VIP'){ const seatId='VIP-M'+String(d.mesa).padStart(2,'0')+'-S'+d.asiento; const batch=db.batch();
+  try{ if(d.tipo!=='GENERAL'){
+      const seatId=d.asientoId||(d.tipo==='VIP'?'VIP-M'+pad2(d.mesa)+'-S'+d.asiento:d.tipo==='VIPA'?'VIPA-'+pad2(d.asiento):'PREF-'+d.sec+'-'+pad2(d.num)); const batch=db.batch();
       batch.update(db.collection(BOLETOS_COL).doc(token),{estado:'cancelado',canceladoAt:Date.now()}); batch.delete(db.collection(SEATS_COL).doc(seatId)); await batch.commit();
     } else { await db.runTransaction(async tx=>{ const gRef=db.collection('config').doc('general'); const g=await tx.get(gRef); const v=(g.exists&&g.data().vendidos)||0;
       tx.update(db.collection(BOLETOS_COL).doc(token),{estado:'cancelado',canceladoAt:Date.now()}); tx.set(gRef,{vendidos:Math.max(0,v-1)},{merge:true}); }); }

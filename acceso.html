@@ -70,7 +70,7 @@
       <div id="reader"></div>
       <button class="btn ghost" id="camBtn" style="margin-top:10px">Activar / reintentar cámara</button>
       <div class="counters">
-        <div class="counter vip"><div class="k">Ingresados VIP</div><div class="v"><span id="inV">0</span>/<span id="emV">0</span></div></div>
+        <div class="counter vip"><div class="k">Ingresados con asiento</div><div class="v"><span id="inV">0</span>/<span id="emV">0</span></div></div>
         <div class="counter gen"><div class="k">Ingresados General</div><div class="v"><span id="inG">0</span>/<span id="emG">0</span></div></div>
       </div>
       <div class="manual">
@@ -155,7 +155,11 @@ async function validate(token){
     }catch(e){ const s3=await ref.get(); const d3=s3.data(); show('warn','Ya ingresó', ticketLine(d3), 'Entrada registrada '+fmtTime(d3.checkinAt)); }
   }catch(e){ $('scanMsg').textContent='Error: '+e.message; busy=false; }
 }
-function ticketLine(d){ if(d.tipo==='VIP'){ return 'VIP · Mesa <b>'+(d.mesa??'?')+'</b> · Asiento <b>'+(d.asiento??'?')+'</b> · '+(d.folio||''); } return 'General · Admisión de pie · '+(d.folio||''); }
+function ticketLine(d){
+  if(d.tipo==='VIP')  return 'VIP · Mesa <b>'+(d.mesa??'?')+'</b> · Asiento <b>'+(d.asiento??'?')+'</b> · '+(d.folio||'');
+  if(d.tipo==='VIPA') return 'VIP Asiento <b>'+(d.asiento??'?')+'</b> · '+(d.folio||'');
+  if(d.tipo==='PREF') return 'Preferente <b>'+(d.sec||'?')+'-'+String(d.num??'').padStart(2,'0')+'</b> · '+(d.folio||'');
+  return 'General · Admisión de pie · '+(d.folio||''); }
 function fmtTime(ts){ if(!ts) return''; const dt=new Date(ts); return dt.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'}); }
 
 const ICONS={ ok:'<svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>', warn:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16h.01"/></svg>', bad:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6"/><path d="M9 9l6 6"/></svg>' };
@@ -183,7 +187,7 @@ $('folioInput').addEventListener('keydown',e=>{ if(e.key==='Enter') $('folioBtn'
 /* ===== Contadores en vivo ===== */
 function watchCounters(){ db.collection('boletos').onSnapshot(snap=>{ let inV=0,inG=0,emV=0,emG=0;
     snap.forEach(doc=>{ const d=doc.data(); if(d.estado==='cancelado') return;
-      if(d.tipo==='VIP'){ emV++; if(d.estado==='usado') inV++; } else { emG++; if(d.estado==='usado') inG++; } });
+      if(d.tipo!=='GENERAL'){ emV++; if(d.estado==='usado') inV++; } else { emG++; if(d.estado==='usado') inG++; } });
     $('inV').textContent=inV; $('emV').textContent=emV; $('inG').textContent=inG; $('emG').textContent=emG;
   }, ()=>{}); }
 </script>
