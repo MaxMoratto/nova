@@ -23,10 +23,10 @@
   <div id="state" class="state">Cargando boleto…</div>
   <canvas id="cv"></canvas>
   <div class="actions" id="actions" style="display:none">
-    <button class="btn" id="dlBtn">Descargar</button>
+    <button class="btn" id="dlBtn">Guardar boleto</button>
     <a class="btn ghost" href="index.html">Sitio</a>
   </div>
-  <div class="tip" id="tip" style="display:none">Guarda o descarga tu boleto. Es válido una sola vez: al escanearlo en la entrada queda registrado.</div>
+  <div class="tip" id="tip" style="display:none">En celular toca <b>Descargar</b> y elige <b>Guardar en Fotos</b> (o compártelo por WhatsApp). Es válido una sola vez: al escanearlo en la entrada queda registrado.</div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -103,8 +103,20 @@ async function load(){
   render(d);
 }
 
-$('dlBtn').addEventListener('click',()=>{ const cv=$('cv'); const a=document.createElement('a');
-  a.download='NSS-'+((CUR&&CUR.folio)||'boleto')+'.png'; a.href=cv.toDataURL('image/png'); a.click(); });
+function dataURLtoFile(durl,name){ const [head,b64]=durl.split(','); const mime=(head.match(/:(.*?);/)||[])[1]||'image/png';
+  const bin=atob(b64), n=bin.length, u8=new Uint8Array(n); for(let i=0;i<n;i++) u8[i]=bin.charCodeAt(i);
+  return new File([u8], name, {type:mime}); }
+$('dlBtn').addEventListener('click',()=>{ const cv=$('cv'); const name='NSS-'+((CUR&&CUR.folio)||'boleto')+'.png';
+  // Todo sincrono dentro del gesto (iOS exige que share/descarga salga del click)
+  const durl=cv.toDataURL('image/png'); const file=dataURLtoFile(durl,name);
+  // Movil: compartir / "Guardar en Fotos"
+  if(navigator.canShare && navigator.canShare({files:[file]})){
+    navigator.share({files:[file], title:'Boleto NOVA Strike Series'}).catch(()=>{}); return;
+  }
+  // Escritorio / Android: descarga directa
+  try{ const url=URL.createObjectURL(file); const a=document.createElement('a'); a.href=url; a.download=name;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),4000);
+  }catch(e){ const a=document.createElement('a'); a.download=name; a.href=durl; a.click(); } });
 
 load();
 </script>
