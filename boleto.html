@@ -34,10 +34,18 @@
 <script>
 const firebaseConfig = { apiKey:"AIzaSyAXxTUFo0CHFZnAs0wGrYHLTwwVzZ_ArZA", authDomain:"nova-dd664.firebaseapp.com", projectId:"nova-dd664", storageBucket:"nova-dd664.firebasestorage.app", messagingSenderId:"967862553249", appId:"1:967862553249:web:3524af97999ce667bafee0" };
 const EVENTO = { hora:"" };   // <-- cuando haya horario, pon aquí "20:00" y aparece en el boleto
-// Posiciones (fracción del boleto) de cada dato, medidas del SVG original
+// Posiciones (fracción del boleto) de cada dato, medidas de los 4 SVG originales.
+// Caja QR identica en los 4 disenos. Campos variables por tipo.
+const QR = { x:.1578, y:.5717, w:.6852, h:.2869 };
+const HORA = { x:.84, y:.278, f:.020 }, FOLIO = { x:.35, y:.897, f:.017 };
 const FR = {
-  VIP:     { img:'vip_ticket.webp',     qr:{x:.1536,y:.5710,w:.6928,h:.2893}, hora:{x:.8400,y:.2774,f:.0196}, folio:{x:.3540,y:.8978,f:.0150}, seat:true, mesa:{x:.3433,y:.5470,f:.030}, asiento:{x:.6760,y:.5470,f:.030} },
-  GENERAL: { img:'general_ticket.webp', qr:{x:.1536,y:.5711,w:.6927,h:.2893}, hora:{x:.8690,y:.2774,f:.0196}, folio:{x:.3620,y:.8978,f:.0150}, seat:false }
+  VIP:     { img:'uploads/tk_vip.webp',     qr:QR, hora:HORA, folio:FOLIO,
+             fields:[ {t:'mesa',x:.53,y:.525,f:.030,a:'center'}, {t:'asiento',x:.71,y:.525,f:.030,a:'center'} ] },   // bvip1 (VIP mesa)
+  VIPA:    { img:'uploads/tk_vipa.webp',    qr:QR, hora:HORA, folio:FOLIO,
+             fields:[ {t:'asiento',x:.66,y:.5295,f:.030,a:'center'} ] },                                             // bvip2 (VIP asiento)
+  PREF:    { img:'uploads/tk_pref.webp',    qr:QR, hora:HORA, folio:FOLIO,
+             fields:[ {t:'pref',x:.655,y:.528,f:.028,a:'center'} ] },                                                // preferente (dorado)
+  GENERAL: { img:'uploads/tk_general.webp', qr:QR, hora:HORA, folio:FOLIO, fields:[] }
 };
 const params=new URLSearchParams(location.search);
 const token=params.get('t')||'DEMO-TOKEN';
@@ -54,8 +62,7 @@ function loadImg(src){ return new Promise((res,rej)=>{ const im=new Image(); im.
 
 async function render(d){
   CUR=d;
-  const tipo = d.tipo==='VIP' ? 'VIP' : 'GENERAL';
-  const cfg=FR[tipo];
+  const cfg = FR[d.tipo] || FR.GENERAL;
   let bg; try{ bg=await loadImg(cfg.img); }catch(e){ fail('No se pudo cargar el diseño del boleto.'); return; }
   const W=bg.naturalWidth, H=bg.naturalHeight;
   const cv=$('cv'); cv.width=W; cv.height=H; const ctx=cv.getContext('2d');
@@ -71,7 +78,13 @@ async function render(d){
   const put=(c,val,align)=>{ ctx.textAlign=align; ctx.font='bold '+(c.f*H)+'px Arial, sans-serif'; ctx.fillText(String(val), c.x*W, c.y*H); };
   put(cfg.hora, EVENTO.hora||'—','center');
   put(cfg.folio, d.folio||'','left');
-  if(cfg.seat){ put(cfg.mesa, d.mesa!=null?d.mesa:'—','center'); put(cfg.asiento, d.asiento!=null?d.asiento:'—','center'); }
+  for(const f of (cfg.fields||[])){
+    const v = f.t==='mesa'    ? (d.mesa!=null?d.mesa:'—')
+            : f.t==='asiento' ? (d.asiento!=null?d.asiento:'—')
+            : f.t==='pref'    ? (d.sec?d.sec+'-'+String(d.num!=null?d.num:0).padStart(2,'0'):'—')
+            : '';
+    put(f, v, f.a||'center');
+  }
   // Marca "YA INGRESÓ" si el boleto ya se usó
   if(d.estado==='usado'){ ctx.save(); ctx.translate(W/2,H*0.72); ctx.rotate(-Math.PI/9);
     ctx.fillStyle='rgba(8,10,14,.55)'; ctx.fillRect(-W*0.5,-H*0.05,W,H*0.10);
@@ -80,7 +93,8 @@ async function render(d){
 }
 
 async function load(){
-  if(demo){ return render({ tipo: demo==='general'?'GENERAL':'VIP', folio: demo==='general'?'NSS-GEN-0007':'NSS-VIP-M07-S3', mesa:7, asiento:3, estado:'valido', comprador:{nombre:'DEMO'} }); }
+  if(demo){ const T=demo.toUpperCase(); const tipo=['VIP','VIPA','PREF','GENERAL'].includes(T)?T:'VIP';
+    return render({ tipo, folio:'NSS-00007', mesa:7, asiento:3, sec:'A', num:5, estado:'valido', comprador:{nombre:'DEMO'} }); }
   if(!token || token==='DEMO-TOKEN'){ fail('Boleto no válido (falta el código).'); return; }
   let snap; try{ snap=await db.collection('boletos').doc(token).get(); }catch(e){ fail('No se pudo cargar el boleto. '+e.message); return; }
   if(!snap.exists){ fail('Este boleto no existe o fue cancelado.'); return; }
