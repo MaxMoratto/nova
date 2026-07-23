@@ -10,6 +10,18 @@ const randToken = () => crypto.randomBytes(16).toString('hex');
 const fmtFolio = (n) => 'NSS-' + String(n).padStart(5, '0');
 const safeJson = (s) => { try { return JSON.parse(s); } catch (_) { return {}; } };
 
+// Precio y datos del boleto derivados del id del asiento (autoridad del servidor).
+function seatInfo(seatId) {
+  let m;
+  if ((m = seatId.match(/^VIP-M(\d+)-S(\d+)$/)))
+    return { tipo: 'VIP', mesa: +m[1], asiento: +m[2], precio: 850, label: 'VIP Mesa ' + (+m[1]) + ' · Silla ' + (+m[2]) };
+  if ((m = seatId.match(/^VIPA-(\d+)$/)))
+    return { tipo: 'VIPA', asiento: +m[1], precio: 850, label: 'VIP Asiento ' + (+m[1]) };
+  if ((m = seatId.match(/^PREF-([ABC])-(\d+)$/)))
+    return { tipo: 'PREF', sec: m[1], num: +m[2], precio: 650, label: 'Preferente ' + m[1] + '-' + String(+m[2]).padStart(2, '0') };
+  return { tipo: 'OTRO', precio: 0, label: seatId };
+}
+
 async function releaseOrder(firestore, orderId) {
   const orderRef = firestore.collection('ordenes').doc(orderId);
   const oSnap = await orderRef.get();
@@ -35,7 +47,7 @@ async function generateTickets(firestore, orderId, pay) {
     if (!oSnap.exists) throw new Error('orden no existe');
     const o = oSnap.data();
     if (o.estado === 'pagado') return; // idempotente: no duplica boletos
-    const vipSeats = o.seats || [];
+    const seats = o.seats || [];
     const genQty = o.general || 0;
     let n = (fSnap.exists && fSnap.data().n) || 0;
     const vend = (gSnap.exists && gSnap.data().vendidos) || 0;
@@ -43,12 +55,15 @@ async function generateTickets(firestore, orderId, pay) {
     const comprador = o.comprador || {};
     const meta = { comprador, estado: 'valido', canal: 'mp', cortesia: false, emitidoAt: Date.now(), evento: 'NOVA-11SEP2026', orden: orderId, pagoId: String(pay.id) };
     const tokens = [];
-    for (const seatId of vipSeats) {
-      const m = seatId.match(/VIP-M(\d+)-S(\d+)/);
-      const mesa = m ? parseInt(m[1], 10) : null;
-      const asiento = m ? parseInt(m[2], 10) : null;
+    for (const seatId of seats) {
+      const inf = seatInfo(seatId);
       n++; const folio = fmtFolio(n); const tok = randToken();
-      tx.set(firestore.collection('boletos').doc(tok), Object.assign({ tipo: 'VIP', mesa, asiento, folio, precio: 850 }, meta));
+      const boleto = { tipo: inf.tipo, folio, precio: inf.precio, asientoId: seatId, label: inf.label };
+      if (inf.mesa != null) boleto.mesa = inf.mesa;
+      if (inf.asiento != null) boleto.asiento = inf.asiento;
+      if (inf.sec != null) boleto.sec = inf.sec;
+      if (inf.num != null) boleto.num = inf.num;
+      tx.set(firestore.collection('boletos').doc(tok), Object.assign(boleto, meta));
       tx.set(firestore.collection('asientos_nova').doc(seatId), { status: 'vendido', ts: Date.now(), orderId, folio }, { merge: true });
       tokens.push(tok);
     }
