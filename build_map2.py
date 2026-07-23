@@ -52,6 +52,8 @@ HTML = r"""<!DOCTYPE html>
   .seat.sel{fill:rgba(37,211,102,0.42);stroke:#25d366;stroke-width:520}
   .seat.vendido{fill:rgba(12,13,18,0.55);stroke:#e11d2a;stroke-width:300;cursor:not-allowed}
   .seats.dimmed .seat:not(.hl){opacity:.18}
+  .seat.hl:not(.sel):not(.vendido){fill:rgba(255,255,255,.14);stroke:#fff;stroke-width:420;stroke-opacity:.95;animation:hlpulse 1s ease-in-out infinite}
+  @keyframes hlpulse{0%,100%{stroke-opacity:.35}50%{stroke-opacity:1}}
   .zoombar{position:absolute;left:18px;bottom:18px;display:flex;flex-direction:column;gap:6px;z-index:6}
   .zoombar button{width:40px;height:40px;border-radius:11px;border:1px solid var(--border2);background:rgba(17,21,29,.92);color:var(--txt);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
   .zoombar button:hover{border-color:var(--red);color:var(--red2)}
@@ -235,14 +237,30 @@ seatsG.addEventListener('mouseleave',()=>tip.classList.remove('on'));
 function avail(zone){let a=0;for(const s of SEATS)if(s.zone===zone&&!state.selected.has(s.id)&&!taken.has(s.id))a++;return a;}
 function zoneTotal(zone){return SEATS.filter(s=>s.zone===zone).length;}
 const zonesBox=document.getElementById('zones');
+const ZFLOOR={VIP:'PB',VIPA:'1P',PREF:'1P',GENERAL:'PB'};
+function goFloor(fl){ if(curFloor===fl)return; curFloor=fl;
+  document.querySelectorAll('.floorsw button').forEach(x=>x.classList.toggle('on',x.dataset.f===fl)); renderFloor(); }
+function focusZone(z){                                   // llevar el mapa a la seccion de la zona
+  const fl=ZFLOOR[z]||'PB'; goFloor(fl);
+  const pts=SEATS.filter(s=>s.floor===fl&&s.zone===z);
+  if(pts.length){ const r=FLOORS[fl].r; let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;
+    pts.forEach(s=>{x0=Math.min(x0,s.x-r);y0=Math.min(y0,s.y-r);x1=Math.max(x1,s.x+r);y1=Math.max(y1,s.y+r);});
+    const [W,H]=vbDims(),bw=x1-x0,bh=y1-y0,pad=1.22;
+    const s=Math.min(6,Math.max(1,Math.min(W/(bw*pad),H/(bh*pad))));
+    state.scale=s; state.tx=W/2-s*(x0+x1)/2; state.ty=H/2-s*(y0+y1)/2; apply();
+    hl(z); clearTimeout(focusZone._t); focusZone._t=setTimeout(()=>hl(null),1800);
+  } else { state.scale=1;state.tx=0;state.ty=0;apply(); }
+  if(innerWidth<=940){const st=document.querySelector('.stage'); if(st)st.scrollIntoView({behavior:'smooth',block:'start'});}
+}
 function buildZones(){ zonesBox.innerHTML='';
   [['VIP','Planta baja'],['VIPA','1er piso'],['PREF','1er piso']].forEach(([z,fl])=>{ const Z=ZONES[z];
     const row=document.createElement('div');row.className='zrow';row.dataset.zone=z;
     row.innerHTML='<span class="sw" style="background:'+Z.bright+'"></span><div class="zn"><b>'+Z.label+'</b><small>'+fl+' &#183; <span class="av">'+zoneTotal(z)+'</span> disp.</small></div><div class="zp"><b style="color:'+Z.bright+'">'+money(Z.price)+'</b><small>c/u</small></div>';
-    row.addEventListener('mouseenter',()=>hl(z));row.addEventListener('mouseleave',()=>hl(null)); zonesBox.appendChild(row); });
+    row.addEventListener('mouseenter',()=>hl(z));row.addEventListener('mouseleave',()=>hl(null));
+    row.addEventListener('click',()=>focusZone(z)); zonesBox.appendChild(row); });
   const g=ZONES.GENERAL; const row=document.createElement('div');row.className='zrow';row.dataset.zone='GENERAL';
   row.innerHTML='<span class="sw" style="background:'+g.bright+'"></span><div class="zn"><b>General</b><small>planta baja &#183; admisi&oacute;n</small></div><div class="gqty"><button class="qb" id="gminus">&#8722;</button><b id="gqty">0</b><button class="qb" id="gplus">+</button></div><div class="zp"><b style="color:'+g.bright+'">'+money(g.price)+'</b><small>c/u</small></div>';
-  zonesBox.appendChild(row);
+  row.addEventListener('click',e=>{if(e.target.closest('.qb'))return; focusZone('GENERAL');}); zonesBox.appendChild(row);
 }
 function updateGenPanel(){ const total=ZONES.GENERAL.total; const used=Math.min(total,generalSold+state.generalQty); const av=total-used;
   const w=document.getElementById('gpavailwrap'); if(w)w.innerHTML='<b>'+av+'</b> de '+total+' disponibles';
@@ -276,7 +294,7 @@ document.getElementById('clear').addEventListener('click',()=>{state.selected.fo
 let flashT;function flash(m){let f=document.getElementById('flashmsg');if(!f){f=document.createElement('div');f.id='flashmsg';f.style.cssText='position:fixed;left:50%;top:20px;transform:translateX(-50%);background:#2a1116;border:1px solid #e11d2a;color:#ff8f98;padding:10px 18px;border-radius:10px;z-index:90;font-size:13px';document.body.appendChild(f);}f.innerHTML=m;f.style.opacity='1';clearTimeout(flashT);flashT=setTimeout(()=>f.style.opacity='0',1800);}
 
 // floor switch
-document.getElementById('floorsw').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return; curFloor=b.dataset.f; document.querySelectorAll('.floorsw button').forEach(x=>x.classList.toggle('on',x===b)); renderFloor();});
+document.getElementById('floorsw').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return; goFloor(b.dataset.f);});
 
 // checkout modal
 const modalbg=document.getElementById('modalbg');
