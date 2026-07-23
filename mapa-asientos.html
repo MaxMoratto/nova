@@ -236,7 +236,7 @@ function buildZones(){ zonesBox.innerHTML='';
     row.addEventListener('mouseenter',()=>hl(z));row.addEventListener('mouseleave',()=>hl(null));
     row.addEventListener('click',()=>focusZone(z)); zonesBox.appendChild(row); });
   const g=ZONES.GENERAL; const row=document.createElement('div');row.className='zrow';row.dataset.zone='GENERAL';
-  row.innerHTML='<span class="sw" style="background:'+g.bright+'"></span><div class="zn"><b>General</b><small>planta baja &#183; admisi&oacute;n</small></div><div class="gqty"><button class="qb" id="gminus">&#8722;</button><b id="gqty">0</b><button class="qb" id="gplus">+</button></div><div class="zp"><b style="color:'+g.bright+'">'+money(g.price)+'</b><small>c/u</small></div>';
+  row.innerHTML='<span class="sw" style="background:'+g.bright+'"></span><div class="zn"><b>General</b><small>planta baja &#183; lugar por llegada</small></div><div class="gqty"><button class="qb" id="gminus">&#8722;</button><b id="gqty">0</b><button class="qb" id="gplus">+</button></div><div class="zp"><b style="color:'+g.bright+'">'+money(g.price)+'</b><small>c/u</small></div>';
   row.addEventListener('click',e=>{if(e.target.closest('.qb'))return; focusZone('GENERAL');}); zonesBox.appendChild(row);
 }
 function updateGenPanel(){ const total=ZONES.GENERAL.total; const used=Math.min(total,generalSold+state.generalQty); const av=total-used;
@@ -259,7 +259,7 @@ function renderCart(){ const sel=selectedSeats(); const gq=state.generalQty, cou
     for(const s of sel){const z=ZONES[s.zone];const d=document.createElement('div');d.className='pick';
       d.innerHTML='<span class="pw" style="background:'+z.bright+'"></span><div class="pi"><b>'+seatLabel(s)+'</b><small>'+z.label+'</small></div><span class="pp">'+money(z.price)+'</span><button class="rm" data-id="'+s.id+'">&times;</button>';w.appendChild(d);}
     if(gq>0){const z=ZONES.GENERAL;const d=document.createElement('div');d.className='pick';
-      d.innerHTML='<span class="pw" style="background:'+z.bright+'"></span><div class="pi"><b>General &#215; '+gq+'</b><small>admisi&oacute;n general</small></div><span class="pp">'+money(z.price*gq)+'</span><button class="rm" data-gen="1">&times;</button>';w.appendChild(d);}
+      d.innerHTML='<span class="pw" style="background:'+z.bright+'"></span><div class="pi"><b>General &#215; '+gq+'</b><small>silla &#183; por orden de llegada</small></div><span class="pp">'+money(z.price*gq)+'</span><button class="rm" data-gen="1">&times;</button>';w.appendChild(d);}
     pickbox.innerHTML='';pickbox.appendChild(w);}
   const sub=sel.reduce((t,s)=>t+ZONES[s.zone].price,0)+gq*ZONES.GENERAL.price, fee=count*CARGO_SERVICIO;
   document.getElementById('nq').textContent='('+count+')';document.getElementById('subt').textContent=money(sub);
@@ -291,7 +291,7 @@ function buildItems(sel){ const items=[]; const byZone={};
   if(byZone.VIP) items.push({name:'VIP Mesa', price:ZONES.VIP.price, qty:byZone.VIP});
   if(byZone.VIPA) items.push({name:'VIP Asiento', price:ZONES.VIPA.price, qty:byZone.VIPA});
   if(byZone.PREF) items.push({name:'Preferente', price:ZONES.PREF.price, qty:byZone.PREF});
-  if(state.generalQty>0) items.push({name:'General (admision)', price:ZONES.GENERAL.price, qty:state.generalQty});
+  if(state.generalQty>0) items.push({name:'General (lugar por llegada)', price:ZONES.GENERAL.price, qty:state.generalQty});
   const nBol=sel.length+state.generalQty; if(nBol>0) items.push({name:'Cargo por servicio', price:CARGO_SERVICIO, qty:nBol});
   return items;
 }

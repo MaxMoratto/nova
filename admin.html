@@ -141,7 +141,7 @@
             <option value="VIP">VIP mesa ($850)</option>
             <option value="VIPA">VIP asiento ($850)</option>
             <option value="PREF">Preferente ($650)</option>
-            <option value="GENERAL">General · admisión ($450)</option>
+            <option value="GENERAL">General · lugar por llegada ($450)</option>
           </select></div>
           <div id="f_vip"><div class="grid2"><div><label>Mesa</label><select id="b_mesa"></select></div><div><label>Asiento</label><select id="b_asiento"><option>1</option><option>2</option><option>3</option><option>4</option></select></div></div></div>
           <div id="f_vipa" style="display:none"><label>Asiento VIP (1–40)</label><select id="b_vipa_n"></select></div>
@@ -426,7 +426,7 @@ function renderBoletos(){ const q=($('bSearch').value||'').trim().toUpperCase();
     const seat=d.tipo==='VIP'?('Mesa '+d.mesa+' · As '+d.asiento)
              :d.tipo==='VIPA'?('Asiento '+d.asiento)
              :d.tipo==='PREF'?('Pref '+d.sec+'-'+pad2(d.num))
-             :'de pie';
+             :'lugar por llegada';
     const st=d.estado==='usado'?'<span style="color:#f4b942">ingresó</span>':(d.estado==='cancelado'?'<span style="color:#ff6b76">cancelado</span>':'<span style="color:#25d366">válido</span>');
     const who=(d.comprador&&d.comprador.nombre)||''; const cort=d.cortesia?' · <span style="color:#f4b942">cortesía</span>':''; const el=document.createElement('div'); el.className='sold-item';
     el.innerHTML='<span class="sid">'+(d.folio||'')+'</span><span class="sinfo">'+(TIPO_LBL_B[d.tipo]||d.tipo)+' · '+seat+(who?' · '+who:'')+cort+' · '+st+'</span>'+
