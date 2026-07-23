@@ -401,7 +401,7 @@ let BOLETOS=[];
 function watchBoletos(){ db.collection(BOLETOS_COL).onSnapshot(snap=>{ BOLETOS=[];
     let ingresados=0,pendientes=0,cancelados=0,cortesias=0,ventas=0;
     const occ={VIP:0,VIPA:0,PREF:0,GENERAL:0}, sold={VIP:0,VIPA:0,PREF:0,GENERAL:0};
-    snap.forEach(doc=>{ const d=doc.data(); BOLETOS.push({token:doc.id,d});
+    snap.forEach(doc=>{ const d=doc.data(); if(d.test) return; BOLETOS.push({token:doc.id,d});
       if(d.estado==='cancelado'){ cancelados++; return; }
       const t=(d.tipo in occ)?d.tipo:'GENERAL'; occ[t]++;
       if(d.estado==='usado') ingresados++; else pendientes++;

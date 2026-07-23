@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NOVA · Boletos de prueba</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{--bg:#0a0c11;--panel:#12161f;--panel2:#161b26;--border:#232a38;--border2:#2d3547;--txt:#e8eaf0;--muted:#8a92a6;--muted2:#5f6779;--red:#e11d2a;--red2:#ff3646;--ok:#25d366;--gold:#D2AE6D}
+  *{box-sizing:border-box}html,body{height:100%}
+  body{margin:0;background:radial-gradient(1000px 700px at 50% -10%,#171b26,#0a0c11) fixed,var(--bg);color:var(--txt);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 18px 90px}
+  .logo{font-family:'Bebas Neue',sans-serif;letter-spacing:.08em;display:flex;gap:5px;align-items:baseline;font-size:26px}
+  .sub{color:var(--muted);font-size:12px;letter-spacing:2px;text-transform:uppercase;margin-top:2px}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:22px;margin-top:16px}
+  h2{font-family:'Oswald',sans-serif;font-size:18px;margin:0 0 14px;text-transform:uppercase;letter-spacing:.4px}
+  label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px;text-transform:uppercase;letter-spacing:1px}
+  input{width:100%;background:var(--panel2);border:1px solid var(--border2);border-radius:10px;padding:11px;color:var(--txt);font-family:inherit;font-size:14px;outline:none;margin-bottom:12px}
+  input:focus{border-color:var(--red)}
+  .btn{border:none;border-radius:11px;padding:12px 18px;font-family:'Oswald',sans-serif;font-weight:600;font-size:14px;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;color:#fff;transition:.15s}
+  .btn:hover{filter:brightness(1.1)}
+  .btn.red{background:linear-gradient(180deg,var(--red2),var(--red))}
+  .btn.green{background:linear-gradient(180deg,#2bd576,#128c4b)}
+  .btn.ghost{background:transparent;border:1px solid var(--border2);color:var(--muted)}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .msg{font-size:13px;margin-top:10px;min-height:18px}.msg.ok{color:var(--ok)}.msg.err{color:var(--red2)}
+  .hint{font-size:12px;color:var(--muted2);margin-top:10px;line-height:1.6}
+  .list{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+  .item{display:flex;align-items:center;gap:10px;background:var(--panel2);border:1px solid var(--border);border-radius:9px;padding:9px 11px}
+  .item .f{font-family:'Oswald',sans-serif;font-size:14px;flex:none;min-width:92px}
+  .item .z{flex:1;min-width:0;color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .item .z b{color:var(--txt)}
+  .pill{display:inline-block;font-size:10px;padding:2px 7px;border-radius:20px;border:1px solid var(--border2);color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  a.mini{background:transparent;border:1px solid var(--border2);color:var(--txt);border-radius:7px;padding:6px 11px;font-size:11px;cursor:pointer;flex:none;text-decoration:none}
+  a.mini:hover{border-color:var(--red);color:var(--red2)}
+  .st{font-size:11px}.st.val{color:var(--ok)}.st.us{color:#f4b942}
+  #login{max-width:400px;margin:12vh auto 0}
+  .empty{color:var(--muted2);font-size:13px;text-align:center;padding:18px;border:1px dashed var(--border2);border-radius:10px;margin-top:8px}
+  .link{color:var(--muted);font-size:12px;text-decoration:none;border:1px solid var(--border2);padding:7px 12px;border-radius:8px}
+  .link:hover{border-color:var(--red);color:var(--red2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="login" class="card" style="display:none">
+    <div class="logo"><span style="color:#FF0033">NOVA</span><span style="color:#fff">STRIKE</span><span style="color:#00F0FF">SERIES</span><span style="font-size:13px;color:#8a92a6;margin-left:4px">PRUEBAS</span></div>
+    <div class="sub" style="margin-bottom:18px">Generador de boletos de prueba</div>
+    <label>Correo</label><input id="email" type="email" autocomplete="username" placeholder="tucorreo@gmail.com"/>
+    <label>Contraseña</label><input id="pass" type="password" autocomplete="current-password" placeholder="••••••••"/>
+    <button class="btn red" id="loginBtn" style="width:100%">Entrar</button>
+    <div class="msg err" id="loginMsg"></div>
+  </div>
+
+  <div id="panel" style="display:none">
+    <div class="row" style="justify-content:space-between">
+      <div><div class="logo"><span style="color:#FF0033">NOVA</span><span style="color:#fff">STRIKE</span><span style="color:#00F0FF">SERIES</span><span style="font-size:13px;color:#8a92a6;margin-left:4px">PRUEBAS</span></div><div class="sub">Boletos fantasma para probar escáner y descargas</div></div>
+      <div class="row"><a class="link" href="admin.html" target="_blank">Admin ↗</a><a class="link" href="acceso.html" target="_blank">Escáner ↗</a><button class="btn ghost" id="logoutBtn" style="padding:8px 14px">Salir</button></div>
+    </div>
+
+    <div class="card">
+      <h2>Generar boletos de prueba</h2>
+      <div class="row">
+        <button class="btn green" id="genBtn">Generar 15 boletos de prueba</button>
+        <button class="btn ghost" id="delBtn">Borrar todos los de prueba</button>
+      </div>
+      <div class="msg" id="msg"></div>
+      <div class="hint">
+        Crea 15 boletos <b>fantasma</b> (VIP mesa, VIP asiento, Preferente y General) con folios <b>TEST-####</b> — no gastan folios reales ni marcan asientos, y están marcados como <code>test</code> para <b>no contar</b> en las métricas del admin.<br>
+        Cada uno abre su página con <b>QR real</b>: ahí puedes <b>Guardar boleto</b> (probar descarga) y <b>escanear el QR</b> con <a class="link" style="padding:1px 6px" href="acceso.html" target="_blank">el escáner</a> (marca ingresado / doble uso).<br>
+        Al terminar la prueba, toca <b>Borrar todos los de prueba</b> para dejar la base limpia.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="row" style="justify-content:space-between;margin-bottom:6px"><h2 style="margin:0">Boletos de prueba (<span id="count">0</span>)</h2></div>
+      <div class="list" id="list"><div class="empty">Aún no hay boletos de prueba. Toca "Generar 15…".</div></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = { apiKey:"AIzaSyAXxTUFo0CHFZnAs0wGrYHLTwwVzZ_ArZA", authDomain:"nova-dd664.firebaseapp.com", projectId:"nova-dd664", storageBucket:"nova-dd664.firebasestorage.app", messagingSenderId:"967862553249", appId:"1:967862553249:web:3524af97999ce667bafee0" };
+firebase.initializeApp(firebaseConfig);
+const auth=firebase.auth(), db=firebase.firestore(), BOLETOS='boletos';
+const $=id=>document.getElementById(id);
+const pad2=n=>String(n).padStart(2,'0'), pad4=n=>String(n).padStart(4,'0');
+const TIPO_LBL={VIP:'VIP mesa',VIPA:'VIP asiento',PREF:'Preferente',GENERAL:'General'};
+
+// 15 boletos variados
+const DEFS=[
+  {tipo:'VIP',mesa:1,asiento:1},{tipo:'VIP',mesa:3,asiento:2},{tipo:'VIP',mesa:7,asiento:4},{tipo:'VIP',mesa:12,asiento:3},{tipo:'VIP',mesa:18,asiento:2},
+  {tipo:'VIPA',asiento:1},{tipo:'VIPA',asiento:10},{tipo:'VIPA',asiento:25},{tipo:'VIPA',asiento:40},
+  {tipo:'PREF',sec:'A',num:1},{tipo:'PREF',sec:'B',num:12},{tipo:'PREF',sec:'C',num:24},
+  {tipo:'GENERAL'},{tipo:'GENERAL'},{tipo:'GENERAL'}
+];
+function seatMeta(def){
+  if(def.tipo==='VIP')  return {asientoId:'VIP-M'+pad2(def.mesa)+'-S'+def.asiento, mesa:def.mesa, asiento:def.asiento, label:'VIP Mesa '+def.mesa+' · Silla '+def.asiento};
+  if(def.tipo==='VIPA') return {asientoId:'VIPA-'+pad2(def.asiento), asiento:def.asiento, label:'VIP Asiento '+def.asiento};
+  if(def.tipo==='PREF') return {asientoId:'PREF-'+def.sec+'-'+pad2(def.num), sec:def.sec, num:def.num, label:'Preferente '+def.sec+'-'+pad2(def.num)};
+  return {label:'General · admisión'};
+}
+function genToken(){ const a=new Uint8Array(16); (window.crypto||window.msCrypto).getRandomValues(a); return Array.from(a).map(b=>b.toString(16).padStart(2,'0')).join(''); }
+
+auth.onAuthStateChanged(u=>{ if(u){ $('login').style.display='none'; $('panel').style.display='block'; watch(); } else { $('panel').style.display='none'; $('login').style.display='block'; } });
+$('loginBtn').addEventListener('click', async ()=>{ const m=$('loginMsg'); m.textContent=''; const b=$('loginBtn'); b.disabled=true;
+  try{ await auth.signInWithEmailAndPassword($('email').value.trim(), $('pass').value); }
+  catch(e){ m.textContent=/invalid-credential|wrong-password|user-not-found/.test(e.code)?'Correo o contraseña incorrectos':('Error: '+e.message); } b.disabled=false; });
+$('pass').addEventListener('keydown',e=>{ if(e.key==='Enter') $('loginBtn').click(); });
+$('logoutBtn').addEventListener('click',()=>auth.signOut());
+
+$('genBtn').addEventListener('click', async ()=>{ const m=$('msg'); m.className='msg'; const b=$('genBtn'); b.disabled=true; m.textContent='Generando…';
+  try{
+    const batch=db.batch(); const now=Date.now(), email=auth.currentUser.email;
+    DEFS.forEach((def,i)=>{ const token=genToken(); const sm=seatMeta(def);
+      const doc=Object.assign({ tipo:def.tipo, folio:'TEST-'+pad4(i+1),
+        estado:'valido', cortesia:true, test:true, canal:'test', precio:0,
+        comprador:{nombre:'PRUEBA '+(i+1), tel:'', mail:''}, evento:'NOVA-11SEP2026',
+        emitidoAt:now+i, emitidoBy:email }, sm);
+      batch.set(db.collection(BOLETOS).doc(token), doc);
+    });
+    await batch.commit(); m.className='msg ok'; m.textContent='✓ 15 boletos de prueba creados.';
+  }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; } b.disabled=false; });
+
+$('delBtn').addEventListener('click', async ()=>{ const m=$('msg'); m.className='msg';
+  if(!confirm('¿Borrar TODOS los boletos de prueba?')) return; const b=$('delBtn'); b.disabled=true; m.textContent='Borrando…';
+  try{ const snap=await db.collection(BOLETOS).where('test','==',true).get();
+    const batch=db.batch(); snap.forEach(d=>batch.delete(d.ref)); await batch.commit();
+    m.className='msg ok'; m.textContent='✓ '+snap.size+' boletos de prueba borrados.';
+  }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; } b.disabled=false; });
+
+function watch(){ db.collection(BOLETOS).where('test','==',true).onSnapshot(snap=>{ const box=$('list'); const rows=[];
+    snap.forEach(d=>rows.push({token:d.id, d:d.data()})); rows.sort((a,b)=>(a.d.folio||'').localeCompare(b.d.folio||''));
+    $('count').textContent=rows.length;
+    if(!rows.length){ box.innerHTML='<div class="empty">Aún no hay boletos de prueba. Toca "Generar 15…".</div>'; return; }
+    box.innerHTML='';
+    for(const r of rows){ const d=r.d; const sm=seatMeta({tipo:d.tipo,mesa:d.mesa,asiento:d.asiento,sec:d.sec,num:d.num});
+      const st=d.estado==='usado'?'<span class="st us">ingresó</span>':'<span class="st val">válido</span>';
+      const el=document.createElement('div'); el.className='item';
+      el.innerHTML='<span class="f">'+(d.folio||'')+'</span>'+
+        '<span class="z"><span class="pill">'+(TIPO_LBL[d.tipo]||d.tipo)+'</span> <b>'+sm.label+'</b> · '+st+'</span>'+
+        '<a class="mini" href="boleto.html?t='+r.token+'" target="_blank">Abrir / QR ↗</a>';
+      box.appendChild(el); }
+  }, err=>{ $('list').innerHTML='<div class="empty">Error: '+err.message+'</div>'; }); }
+</script>
+</body>
+</html>
