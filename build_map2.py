@@ -144,12 +144,6 @@ HTML = r"""<!DOCTYPE html>
       </svg>
       <div class="zoombar"><button id="zin">+</button><button id="zout">-</button><button id="zfit" style="font-size:14px">&#10530;</button></div>
       <div class="maplegend" id="maplegend"></div>
-      <div id="genpanel">
-        <div class="gp-top"><span class="gp-t"><span class="gdot"></span>General &#183; Planta baja</span><span class="gp-price">$450 <small style="color:var(--muted);font-size:10px">por boleto</small></span></div>
-        <div class="gp-bar"><div class="gp-fill" id="gpfill"></div></div>
-        <div class="gp-row"><span class="gp-avail" id="gpavailwrap"><b id="gpavail">250</b> de 250 disponibles</span>
-          <span class="gp-step"><button class="qb" id="gminus2">&#8722;</button><b id="gqty2">0</b><button class="qb" id="gplus2">+</button></span></div>
-      </div>
     </div>
   </section>
   <aside class="side">
@@ -210,7 +204,6 @@ function renderFloor(){
   seatsG.innerHTML='';
   for(const s of SEATS){ if(s.floor!==curFloor) continue;
     const c=el('circle',{cx:s.x,cy:s.y,r:f.r,class:'seat','data-id':s.id}); if(taken.has(s.id))c.classList.add('vendido'); if(state.selected.has(s.id))c.classList.add('sel'); seatsG.appendChild(c); }
-  document.getElementById('genpanel').classList.toggle('show', curFloor==='PB');
   state.scale=1;state.tx=0;state.ty=0;apply();
 }
 function nodeOf(id){return seatsG.querySelector('[data-id="'+CSS.escape(id)+'"]');}
