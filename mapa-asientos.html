@@ -307,20 +307,36 @@ document.getElementById('mpay').addEventListener('click',()=>{
   modalbg.classList.remove('on');flash('Te mandamos a WhatsApp para confirmar');
 });
 
-// pan / zoom
-function apply(){viewport.setAttribute('transform','translate('+state.tx+' '+state.ty+') scale('+state.scale+')');}
+// pan / zoom  -> al abrir se ve completo (fit) y NO se desplaza; solo zoom.
+//               web: scroll o botones +/- ; movil: pellizco. Arrastre solo con zoom activo.
+function vbDims(){const p=svg.getAttribute('viewBox').split(/\s+/);return [parseFloat(p[2]),parseFloat(p[3])];}
+function clampPan(){const [W,H]=vbDims(),s=state.scale;
+  if(s<=1){state.tx=0;state.ty=0;return;}                 // en fit queda centrado y fijo
+  state.tx=Math.min(0,Math.max(W*(1-s),state.tx));         // sin dejar ver bordes vacios
+  state.ty=Math.min(0,Math.max(H*(1-s),state.ty));}
+function apply(){clampPan();viewport.setAttribute('transform','translate('+state.tx+' '+state.ty+') scale('+state.scale+')');}
 function sp(cx,cy){const p=svg.createSVGPoint();p.x=cx;p.y=cy;return p.matrixTransform(svg.getScreenCTM().inverse());}
-function zoomAt(cx,cy,f){const p=sp(cx,cy);const ns=Math.min(6,Math.max(.8,state.scale*f));state.tx=p.x-(p.x-state.tx)*(ns/state.scale);state.ty=p.y-(p.y-state.ty)*(ns/state.scale);state.scale=ns;apply();}
+function zoomAt(cx,cy,f){const p=sp(cx,cy);const ns=Math.min(6,Math.max(1,state.scale*f));   // min = fit (no se achica de mas)
+  state.tx=p.x-(p.x-state.tx)*(ns/state.scale);state.ty=p.y-(p.y-state.ty)*(ns/state.scale);state.scale=ns;apply();}
 const wrap=document.getElementById('wrap');
 wrap.addEventListener('wheel',e=>{e.preventDefault();zoomAt(e.clientX,e.clientY,e.deltaY<0?1.12:1/1.12);},{passive:false});
 document.getElementById('zin').onclick=()=>zoomAt(innerWidth*.42,innerHeight*.45,1.25);
 document.getElementById('zout').onclick=()=>zoomAt(innerWidth*.42,innerHeight*.45,1/1.25);
 document.getElementById('zfit').onclick=()=>{state.scale=1;state.tx=0;state.ty=0;apply();};
-let drag=null;
-wrap.addEventListener('pointerdown',e=>{if(e.target.closest('.seat'))return;drag={x:e.clientX,y:e.clientY,tx:state.tx,ty:state.ty};wrap.classList.add('grabbing');wrap.setPointerCapture(e.pointerId);});
-wrap.addEventListener('pointermove',e=>{if(!drag)return;const k=svg.getScreenCTM().a;state.tx=drag.tx+(e.clientX-drag.x)/k;state.ty=drag.ty+(e.clientY-drag.y)/k;apply();});
-wrap.addEventListener('pointerup',()=>{drag=null;wrap.classList.remove('grabbing');});
-wrap.addEventListener('pointerleave',()=>{drag=null;wrap.classList.remove('grabbing');});
+// arrastre (solo con zoom) + pellizco (2 dedos) en movil
+const ptrs=new Map(); let drag=null, pinch=null;
+wrap.addEventListener('pointerdown',e=>{ ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(ptrs.size===2){const[a,b]=[...ptrs.values()];pinch={d:Math.hypot(a.x-b.x,a.y-b.y),cx:(a.x+b.x)/2,cy:(a.y+b.y)/2};drag=null;return;}
+  if(e.target.closest('.seat'))return; if(state.scale<=1.002)return;        // en fit no se mueve
+  drag={x:e.clientX,y:e.clientY,tx:state.tx,ty:state.ty};wrap.classList.add('grabbing');});
+wrap.addEventListener('pointermove',e=>{ if(ptrs.has(e.pointerId))ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pinch&&ptrs.size>=2){const[a,b]=[...ptrs.values()];const nd=Math.hypot(a.x-b.x,a.y-b.y);
+    if(pinch.d>0)zoomAt(pinch.cx,pinch.cy,nd/pinch.d); pinch.d=nd;pinch.cx=(a.x+b.x)/2;pinch.cy=(a.y+b.y)/2;return;}
+  if(!drag)return;const k=svg.getScreenCTM().a;state.tx=drag.tx+(e.clientX-drag.x)/k;state.ty=drag.ty+(e.clientY-drag.y)/k;apply();});
+function endPtr(e){ptrs.delete(e.pointerId); if(ptrs.size<2)pinch=null; if(ptrs.size===0){drag=null;wrap.classList.remove('grabbing');}}
+wrap.addEventListener('pointerup',endPtr);
+wrap.addEventListener('pointercancel',endPtr);
+wrap.addEventListener('pointerleave',e=>{if(drag){drag=null;wrap.classList.remove('grabbing');}});
 
 buildZones(); bindGen(); renderFloor(); renderCart();
 </script>
