@@ -184,7 +184,7 @@ const ZONES = {
 const COMISION=0.042;                       // 4.2% comision de compra en linea (cubre el costo real de Mercado Pago)
 const feeOf=sub=>Math.round(sub*COMISION);  // sobre el subtotal, redondeada al peso
 const CONFIG = {
-  whatsapp:"521XXXXXXXXXX", evento:"NOVA - 11 SEP 2026 - NOVA Show Center", spei:{beneficiario:"",banco:"",clabe:""},
+  whatsapp:"5215633353642", evento:"NOVA - 11 SEP 2026 - NOVA Show Center", spei:{beneficiario:"",banco:"",clabe:""},
   firebaseConfig:{ apiKey:"AIzaSyAXxTUFo0CHFZnAs0wGrYHLTwwVzZ_ArZA", authDomain:"nova-dd664.firebaseapp.com", projectId:"nova-dd664", storageBucket:"nova-dd664.firebasestorage.app", messagingSenderId:"967862553249", appId:"1:967862553249:web:3524af97999ce667bafee0" },
   reservaAutomatica:false
 };
