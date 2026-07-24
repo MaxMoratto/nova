@@ -138,7 +138,7 @@
         <h2>Emitir boleto</h2>
         <div class="grid2">
           <div><label>Tipo</label><select id="b_tipo">
-            <option value="VIP">VIP mesa ($850)</option>
+            <option value="VIP">VIP mesa ($950)</option>
             <option value="VIPA">VIP asiento ($850)</option>
             <option value="PREF">Preferente ($650)</option>
             <option value="GENERAL">General · lugar por llegada ($450)</option>
@@ -212,7 +212,7 @@ const firebaseConfig = {
 const SEATS_COL="asientos_nova", FIGHTS_COL="peleas", BOLETOS_COL="boletos", MAX_FIGHTS=10;
 // Zonas: capacidad real y precio por tipo
 const CAP={VIP:72,VIPA:40,PREF:74,GENERAL:250};           // VIP mesa 18x4, VIP asiento 40, Preferente A25+B25+C24
-const PRECIO={VIP:850,VIPA:850,PREF:650,GENERAL:450};
+const PRECIO={VIP:950,VIPA:850,PREF:650,GENERAL:450};
 const TOTAL_CAP=CAP.VIP+CAP.VIPA+CAP.PREF+CAP.GENERAL;     // 436
 const TIPO_LBL_B={VIP:'VIP mesa',VIPA:'VIP asiento',PREF:'Preferente',GENERAL:'General'};
 const PREF_MAX={A:25,B:25,C:24};

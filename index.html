@@ -319,6 +319,7 @@
       <div style="background:{{ pkg.colorBg }};border:1px solid {{ pkg.colorBorder }};padding:clamp(22px,4vw,36px);display:flex;flex-direction:column;position:relative;transition:transform .3s,box-shadow .3s;" style-hover="transform:translateY(-6px);box-shadow:0 16px 50px rgba(0,0,0,.5);">
         <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(24px,4vw,40px);color:#fff;letter-spacing:.12em;margin-bottom:5px;">{{ pkg.tier }}</div>
         <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,6vw,58px);color:{{ pkg.color }};letter-spacing:.06em;line-height:1;margin-bottom:3px;">{{ pkg.price }}</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(15px,2.4vw,22px);color:{{ pkg.color }};opacity:.8;letter-spacing:.05em;line-height:1;margin-bottom:6px;">{{ pkg.priceSub }}</div>
         <div style="font-size:10px;font-weight:700;letter-spacing:.18em;color:rgba(255,255,255,.35);margin-bottom:20px;text-transform:uppercase;">MXN / persona</div>
         <div style="height:1px;background:{{ pkg.colorBorder }};margin-bottom:18px;"></div>
         <div style="flex:1;display:flex;flex-direction:column;gap:9px;margin-bottom:22px;">
@@ -633,14 +634,19 @@ class Component extends DCLogic {
 
     const vipPackages = [
       {
-        tier: 'GENERAL', price: '$450',
+        tier: 'GENERAL', price: '$450', priceSub: '',
         color: '#CAD3DF', colorBg: 'rgba(202,211,223,0.05)', colorBorder: 'rgba(202,211,223,0.28)',
         features: ['Acceso al evento', 'Silla en zona general (lugar por orden de llegada)', 'Bar disponible', 'Pantallas LED gigantes', 'Estacionamiento no incluido']
       },
       {
-        tier: 'VIP', price: '$850',
+        tier: 'PREFERENTE', price: '$650', priceSub: '',
+        color: '#E0B84C', colorBg: 'rgba(224,184,76,0.06)', colorBorder: 'rgba(224,184,76,0.40)',
+        features: ['Asiento numerado en 1er piso', 'Secciones A · B · C', 'Vista elevada al octágono', 'Acceso preferente', 'Bar disponible']
+      },
+      {
+        tier: 'VIP', price: '$850', priceSub: 'ó $950 con mesa',
         color: '#FF0033', colorBg: 'rgba(255,0,51,0.07)', colorBorder: 'rgba(255,0,51,0.35)',
-        features: ['Zona en VIP', 'Mesa reservada', 'Meet & Greet peleadores', 'Foto con cartel oficial']
+        features: ['Zona VIP frente al octágono', 'Asiento VIP · $850', 'Mesa reservada · $950', 'Meet & Greet peleadores', 'Foto con cartel oficial']
       }
     ];
 

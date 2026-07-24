@@ -176,7 +176,7 @@ HTML = r"""<!DOCTYPE html>
 const SEATS = __SEATS__;
 const FLOORS = __FLOORS__;
 const ZONES = {
-  VIP:  { label:'VIP (mesa)', color:'#e11d2a', bright:'#ff6b76', price:850 },
+  VIP:  { label:'VIP (mesa)', color:'#e11d2a', bright:'#ff6b76', price:950 },
   VIPA: { label:'VIP (asiento)', color:'#e11d2a', bright:'#ff8f98', price:850 },
   PREF: { label:'Preferente', color:'#D2AE6D', bright:'#e6c789', price:650 },
   GENERAL: { label:'General', color:'#3b82f6', bright:'#4f8df5', price:450, general:true, total:250 }
