@@ -156,7 +156,7 @@ HTML = r"""<!DOCTYPE html>
     </div>
     <div class="side-foot">
       <div class="sumline"><span>Lugares <span id="nq">(0)</span></span><b id="subt">$0</b></div>
-      <div class="sumline"><span>Cargo por servicio ($50 c/u)</span><b id="fee">$0</b></div>
+      <div class="sumline"><span>Comisión de compra en línea (4.2%)</span><b id="fee">$0</b></div>
       <div class="sumline total"><span>Total</span><b id="tot">$0 MXN</b></div>
       <button class="cta" id="buy" disabled>Continuar al pago</button>
       <div class="foot-note">Max. 12 boletos por compra - <button class="clearbtn" id="clear">Quitar todo</button></div>
@@ -181,7 +181,8 @@ const ZONES = {
   PREF: { label:'Preferente', color:'#D2AE6D', bright:'#e6c789', price:650 },
   GENERAL: { label:'General', color:'#3b82f6', bright:'#4f8df5', price:450, general:true, total:250 }
 };
-const CARGO_SERVICIO=50;
+const COMISION=0.042;                       // 4.2% comision de compra en linea (cubre el costo real de Mercado Pago)
+const feeOf=sub=>Math.round(sub*COMISION);  // sobre el subtotal, redondeada al peso
 const CONFIG = {
   whatsapp:"521XXXXXXXXXX", evento:"NOVA - 11 SEP 2026 - NOVA Show Center", spei:{beneficiario:"",banco:"",clabe:""},
   firebaseConfig:{ apiKey:"AIzaSyAXxTUFo0CHFZnAs0wGrYHLTwwVzZ_ArZA", authDomain:"nova-dd664.firebaseapp.com", projectId:"nova-dd664", storageBucket:"nova-dd664.firebasestorage.app", messagingSenderId:"967862553249", appId:"1:967862553249:web:3524af97999ce667bafee0" },
@@ -284,7 +285,7 @@ function renderCart(){ const sel=selectedSeats(); const gq=state.generalQty, cou
     if(gq>0){const z=ZONES.GENERAL;const d=document.createElement('div');d.className='pick';
       d.innerHTML='<span class="pw" style="background:'+z.bright+'"></span><div class="pi"><b>General &#215; '+gq+'</b><small>silla &#183; por orden de llegada</small></div><span class="pp">'+money(z.price*gq)+'</span><button class="rm" data-gen="1">&times;</button>';w.appendChild(d);}
     pickbox.innerHTML='';pickbox.appendChild(w);}
-  const sub=sel.reduce((t,s)=>t+ZONES[s.zone].price,0)+gq*ZONES.GENERAL.price, fee=count*CARGO_SERVICIO;
+  const sub=sel.reduce((t,s)=>t+ZONES[s.zone].price,0)+gq*ZONES.GENERAL.price, fee=feeOf(sub);
   document.getElementById('nq').textContent='('+count+')';document.getElementById('subt').textContent=money(sub);
   document.getElementById('fee').textContent=money(fee);
   document.getElementById('tot').textContent=money(sub+fee)+' MXN';
@@ -302,8 +303,8 @@ document.getElementById('buy').addEventListener('click',()=>{const sel=selectedS
   const ml=document.getElementById('mlist');ml.innerHTML='';let sub=0;
   for(const s of sel){sub+=ZONES[s.zone].price;const r=document.createElement('div');r.className='mrow';r.innerHTML='<span>'+seatLabel(s)+'</span><b>'+money(ZONES[s.zone].price)+'</b>';ml.appendChild(r);}
   if(state.generalQty>0){sub+=state.generalQty*ZONES.GENERAL.price;const r=document.createElement('div');r.className='mrow';r.innerHTML='<span>General &#215; '+state.generalQty+'</span><b>'+money(state.generalQty*ZONES.GENERAL.price)+'</b>';ml.appendChild(r);}
-  const nBol=sel.length+state.generalQty, fee=nBol*CARGO_SERVICIO;
-  if(fee>0){const r=document.createElement('div');r.className='mrow';r.innerHTML='<span>Cargo por servicio ($50 &#215; '+nBol+')</span><b>'+money(fee)+'</b>';ml.appendChild(r);}
+  const fee=feeOf(sub);
+  if(fee>0){const r=document.createElement('div');r.className='mrow';r.innerHTML='<span>Comisión de compra en línea (4.2%)</span><b>'+money(fee)+'</b>';ml.appendChild(r);}
   document.getElementById('mtot').textContent=money(sub+fee)+' MXN';
   modalbg.classList.add('on');});
 document.getElementById('mclose').addEventListener('click',()=>modalbg.classList.remove('on'));
@@ -315,7 +316,8 @@ function buildItems(sel){ const items=[]; const byZone={};
   if(byZone.VIPA) items.push({name:'VIP Asiento', price:ZONES.VIPA.price, qty:byZone.VIPA});
   if(byZone.PREF) items.push({name:'Preferente', price:ZONES.PREF.price, qty:byZone.PREF});
   if(state.generalQty>0) items.push({name:'General (lugar por llegada)', price:ZONES.GENERAL.price, qty:state.generalQty});
-  const nBol=sel.length+state.generalQty; if(nBol>0) items.push({name:'Cargo por servicio', price:CARGO_SERVICIO, qty:nBol});
+  const sub=sel.reduce((t,s)=>t+ZONES[s.zone].price,0)+state.generalQty*ZONES.GENERAL.price;
+  const fee=feeOf(sub); if(fee>0) items.push({name:'Comisión de compra en línea (4.2%)', price:fee, qty:1});
   return items;
 }
 document.getElementById('mcard').addEventListener('click',async()=>{
@@ -332,11 +334,11 @@ document.getElementById('mpay').addEventListener('click',()=>{
   const name=document.getElementById('bname').value.trim(),phone=document.getElementById('bphone').value.trim(),mail=document.getElementById('bmail').value.trim();
   if(!name||!phone){flash('Pon tu nombre y WhatsApp/telefono');return;}
   const sel=selectedSeats(); if(!sel.length&&!state.generalQty)return;
-  const sub=sel.reduce((t,s)=>t+ZONES[s.zone].price,0)+state.generalQty*ZONES.GENERAL.price, nBol=sel.length+state.generalQty, fee=nBol*CARGO_SERVICIO;
+  const sub=sel.reduce((t,s)=>t+ZONES[s.zone].price,0)+state.generalQty*ZONES.GENERAL.price, fee=feeOf(sub);
   let msg='Hola! Quiero apartar para '+CONFIG.evento+':\n';
   for(const s of sel){msg+='&#8226; '+ZONES[s.zone].label+' '+seatShort(s)+' - '+money(ZONES[s.zone].price)+'\n';}
   if(state.generalQty>0){msg+='&#8226; General &#215; '+state.generalQty+' - '+money(state.generalQty*ZONES.GENERAL.price)+'\n';}
-  msg+='\nCargo por servicio ($50 x '+nBol+'): '+money(fee)+'\nTotal: '+money(sub+fee)+' MXN\n\nNombre: '+name+'\nTel: '+phone+(mail?'\nEmail: '+mail:'');
+  msg+='\nComisión de compra en línea (4.2%): '+money(fee)+'\nTotal: '+money(sub+fee)+' MXN\n\nNombre: '+name+'\nTel: '+phone+(mail?'\nEmail: '+mail:'');
   window.open('https://wa.me/'+CONFIG.whatsapp+'?text='+encodeURIComponent(msg.replace(/&#8226;/g,'\u2022').replace(/&#215;/g,'x')),'_blank');
   modalbg.classList.remove('on');flash('Te mandamos a WhatsApp para confirmar');
 });
