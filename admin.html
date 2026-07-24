@@ -157,7 +157,7 @@
         <div class="hint">Cada boleto genera su propio <b>folio consecutivo</b> + QR. En General puedes emitir <b>varios a la vez</b> (cada uno con su folio y QR). VIP valida que el asiento esté libre y lo bloquea.</div>
       </div>
       <div class="card">
-        <div class="topbar" style="margin-bottom:10px"><h2 style="margin:0">Boletos emitidos</h2><input id="bSearch" placeholder="Buscar folio o nombre" style="max-width:230px;margin:0"/></div>
+        <div class="topbar" style="margin-bottom:10px"><h2 style="margin:0">Boletos emitidos</h2><div class="row" style="align-items:center"><button class="mini" id="exportBtn" title="Descarga todos los boletos y ventas (respaldo)">&#8681; Respaldo CSV</button><input id="bSearch" placeholder="Buscar folio o nombre" style="max-width:220px;margin:0"/></div></div>
         <div class="sold-list" id="boletoList"><div class="empty">Cargando…</div></div>
       </div>
     </div>
@@ -420,6 +420,17 @@ function watchBoletos(){ db.collection(BOLETOS_COL).onSnapshot(snap=>{ BOLETOS=[
     BOLETOS.sort((a,b)=>(b.d.emitidoAt||0)-(a.d.emitidoAt||0)); renderBoletos();
   }, err=>{ $('boletoList').innerHTML='<div class="empty">Error: '+err.message+'</div>'; }); }
 $('bSearch').addEventListener('input', renderBoletos);
+$('exportBtn').addEventListener('click',()=>{
+  const cols=['Folio','Tipo','Asiento','Comprador','Tel','Email','Precio','Estado','Canal','Cortesia','Fecha','Token'];
+  const esc=v=>{ v=(v==null?'':String(v)); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
+  const rows=[...BOLETOS].sort((a,b)=>(a.d.folio||'').localeCompare(b.d.folio||'')).map(r=>{ const d=r.d,c=d.comprador||{};
+    const fecha=d.emitidoAt?new Date(d.emitidoAt).toLocaleString('es-MX'):'';
+    return [d.folio||'',(TIPO_LBL_B[d.tipo]||d.tipo||''),seatText(d),c.nombre||'',c.tel||'',c.mail||'',(d.precio!=null?d.precio:''),d.estado||'',d.canal||'',d.cortesia?'si':'',fecha,r.token].map(esc).join(','); });
+  const csv='﻿'+cols.join(',')+'\n'+rows.join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}); const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='NOVA-boletos-'+new Date().toISOString().slice(0,10)+'.csv';
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),4000);
+});
 function renderBoletos(){ const q=($('bSearch').value||'').trim().toUpperCase(); const box=$('boletoList');
   let rows=BOLETOS; if(q) rows=rows.filter(r=>((r.d.folio||'').toUpperCase().includes(q))||(((r.d.comprador&&r.d.comprador.nombre)||'').toUpperCase().includes(q)));
   rows=rows.slice(0,150);
