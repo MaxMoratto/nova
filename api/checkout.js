@@ -27,7 +27,7 @@ module.exports = async (req, res) => {
       quantity: Math.max(1, parseInt(i.qty || 1, 10))
     }));
 
-    const origin = req.headers.origin || (req.headers.host ? `https://${req.headers.host}` : 'https://nova-kappa-dusky.vercel.app');
+    const origin = req.headers.origin || (req.headers.host ? `https://${req.headers.host}` : 'https://novastrikeseries.com');
 
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',

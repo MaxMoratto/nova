@@ -57,7 +57,7 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: 'Reserva/Firebase: ' + (e && (e.message || e)) });
     }
 
-    const origin = req.headers.origin || (req.headers.host ? `https://${req.headers.host}` : 'https://nova-kappa-dusky.vercel.app');
+    const origin = req.headers.origin || (req.headers.host ? `https://${req.headers.host}` : 'https://novastrikeseries.com');
     const mpItems = items.map(i => ({
       title: String(i.name || 'Boleto').slice(0, 250),
       quantity: Math.max(1, parseInt(i.qty || 1, 10)),

@@ -84,7 +84,7 @@ async function sendTicketEmail(data) {
   const key = process.env.RESEND_API_KEY;
   const to = data && data.comprador && data.comprador.mail;
   if (!key || !to) return;
-  const base = (process.env.SITE_URL || 'https://nova-kappa-dusky.vercel.app').replace(/\/+$/, '');
+  const base = (process.env.SITE_URL || 'https://novastrikeseries.com').replace(/\/+$/, '');
   const from = process.env.MAIL_FROM || 'NOVA Strike Series <boletos@novastrikeseries.com>';
   const replyTo = process.env.MAIL_REPLY_TO || undefined;
   const rows = data.boletos.map((bl) => `

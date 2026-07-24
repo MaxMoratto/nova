@@ -11,7 +11,7 @@ module.exports = async (req, res) => {
 
   const from = process.env.MAIL_FROM || 'NOVA Strike Series <boletos@novastrikeseries.com>';
   const replyTo = process.env.MAIL_REPLY_TO;
-  const base = (process.env.SITE_URL || 'https://nova-kappa-dusky.vercel.app').replace(/\/+$/, '');
+  const base = (process.env.SITE_URL || 'https://novastrikeseries.com').replace(/\/+$/, '');
   const html = `
   <div style="background:#0a0c11;padding:26px 14px">
     <div style="max-width:520px;margin:0 auto;background:#11151d;border:1px solid #232a38;border-radius:16px;padding:28px">
