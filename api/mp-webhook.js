@@ -39,14 +39,14 @@ async function releaseOrder(firestore, orderId) {
 }
 
 async function generateTickets(firestore, orderId, pay) {
-  await firestore.runTransaction(async (tx) => {
+  return await firestore.runTransaction(async (tx) => {
     const orderRef = firestore.collection('ordenes').doc(orderId);
     const foliosRef = firestore.collection('config').doc('folios');
     const genRef = firestore.collection('config').doc('general');
     const [oSnap, fSnap, gSnap] = await Promise.all([tx.get(orderRef), tx.get(foliosRef), tx.get(genRef)]);
     if (!oSnap.exists) throw new Error('orden no existe');
     const o = oSnap.data();
-    if (o.estado === 'pagado') return; // idempotente: no duplica boletos
+    if (o.estado === 'pagado') return null; // idempotente: no duplica boletos ni reenvia correo
     const seats = o.seats || [];
     const genQty = o.general || 0;
     let n = (fSnap.exists && fSnap.data().n) || 0;
@@ -54,7 +54,7 @@ async function generateTickets(firestore, orderId, pay) {
     if (vend + genQty > 250) throw new Error('General agotado');
     const comprador = o.comprador || {};
     const meta = { comprador, estado: 'valido', canal: 'mp', cortesia: false, emitidoAt: Date.now(), evento: 'NOVA-11SEP2026', orden: orderId, pagoId: String(pay.id) };
-    const tokens = [];
+    const tokens = []; const emailItems = [];
     for (const seatId of seats) {
       const inf = seatInfo(seatId);
       n++; const folio = fmtFolio(n); const tok = randToken();
@@ -65,17 +65,58 @@ async function generateTickets(firestore, orderId, pay) {
       if (inf.num != null) boleto.num = inf.num;
       tx.set(firestore.collection('boletos').doc(tok), Object.assign(boleto, meta));
       tx.set(firestore.collection('asientos_nova').doc(seatId), { status: 'vendido', ts: Date.now(), orderId, folio }, { merge: true });
-      tokens.push(tok);
+      tokens.push(tok); emailItems.push({ token: tok, folio, label: inf.label });
     }
     for (let i = 0; i < genQty; i++) {
       n++; const folio = fmtFolio(n); const tok = randToken();
       tx.set(firestore.collection('boletos').doc(tok), Object.assign({ tipo: 'GENERAL', folio, precio: 450 }, meta));
-      tokens.push(tok);
+      tokens.push(tok); emailItems.push({ token: tok, folio, label: 'General · lugar por llegada' });
     }
     tx.set(foliosRef, { n }, { merge: true });
     if (genQty > 0) tx.set(genRef, { vendidos: vend + genQty }, { merge: true });
     tx.update(orderRef, { estado: 'pagado', boletos: tokens, pagoId: String(pay.id), pagadoAt: Date.now() });
+    return { comprador, boletos: emailItems }; // datos para el correo
   });
+}
+
+// Envío del correo con los boletos (Resend). Solo si hay RESEND_API_KEY y correo del comprador.
+async function sendTicketEmail(data) {
+  const key = process.env.RESEND_API_KEY;
+  const to = data && data.comprador && data.comprador.mail;
+  if (!key || !to) return;
+  const base = (process.env.SITE_URL || 'https://nova-kappa-dusky.vercel.app').replace(/\/+$/, '');
+  const from = process.env.MAIL_FROM || 'NOVA Strike Series <boletos@novastrikeseries.com>';
+  const replyTo = process.env.MAIL_REPLY_TO || undefined;
+  const rows = data.boletos.map((bl) => `
+    <tr>
+      <td style="padding:12px 0;border-bottom:1px solid #232a38">
+        <div style="font-family:Arial,sans-serif;color:#ffffff;font-size:15px;font-weight:bold">${bl.label}</div>
+        <div style="font-family:Arial,sans-serif;color:#8a92a6;font-size:12px;margin-top:2px">Folio ${bl.folio}</div>
+      </td>
+      <td align="right" style="border-bottom:1px solid #232a38">
+        <a href="${base}/boleto.html?t=${bl.token}" style="display:inline-block;background:#e11d2a;color:#ffffff;text-decoration:none;font-family:Arial,sans-serif;font-size:13px;font-weight:bold;padding:10px 16px;border-radius:8px">Ver boleto y QR</a>
+      </td>
+    </tr>`).join('');
+  const html = `
+  <div style="background:#0a0c11;padding:26px 14px">
+    <div style="max-width:520px;margin:0 auto;background:#11151d;border:1px solid #232a38;border-radius:16px;padding:28px">
+      <div style="font-family:Arial,sans-serif;color:#ff3646;font-weight:bold;letter-spacing:2px;font-size:13px">NOVA STRIKE SERIES</div>
+      <h1 style="font-family:Arial,sans-serif;color:#ffffff;font-size:22px;margin:12px 0 4px">¡Tus boletos están listos!</h1>
+      <p style="font-family:Arial,sans-serif;color:#8a92a6;font-size:13px;line-height:1.6;margin:0 0 16px">11 de septiembre 2026 · NOVA Show Center, CDMX.<br>Presenta el QR de cada boleto en la entrada (puedes mostrarlo desde el celular o descargarlo).</p>
+      <table width="100%" cellpadding="0" cellspacing="0" role="presentation">${rows}</table>
+      <p style="font-family:Arial,sans-serif;color:#5f6779;font-size:12px;line-height:1.6;margin-top:20px">Guarda este correo. Cada boleto es válido una sola vez. ¿Dudas? Responde a este mensaje.</p>
+    </div>
+  </div>`;
+  const payload = { from, to, subject: 'Tus boletos · NOVA Strike Series', html };
+  if (replyTo) payload.reply_to = replyTo;
+  try {
+    const r = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + key, 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!r.ok) console.error('MAIL_ERR', r.status, (await r.text()).slice(0, 300));
+  } catch (e) { console.error('MAIL_ERR', e.message || e); }
 }
 
 module.exports = async (req, res) => {
@@ -97,7 +138,8 @@ module.exports = async (req, res) => {
 
     const firestore = db();
     if (pay.status === 'approved') {
-      await generateTickets(firestore, orderId, pay);
+      const result = await generateTickets(firestore, orderId, pay);
+      if (result) { try { await sendTicketEmail(result); } catch (_) {} } // recien generados => enviar 1 sola vez
       res.status(200).send('ok');
     } else if (pay.status === 'rejected' || pay.status === 'cancelled') {
       await releaseOrder(firestore, orderId);

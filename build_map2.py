@@ -167,7 +167,7 @@ HTML = r"""<!DOCTYPE html>
 <div class="modal-bg" id="modalbg"><div class="modal"><button class="close" id="mclose">&times;</button>
   <h2>Completa tu compra</h2><p>Pon tus datos y elige c&oacute;mo pagar tus lugares.</p>
   <div class="mlist" id="mlist"></div>
-  <div class="form-wrap"><input id="bname" class="finp" placeholder="Nombre completo" autocomplete="name"/><input id="bphone" class="finp" placeholder="WhatsApp / telefono" autocomplete="tel" inputmode="tel"/><input id="bmail" class="finp" placeholder="Email (opcional)" autocomplete="email"/></div>
+  <div class="form-wrap"><input id="bname" class="finp" placeholder="Nombre completo" autocomplete="name"/><input id="bphone" class="finp" placeholder="WhatsApp / telefono" autocomplete="tel" inputmode="tel"/><input id="bmail" class="finp" placeholder="Email (te enviamos aquí los boletos)" autocomplete="email"/></div>
   <div class="mfoot"><div class="sumline total" style="margin-top:0;border:none;padding-top:0"><span>Total</span><b id="mtot"></b></div>
   <button class="cta" id="mcard" style="background:linear-gradient(180deg,#00b1ea,#009ee3);box-shadow:0 8px 24px rgba(0,158,227,.4)">Pagar con Mercado Pago</button>
   <div style="text-align:center;font-size:10.5px;color:var(--muted2);margin-top:8px">Tarjeta &#183; OXXO &#183; SPEI &#183; meses sin intereses</div>
@@ -322,7 +322,7 @@ function buildItems(sel){ const items=[]; const byZone={};
 }
 document.getElementById('mcard').addEventListener('click',async()=>{
   const name=document.getElementById('bname').value.trim(),phone=document.getElementById('bphone').value.trim(),mail=document.getElementById('bmail').value.trim();
-  if(!name||!phone){flash('Pon tu nombre y WhatsApp/telefono');return;}
+  if(!name||!phone||!/^\S+@\S+\.\S+$/.test(mail)){flash('Pon nombre, WhatsApp y un correo válido (ahí te enviamos los boletos)');return;}
   const sel=selectedSeats(); if(!sel.length&&!state.generalQty)return;
   const items=buildItems(sel);
   const b=document.getElementById('mcard'); b.disabled=true; const old=b.textContent; b.textContent='Redirigiendo a Mercado Pago...';
