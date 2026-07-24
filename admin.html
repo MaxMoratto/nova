@@ -218,6 +218,7 @@ const TIPO_LBL_B={VIP:'VIP mesa',VIPA:'VIP asiento',PREF:'Preferente',GENERAL:'G
 const PREF_MAX={A:25,B:25,C:24};
 const pad2=n=>String(n).padStart(2,'0');
 function waPhone(tel){ let d=String(tel||'').replace(/\D/g,''); if(d.length===10) d='52'+d; else if(d.length===12&&d.startsWith('52')) {} else if(d.length===11&&d.startsWith('1')) d='52'+d.slice(1); return d; }
+function seatText(d){ return d.tipo==='VIP'?('Mesa '+d.mesa+' · As '+d.asiento):d.tipo==='VIPA'?('Asiento '+d.asiento):d.tipo==='PREF'?('Pref '+d.sec+'-'+pad2(d.num)):'lugar por llegada'; }
 firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth(), db=firebase.firestore();
 const $=id=>document.getElementById(id);
@@ -424,18 +425,19 @@ function renderBoletos(){ const q=($('bSearch').value||'').trim().toUpperCase();
   rows=rows.slice(0,150);
   if(!rows.length){ box.innerHTML='<div class="empty">Sin boletos aún. Emite uno arriba.</div>'; return; } box.innerHTML='';
   for(const r of rows){ const d=r.d;
-    const seat=d.tipo==='VIP'?('Mesa '+d.mesa+' · As '+d.asiento)
-             :d.tipo==='VIPA'?('Asiento '+d.asiento)
-             :d.tipo==='PREF'?('Pref '+d.sec+'-'+pad2(d.num))
-             :'lugar por llegada';
+    const seat=seatText(d);
     const st=d.estado==='usado'?'<span style="color:#f4b942">ingresó</span>':(d.estado==='cancelado'?'<span style="color:#ff6b76">cancelado</span>':'<span style="color:#25d366">válido</span>');
     const who=(d.comprador&&d.comprador.nombre)||''; const cort=d.cortesia?' · <span style="color:#f4b942">cortesía</span>':''; const el=document.createElement('div'); el.className='sold-item';
     el.innerHTML='<span class="sid">'+(d.folio||'')+'</span><span class="sinfo">'+(TIPO_LBL_B[d.tipo]||d.tipo)+' · '+seat+(who?' · '+who:'')+cort+' · '+st+'</span>'+
       '<button class="mini" data-see="'+r.token+'">Ver</button>'+
+      '<button class="mini" data-info="'+r.token+'">Datos</button>'+
       ((d.comprador&&d.comprador.tel&&d.estado!=='cancelado')?'<button class="mini" data-wa="'+r.token+'">WhatsApp</button>':'')+
       (d.estado!=='cancelado'?'<button class="mini" data-cancel="'+r.token+'">Cancelar</button>':'');
     box.appendChild(el); }
   box.querySelectorAll('[data-see]').forEach(b=>b.addEventListener('click',()=>window.open('boleto.html?t='+b.dataset.see,'_blank')));
+  box.querySelectorAll('[data-info]').forEach(b=>b.addEventListener('click',()=>{ const r=BOLETOS.find(x=>x.token===b.dataset.info); if(!r)return; const c=r.d.comprador||{};
+    const canal={mp:'Compra en línea (Mercado Pago)',manual:'Emitido por admin',cortesia:'Cortesía',test:'Prueba'}[r.d.canal]||(r.d.canal||'—');
+    alert('COMPRADOR\n\nNombre: '+(c.nombre||'—')+'\nWhatsApp/Tel: '+(c.tel||'—')+'\nEmail: '+(c.mail||'—')+'\n\nFolio: '+(r.d.folio||'')+'\nTipo: '+(TIPO_LBL_B[r.d.tipo]||r.d.tipo)+' · '+seatText(r.d)+'\nCómo compró: '+canal+(r.d.pagoId?'\nPago MP: '+r.d.pagoId:'')); }));
   box.querySelectorAll('[data-wa]').forEach(b=>b.addEventListener('click',()=>{ const r=BOLETOS.find(x=>x.token===b.dataset.wa); if(!r)return;
     const tel=waPhone((r.d.comprador&&r.d.comprador.tel)||''); const link=location.origin+'/boleto.html?t='+b.dataset.wa;
     const nom=(r.d.comprador&&r.d.comprador.nombre)?' '+r.d.comprador.nombre.split(' ')[0]:'';
