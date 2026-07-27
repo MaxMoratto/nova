@@ -201,21 +201,21 @@
     <div style="width:80px;height:2px;background:linear-gradient(90deg,#FF0033,#00F0FF);margin:12px auto 44px;"></div>
   </div>
   <div style="border-top:1px solid rgba(212,160,23,.2);border-bottom:1px solid rgba(212,160,23,.12);background:rgba(212,160,23,.03);padding:10px 0;text-align:center;">
-    <span style="font-size:clamp(9px,2vw,11px);font-weight:700;letter-spacing:clamp(.2em,.45em,.45em);color:#D4A017;text-transform:uppercase;animation:textGold 3s ease-in-out infinite;">⭐ PELEA PRINCIPAL · PESO LIGERO · 155 LB</span>
+    <span style="font-size:clamp(9px,2vw,11px);font-weight:700;letter-spacing:clamp(.2em,.45em,.45em);color:#D4A017;text-transform:uppercase;animation:textGold 3s ease-in-out infinite;">{{ me.banner }}</span>
   </div>
   <div style="position:relative;display:flex;flex-direction:{{ fightDir }};min-height:{{ fightMainMinH }};">
     <div style="flex:1;background:linear-gradient(135deg,#1C0008 0%,#130510 60%,#0D0510 100%);padding:clamp(28px,5vw,56px) clamp(20px,4vw,48px);display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;min-height:clamp(380px,45vw,500px);">
-      <img src="uploads/1rojo.webp" alt="Peleador rojo" style="position:absolute;bottom:0;right:clamp(0px,2vw,20px);height:96%;max-width:60%;object-fit:contain;object-position:bottom right;z-index:1;pointer-events:none;filter:drop-shadow(0 20px 32px rgba(0,0,0,.7));">
+      <img src="{{ me.r.img }}" alt="Peleador rojo" style="position:absolute;bottom:0;right:clamp(0px,2vw,20px);height:96%;max-width:60%;object-fit:contain;object-position:bottom right;z-index:1;pointer-events:none;filter:drop-shadow(0 20px 32px rgba(0,0,0,.7));">
       <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(10,3,8,.95) 0%,rgba(10,3,8,.35) 38%,transparent 65%);z-index:2;pointer-events:none;"></div>
       <div style="position:absolute;top:18px;left:clamp(18px,4vw,48px);font-size:9px;font-weight:700;letter-spacing:.28em;color:#FF0033;border:1px solid rgba(255,0,51,.3);padding:3px 10px;text-transform:uppercase;z-index:3;">Esquina Roja</div>
       <div style="position:relative;z-index:3;">
         <div style="font-size:clamp(11px,1.5vw,14px);font-weight:600;letter-spacing:.1em;color:rgba(255,0,51,.7);margin-bottom:3px;">★ PELEADOR</div>
         <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,7vw,88px);color:#fff;line-height:.88;letter-spacing:.04em;animation:textRed 4s ease-in-out infinite;">
-          <div>POR</div>
-          <div>REVELAR</div>
+          <div>{{ me.r.line1 }}</div>
+          <div>{{ me.r.line2 }}</div>
         </div>
         <div style="margin-top:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
-          <span style="font-family:'Bebas Neue',sans-serif;font-size:clamp(18px,3vw,26px);color:#FF0033;letter-spacing:.1em;">0-0-0</span>
+          <span style="font-family:'Bebas Neue',sans-serif;font-size:clamp(18px,3vw,26px);color:#FF0033;letter-spacing:.1em;">{{ me.r.rec }}</span>
           <span style="font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.14em;text-transform:uppercase;">MMA</span>
         </div>
       </div>
@@ -226,36 +226,36 @@
       </div>
     </div>
     <div style="flex:1;background:linear-gradient(225deg,#001525 0%,#050F1A 60%,#050810 100%);padding:clamp(28px,5vw,56px) clamp(20px,4vw,48px);display:flex;flex-direction:column;justify-content:flex-end;align-items:{{ f2Align }};position:relative;overflow:hidden;min-height:clamp(380px,45vw,500px);">
-      <img src="uploads/1azul.webp" alt="Peleador azul" style="position:absolute;bottom:0;left:clamp(0px,2vw,20px);height:96%;max-width:60%;object-fit:contain;object-position:bottom left;z-index:1;pointer-events:none;filter:drop-shadow(0 20px 32px rgba(0,0,0,.7));">
+      <img src="{{ me.a.img }}" alt="Peleador azul" style="position:absolute;bottom:0;left:clamp(0px,2vw,20px);height:96%;max-width:60%;object-fit:contain;object-position:bottom left;z-index:1;pointer-events:none;filter:drop-shadow(0 20px 32px rgba(0,0,0,.7));">
       <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(3,8,18,.95) 0%,rgba(3,8,18,.35) 38%,transparent 65%);z-index:2;pointer-events:none;"></div>
       <div style="position:absolute;top:18px;right:clamp(18px,4vw,48px);font-size:9px;font-weight:700;letter-spacing:.28em;color:#00F0FF;border:1px solid rgba(0,240,255,.3);padding:3px 10px;text-transform:uppercase;z-index:3;">Esquina Azul</div>
       <div style="position:relative;z-index:3;text-align:{{ f2TextAlign }};">
         <div style="font-size:clamp(11px,1.5vw,14px);font-weight:600;letter-spacing:.1em;color:rgba(0,240,255,.7);margin-bottom:3px;">★ PELEADOR</div>
         <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,7vw,88px);color:#fff;line-height:.88;letter-spacing:.04em;animation:textCyan 4s ease-in-out infinite 1.5s;">
-          <div>POR</div>
-          <div>REVELAR</div>
+          <div>{{ me.a.line1 }}</div>
+          <div>{{ me.a.line2 }}</div>
         </div>
         <div style="margin-top:12px;display:flex;gap:12px;align-items:center;justify-content:{{ f2Align }};flex-wrap:wrap;">
           <span style="font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.14em;text-transform:uppercase;">MMA</span>
-          <span style="font-family:'Bebas Neue',sans-serif;font-size:clamp(18px,3vw,26px);color:#00F0FF;letter-spacing:.1em;">0-0-0</span>
+          <span style="font-family:'Bebas Neue',sans-serif;font-size:clamp(18px,3vw,26px);color:#00F0FF;letter-spacing:.1em;">{{ me.a.rec }}</span>
         </div>
       </div>
     </div>
   </div>
   <div style="border-top:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.015);padding:7px 0;text-align:center;">
-    <span style="font-size:clamp(9px,2vw,10px);font-weight:700;letter-spacing:clamp(.18em,.38em,.38em);color:rgba(255,255,255,.4);text-transform:uppercase;">CO-ESTELAR · PESO LIGERO · 155 LB</span>
+    <span style="font-size:clamp(9px,2vw,10px);font-weight:700;letter-spacing:clamp(.18em,.38em,.38em);color:rgba(255,255,255,.4);text-transform:uppercase;">{{ co.banner }}</span>
   </div>
   <div style="position:relative;display:flex;flex-direction:{{ fightDir }};min-height:{{ fightCoMinH }};background:#070510;">
     <div style="flex:1;background:linear-gradient(135deg,#150008 0%,#100410 60%,#080410 100%);padding:clamp(22px,4vw,44px) clamp(18px,3.5vw,44px);display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;min-height:clamp(340px,40vw,400px);">
-      <img src="uploads/rojo2.webp" alt="Peleador rojo" style="position:absolute;bottom:0;right:clamp(0px,2vw,16px);height:95%;max-width:56%;object-fit:contain;object-position:bottom right;z-index:1;pointer-events:none;filter:drop-shadow(0 16px 28px rgba(0,0,0,.55));">
+      <img src="{{ co.r.img }}" alt="Peleador rojo" style="position:absolute;bottom:0;right:clamp(0px,2vw,16px);height:95%;max-width:56%;object-fit:contain;object-position:bottom right;z-index:1;pointer-events:none;filter:drop-shadow(0 16px 28px rgba(0,0,0,.55));">
       <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(8,4,16,.92) 0%,rgba(8,4,16,.32) 34%,transparent 62%);z-index:2;pointer-events:none;"></div>
       <div style="position:absolute;font-family:'Bebas Neue',sans-serif;font-size:clamp(80px,18vw,230px);color:rgba(255,0,51,.04);right:-5px;bottom:-30px;line-height:1;pointer-events:none;user-select:none;">A</div>
       <div style="position:absolute;top:16px;left:clamp(16px,3.5vw,44px);font-size:9px;font-weight:700;letter-spacing:.24em;color:#FF0033;border:1px solid rgba(255,0,51,.25);padding:3px 9px;text-transform:uppercase;">Esquina Roja</div>
       <div style="position:relative;z-index:3;">
         <div style="font-size:12px;font-weight:600;letter-spacing:.1em;color:rgba(255,0,51,.65);margin-bottom:2px;">★ PELEADOR</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,5.5vw,60px);color:#fff;line-height:.9;letter-spacing:.04em;">POR REVELAR</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,5.5vw,60px);color:#fff;line-height:.9;letter-spacing:.04em;">{{ co.r.name }}</div>
         <div style="margin-top:8px;display:flex;gap:10px;align-items:center;">
-          <span style="font-family:'Bebas Neue',sans-serif;font-size:clamp(16px,2.5vw,22px);color:#FF0033;letter-spacing:.1em;">0-0-0</span>
+          <span style="font-family:'Bebas Neue',sans-serif;font-size:clamp(16px,2.5vw,22px);color:#FF0033;letter-spacing:.1em;">{{ co.r.rec }}</span>
           <span style="font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.12em;text-transform:uppercase;">MMA</span>
         </div>
       </div>
@@ -266,16 +266,16 @@
       </div>
     </div>
     <div style="flex:1;background:linear-gradient(225deg,#001218 0%,#050D18 60%,#05080F 100%);padding:clamp(22px,4vw,44px) clamp(18px,3.5vw,44px);display:flex;flex-direction:column;justify-content:flex-end;align-items:{{ f2Align }};position:relative;overflow:hidden;min-height:clamp(340px,40vw,400px);">
-      <img src="uploads/azul2.webp" alt="Peleador azul" style="position:absolute;bottom:0;left:clamp(0px,2vw,16px);height:95%;max-width:56%;object-fit:contain;object-position:bottom left;z-index:1;pointer-events:none;filter:drop-shadow(0 16px 28px rgba(0,0,0,.55));">
+      <img src="{{ co.a.img }}" alt="Peleador azul" style="position:absolute;bottom:0;left:clamp(0px,2vw,16px);height:95%;max-width:56%;object-fit:contain;object-position:bottom left;z-index:1;pointer-events:none;filter:drop-shadow(0 16px 28px rgba(0,0,0,.55));">
       <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(5,8,15,.92) 0%,rgba(5,8,15,.32) 34%,transparent 62%);z-index:2;pointer-events:none;"></div>
       <div style="position:absolute;font-family:'Bebas Neue',sans-serif;font-size:clamp(80px,18vw,230px);color:rgba(0,240,255,.04);left:-5px;bottom:-30px;line-height:1;pointer-events:none;user-select:none;">Y</div>
       <div style="position:absolute;top:16px;right:clamp(16px,3.5vw,44px);font-size:9px;font-weight:700;letter-spacing:.24em;color:#00F0FF;border:1px solid rgba(0,240,255,.25);padding:3px 9px;text-transform:uppercase;">Esquina Azul</div>
       <div style="position:relative;z-index:3;text-align:{{ f2TextAlign }};">
         <div style="font-size:12px;font-weight:600;letter-spacing:.1em;color:rgba(0,240,255,.65);margin-bottom:2px;">★ PELEADOR</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,5.5vw,60px);color:#fff;line-height:.9;letter-spacing:.04em;">POR REVELAR</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,5.5vw,60px);color:#fff;line-height:.9;letter-spacing:.04em;">{{ co.a.name }}</div>
         <div style="margin-top:8px;display:flex;gap:10px;align-items:center;justify-content:{{ f2Align }};">
           <span style="font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.12em;text-transform:uppercase;">MMA</span>
-          <span style="font-family:'Bebas Neue',sans-serif;font-size:clamp(16px,2.5vw,22px);color:#00F0FF;letter-spacing:.1em;">0-0-0</span>
+          <span style="font-family:'Bebas Neue',sans-serif;font-size:clamp(16px,2.5vw,22px);color:#00F0FF;letter-spacing:.1em;">{{ co.a.rec }}</span>
         </div>
       </div>
     </div>
@@ -584,7 +584,8 @@ class Component extends DCLogic {
   state = {
     days: 0, hours: 0, mins: 0, secs: 0,
     navScrolled: false, mobileMenuOpen: false,
-    windowWidth: window.innerWidth || 1440
+    windowWidth: window.innerWidth || 1440,
+    peleas: null
   };
 
   componentDidMount() {
@@ -608,6 +609,7 @@ class Component extends DCLogic {
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onResize);
     };
+    this._loadPeleas();
   }
 
   componentWillUnmount() {
@@ -615,12 +617,49 @@ class Component extends DCLogic {
     this._off && this._off();
   }
 
+  _loadScript(src) {
+    return new Promise((ok, err) => {
+      if ([...document.scripts].some(s => s.src === src)) return ok();
+      const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = err;
+      document.head.appendChild(s);
+    });
+  }
+  async _loadPeleas() {
+    try {
+      await this._loadScript('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');
+      await this._loadScript('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js');
+      const fb = window.firebase;
+      if (!fb.apps.length) fb.initializeApp({ apiKey: 'AIzaSyAXxTUFo0CHFZnAs0wGrYHLTwwVzZ_ArZA', authDomain: 'nova-dd664.firebaseapp.com', projectId: 'nova-dd664', storageBucket: 'nova-dd664.firebasestorage.app', messagingSenderId: '967862553249', appId: '1:967862553249:web:3524af97999ce667bafee0' });
+      fb.firestore().collection('peleas').onSnapshot(snap => {
+        const a = []; snap.forEach(d => a.push(d.data())); this.setState({ peleas: a });
+      }, () => {});
+    } catch (e) { /* si falla, se queda la cartelera por defecto */ }
+  }
+
   renderVals() {
     const pad = n => String(Math.floor(n)).padStart(2, '0');
     const { days, hours, mins, secs, navScrolled, mobileMenuOpen, windowWidth } = this.state;
     const isMobile = windowWidth < 700;
 
-    const prelims = [
+    // ===== Cartelera dinámica (se llena desde el admin / Firestore) =====
+    const nm = (f) => { const raw = ((f && f.nombre) || '').trim(); const ph = !raw || /^pendiente$/i.test(raw) || /^por revelar$/i.test(raw); return ph ? 'POR REVELAR' : raw.toUpperCase(); };
+    const rec = (f) => (((f && f.record) || '').trim()) || '0-0-0';
+    const corner = (f, defImg) => { const name = nm(f); const parts = name.split(/\s+/); return { img: (f && f.fotos && f.fotos[0]) || defImg, name, line1: parts[0], line2: parts.slice(1).join(' '), rec: rec(f) }; };
+    const plist = Array.isArray(this.state.peleas) ? this.state.peleas : [];
+    const principal = plist.find(p => p.tipo === 'principal');
+    const coest = plist.find(p => p.tipo === 'coestelar');
+    const me = {
+      banner: '⭐ PELEA PRINCIPAL · ' + ((principal && principal.banner) || 'PESO LIGERO · 155 LB'),
+      r: corner(principal && principal.rojo, 'uploads/1rojo.webp'),
+      a: corner(principal && principal.azul, 'uploads/1azul.webp')
+    };
+    const co = {
+      banner: 'CO-ESTELAR · ' + ((coest && coest.banner) || 'PESO LIGERO · 155 LB'),
+      r: corner(coest && coest.rojo, 'uploads/rojo2.webp'),
+      a: corner(coest && coest.azul, 'uploads/azul2.webp')
+    };
+    const prelimList = plist.filter(p => p.tipo === 'preliminar').sort((a, b) => (a.orden || 99) - (b.orden || 99));
+    const prelims = prelimList.length ? prelimList.map(p => ({ r1: nm(p.rojo), r1rec: rec(p.rojo), r2: nm(p.azul), r2rec: rec(p.azul) })) : [
       { r1: 'POR REVELAR', r1rec: '0-0-0', r2: 'POR REVELAR', r2rec: '0-0-0' },
       { r1: 'POR REVELAR', r1rec: '0-0-0', r2: 'POR REVELAR', r2rec: '0-0-0' },
       { r1: 'POR REVELAR', r1rec: '0-0-0', r2: 'POR REVELAR', r2rec: '0-0-0' },
@@ -687,7 +726,7 @@ class Component extends DCLogic {
       fightCoMinH: isMobile ? '170px' : '240px',
       f2TextAlign: isMobile ? 'left' : 'right',
       f2Align: isMobile ? 'flex-start' : 'flex-end',
-      prelims, feedItems, vipPackages, particles
+      me, co, prelims, feedItems, vipPackages, particles
     };
   }
 }
