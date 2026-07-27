@@ -69,7 +69,8 @@
   .cornerbox{border:1px solid var(--border);border-radius:12px;padding:14px;background:rgba(255,255,255,.012);margin-bottom:6px}
   .photos{display:flex;flex-direction:column;gap:8px;margin-bottom:6px}
   .pslot{display:flex;gap:9px;align-items:center}
-  .pslot .thumb{width:56px;height:56px;border-radius:8px;background:var(--panel2);border:1px dashed var(--border2);flex:none;background-size:cover;background-position:center;font-size:16px;color:var(--muted2);display:flex;align-items:center;justify-content:center;cursor:copy;transition:.12s}
+  .pslot .thumb{width:92px;height:92px;border-radius:10px;background:var(--panel2);border:1px dashed var(--border2);flex:none;background-size:cover;background-position:center;font-size:22px;color:var(--muted2);display:flex;align-items:center;justify-content:center;cursor:copy;transition:.12s}
+  .pslot .thumb.has{border-style:solid;border-color:var(--red2);box-shadow:0 0 0 1px rgba(225,29,42,.25)}
   .pslot .thumb.drop{border-color:var(--red);border-style:solid;box-shadow:0 0 0 3px rgba(225,29,42,.35);background-color:rgba(225,29,42,.08)}
   .pslot input{margin:0}
   .upbtn{position:relative;overflow:hidden;flex:none;border:1px solid var(--border2);color:var(--muted);border-radius:8px;padding:9px 12px;font-size:11px;cursor:pointer;white-space:nowrap}
@@ -272,20 +273,22 @@ function cornerHTML(p){ // p = 'r' o 'a'
   return h+'</div>';
 }
 $('rojoFields').innerHTML=cornerHTML('r'); $('azulFields').innerHTML=cornerHTML('a');
-function refThumb(p,i){ const v=$(p+'_foto'+i).value.trim(); const t=$(p+'_thumb'+i); if(v){ t.style.backgroundImage='url("'+v+'")'; t.innerHTML=''; } else { t.style.backgroundImage=''; t.innerHTML='&#8615;'; } }
+function refThumb(p,i){ const v=$(p+'_foto'+i).value.trim(); const t=$(p+'_thumb'+i); if(v){ t.style.backgroundImage='url("'+v.replace(/"/g,'%22')+'")'; t.classList.add('has'); t.innerHTML=''; } else { t.style.backgroundImage=''; t.classList.remove('has'); t.innerHTML='&#8615;'; } }
 window.refThumb=refThumb;
 
 /* ---- subir (Storage): botón + arrastrar ---- */
 async function uploadFile(file,p,i){
   if(!file){ return; }
   if(!file.type||!file.type.startsWith('image/')){ alert('Solo imágenes.'); return; }
-  const field=$(p+'_foto'+i), thumb=$(p+'_thumb'+i); const prev=thumb.innerHTML; thumb.innerHTML='…';
+  const field=$(p+'_foto'+i), thumb=$(p+'_thumb'+i);
+  // preview inmediato (local) para que se vea la imagen al instante
+  const localUrl=URL.createObjectURL(file); thumb.style.backgroundImage='url("'+localUrl+'")'; thumb.classList.add('has'); thumb.innerHTML='';
   try{
     const storage=firebase.storage();
     const name='peleadores/'+Date.now()+'_'+Math.random().toString(36).slice(2)+'_'+file.name.replace(/[^a-zA-Z0-9._-]/g,'');
     const ref=storage.ref().child(name); await ref.put(file); const url=await ref.getDownloadURL();
     field.value=url; refThumb(p,i);
-  }catch(err){ thumb.innerHTML=prev; alert('No se pudo subir. Activa Firebase Storage (Build → Storage) y sus reglas.\n\n'+err.message); }
+  }catch(err){ alert('Se muestra la vista previa, pero para GUARDARLA activa Firebase Storage (Build → Storage) o usa una ruta de uploads/ o una URL.\n\n'+err.message); }
 }
 document.addEventListener('change', e=>{ const inp=e.target; if(inp.matches&&inp.matches('.upbtn input[type=file]')){ uploadFile(inp.files[0], inp.dataset.p, inp.dataset.i); inp.value=''; } });
 function attachDnD(){
