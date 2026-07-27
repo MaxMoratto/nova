@@ -176,8 +176,8 @@
               <option value="preliminar">Preliminar</option>
             </select>
           </div>
-          <div><label>Orden en cartelera (1 a 10)</label>
-            <select id="p_orden"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select>
+          <div><label>Orden en cartelera (1 a 20)</label>
+            <select id="p_orden"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option><option>13</option><option>14</option><option>15</option><option>16</option><option>17</option><option>18</option><option>19</option><option>20</option></select>
           </div>
         </div>
         <label>Banner / categoría (ej. PESO SEMICOMPLETO · 93 KG)</label><input id="p_banner" placeholder="PESO GALLO FEMENIL · 61 KG"/>
@@ -190,9 +190,9 @@
           <button class="btn ghost" id="cancelEditBtn" style="display:none">Cancelar edición</button>
         </div>
         <div class="msg" id="fightMsg"></div>
-        <div class="hint">Puedes tener hasta 10 peleas (usa el "Orden"). Cada peleador acepta hasta 4 fotos. El botón <b>Subir</b> requiere activar Firebase Storage; mientras, puedes pegar una ruta de <b>uploads/</b> o una URL.</div>
+        <div class="hint">Puedes tener hasta 20 peleas (usa el "Orden"). Cada peleador acepta hasta 4 fotos. El botón <b>Subir</b> requiere activar Firebase Storage; mientras, puedes pegar una ruta de <b>uploads/</b> o una URL.</div>
       </div>
-      <div class="card"><h2>Cartelera (<span id="fightCount">0</span>/10)</h2><div id="fightList"><div class="empty">Cargando…</div></div></div>
+      <div class="card"><h2>Cartelera (<span id="fightCount">0</span>/20)</h2><div id="fightList"><div class="empty">Cargando…</div></div></div>
     </div>
   </div>
 </div>
@@ -210,7 +210,7 @@ const firebaseConfig = {
   messagingSenderId: "967862553249",
   appId: "1:967862553249:web:3524af97999ce667bafee0"
 };
-const SEATS_COL="asientos_nova", FIGHTS_COL="peleas", BOLETOS_COL="boletos", MAX_FIGHTS=10;
+const SEATS_COL="asientos_nova", FIGHTS_COL="peleas", BOLETOS_COL="boletos", MAX_FIGHTS=20;
 // Zonas: capacidad real y precio por tipo
 const CAP={VIP:72,VIPA:40,PREF:74,GENERAL:250};           // VIP mesa 18x4, VIP asiento 40, Preferente A25+B25+C24
 const PRECIO={VIP:950,VIPA:850,PREF:650,GENERAL:450};
