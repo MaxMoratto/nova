@@ -190,7 +190,7 @@
           <button class="btn ghost" id="cancelEditBtn" style="display:none">Cancelar edición</button>
         </div>
         <div class="msg" id="fightMsg"></div>
-        <div class="hint">Puedes tener hasta 20 peleas (usa el "Orden"). Cada peleador acepta hasta 4 fotos. El botón <b>Subir</b> requiere activar Firebase Storage; mientras, puedes pegar una ruta de <b>uploads/</b> o una URL.</div>
+        <div class="hint">Puedes tener hasta 20 peleas (usa el "Orden"). Cada peleador acepta hasta 4 fotos. El botón <b>Subir</b> optimiza y guarda la imagen automáticamente (se reduce a ~640px). También puedes pegar una ruta de <b>uploads/</b> o una URL.</div>
       </div>
       <div class="card"><h2>Cartelera (<span id="fightCount">0</span>/20)</h2><div id="fightList"><div class="empty">Cargando…</div></div></div>
     </div>
@@ -276,19 +276,25 @@ $('rojoFields').innerHTML=cornerHTML('r'); $('azulFields').innerHTML=cornerHTML(
 function refThumb(p,i){ const v=$(p+'_foto'+i).value.trim(); const t=$(p+'_thumb'+i); if(v){ t.style.backgroundImage='url("'+v.replace(/"/g,'%22')+'")'; t.classList.add('has'); t.innerHTML=''; } else { t.style.backgroundImage=''; t.classList.remove('has'); t.innerHTML='&#8615;'; } }
 window.refThumb=refThumb;
 
-/* ---- subir (Storage): botón + arrastrar ---- */
+/* ---- subir: optimiza la imagen y la guarda como dato (sin necesidad de Storage) ---- */
+function fileToSmallDataURL(file, maxDim, maxBytes){
+  return new Promise((res,rej)=>{ const img=new Image();
+    img.onload=()=>{ let w=img.naturalWidth,h=img.naturalHeight; const s=Math.min(1,maxDim/Math.max(w,h)); w=Math.round(w*s); h=Math.round(h*s);
+      const c=document.createElement('canvas'); c.width=w; c.height=h; c.getContext('2d').drawImage(img,0,0,w,h);
+      const type=c.toDataURL('image/webp',0.8).indexOf('image/webp')>0?'image/webp':'image/png';
+      let q=0.82, url=c.toDataURL(type,q);
+      while(url.length*0.75>maxBytes && q>0.45){ q-=0.1; url=c.toDataURL(type,q); }
+      URL.revokeObjectURL(img.src); res(url); };
+    img.onerror=()=>rej(new Error('No se pudo leer la imagen')); img.src=URL.createObjectURL(file); });
+}
 async function uploadFile(file,p,i){
   if(!file){ return; }
   if(!file.type||!file.type.startsWith('image/')){ alert('Solo imágenes.'); return; }
-  const field=$(p+'_foto'+i), thumb=$(p+'_thumb'+i);
-  // preview inmediato (local) para que se vea la imagen al instante
-  const localUrl=URL.createObjectURL(file); thumb.style.backgroundImage='url("'+localUrl+'")'; thumb.classList.add('has'); thumb.innerHTML='';
+  const field=$(p+'_foto'+i), thumb=$(p+'_thumb'+i); const prev=thumb.innerHTML; thumb.innerHTML='…';
   try{
-    const storage=firebase.storage();
-    const name='peleadores/'+Date.now()+'_'+Math.random().toString(36).slice(2)+'_'+file.name.replace(/[^a-zA-Z0-9._-]/g,'');
-    const ref=storage.ref().child(name); await ref.put(file); const url=await ref.getDownloadURL();
-    field.value=url; refThumb(p,i);
-  }catch(err){ alert('Se muestra la vista previa, pero para GUARDARLA activa Firebase Storage (Build → Storage) o usa una ruta de uploads/ o una URL.\n\n'+err.message); }
+    const url=await fileToSmallDataURL(file, 640, 120000);   // reduce a ~640px y ~<120 KB
+    field.value=url; refThumb(p,i);                          // queda en el campo => se guarda con la pelea
+  }catch(err){ thumb.innerHTML=prev; thumb.classList.remove('has'); alert('No se pudo procesar la imagen: '+(err.message||err)); }
 }
 document.addEventListener('change', e=>{ const inp=e.target; if(inp.matches&&inp.matches('.upbtn input[type=file]')){ uploadFile(inp.files[0], inp.dataset.p, inp.dataset.i); inp.value=''; } });
 function attachDnD(){
