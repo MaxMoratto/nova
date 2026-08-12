@@ -171,7 +171,7 @@ HTML = r"""<!DOCTYPE html>
   <div class="mfoot"><div class="sumline total" style="margin-top:0;border:none;padding-top:0"><span>Total</span><b id="mtot"></b></div>
   <button class="cta" id="mcard" style="background:linear-gradient(180deg,#00b1ea,#009ee3);box-shadow:0 8px 24px rgba(0,158,227,.4)">Pagar con Mercado Pago</button>
   <div style="font-size:10.5px;color:var(--muted2);text-align:center;margin-top:9px;line-height:1.5">Al continuar aceptas los <a href="terminos.html" target="_blank" style="color:var(--muted)">Términos</a>, el <a href="privacidad.html" target="_blank" style="color:var(--muted)">Aviso de Privacidad</a> y la <a href="reembolsos.html" target="_blank" style="color:var(--muted)">Política de Reembolsos</a>.</div>
-  <div style="text-align:center;font-size:10.5px;color:var(--muted2);margin-top:8px">Tarjeta &#183; OXXO &#183; SPEI &#183; meses sin intereses</div>
+  <div style="text-align:center;font-size:10.5px;color:var(--muted2);margin-top:8px">Tarjeta &#183; OXXO &#183; SPEI</div>
   <button class="cta" id="mpay" style="background:transparent;border:1px solid var(--border2);color:var(--muted);box-shadow:none;margin-top:10px;font-size:13px">o apartar por WhatsApp</button><div id="speibox" style="font-size:11.5px;color:var(--muted);margin-top:12px;line-height:1.6;background:var(--panel2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;display:none"></div></div></div></div>
 <script>
 const SEATS = __SEATS__;
@@ -306,8 +306,15 @@ document.getElementById('buy').addEventListener('click',()=>{const sel=selectedS
   if(state.generalQty>0){sub+=state.generalQty*ZONES.GENERAL.price;const r=document.createElement('div');r.className='mrow';r.innerHTML='<span>General &#215; '+state.generalQty+'</span><b>'+money(state.generalQty*ZONES.GENERAL.price)+'</b>';ml.appendChild(r);}
   const fee=feeOf(sub);
   if(fee>0){const r=document.createElement('div');r.className='mrow';r.innerHTML='<span>Comisión de compra en línea (4.2%)</span><b>'+money(fee)+'</b>';ml.appendChild(r);}
-  document.getElementById('mtot').textContent=money(sub+fee)+' MXN';
+  _modalTotal=sub+fee; applyCoupon();
   modalbg.classList.add('on');});
+// Cupón de prueba: al escribirlo, muestra el total en $1 (validado también en el servidor).
+const COUPON='NOVAPRUEBA1'; let _modalTotal=0;
+function couponOk(){ return (document.getElementById('bcoupon').value||'').trim().toUpperCase()===COUPON; }
+function applyCoupon(){ const mt=document.getElementById('mtot'); if(!mt)return;
+  if(couponOk()) mt.innerHTML='<span style="text-decoration:line-through;color:var(--muted2);font-weight:400;font-size:.6em;margin-right:7px">'+money(_modalTotal)+'</span>$1 MXN';
+  else mt.textContent=money(_modalTotal)+' MXN'; }
+document.getElementById('bcoupon').addEventListener('input',applyCoupon);
 document.getElementById('mclose').addEventListener('click',()=>modalbg.classList.remove('on'));
 modalbg.addEventListener('click',e=>{if(e.target===modalbg)modalbg.classList.remove('on');});
 
