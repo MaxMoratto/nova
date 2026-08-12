@@ -86,6 +86,7 @@ module.exports = async (req, res) => {
       external_reference: orderId,
       notification_url: `${origin}/api/mp-webhook`,
       statement_descriptor: 'NOVA STRIKE',
+      payment_methods: { installments: 1, default_installments: 1 }, // solo 1 pago (sin meses sin intereses)
       metadata: { orderId }
     };
 
