@@ -167,7 +167,7 @@ HTML = r"""<!DOCTYPE html>
 <div class="modal-bg" id="modalbg"><div class="modal"><button class="close" id="mclose">&times;</button>
   <h2>Completa tu compra</h2><p>Pon tus datos y elige c&oacute;mo pagar tus lugares.</p>
   <div class="mlist" id="mlist"></div>
-  <div class="form-wrap"><input id="bname" class="finp" placeholder="Nombre completo" autocomplete="name"/><input id="bphone" class="finp" placeholder="WhatsApp / telefono" autocomplete="tel" inputmode="tel"/><input id="bmail" class="finp" placeholder="Email (te enviamos aquí los boletos)" autocomplete="email"/></div>
+  <div class="form-wrap"><input id="bname" class="finp" placeholder="Nombre completo" autocomplete="name"/><input id="bphone" class="finp" placeholder="WhatsApp / telefono" autocomplete="tel" inputmode="tel"/><input id="bmail" class="finp" placeholder="Email (te enviamos aquí los boletos)" autocomplete="email"/><input id="bcoupon" class="finp" placeholder="Cupón (opcional)" autocomplete="off" style="text-transform:uppercase"/></div>
   <div class="mfoot"><div class="sumline total" style="margin-top:0;border:none;padding-top:0"><span>Total</span><b id="mtot"></b></div>
   <button class="cta" id="mcard" style="background:linear-gradient(180deg,#00b1ea,#009ee3);box-shadow:0 8px 24px rgba(0,158,227,.4)">Pagar con Mercado Pago</button>
   <div style="font-size:10.5px;color:var(--muted2);text-align:center;margin-top:9px;line-height:1.5">Al continuar aceptas los <a href="terminos.html" target="_blank" style="color:var(--muted)">Términos</a>, el <a href="privacidad.html" target="_blank" style="color:var(--muted)">Aviso de Privacidad</a> y la <a href="reembolsos.html" target="_blank" style="color:var(--muted)">Política de Reembolsos</a>.</div>
@@ -323,11 +323,12 @@ function buildItems(sel){ const items=[]; const byZone={};
 }
 document.getElementById('mcard').addEventListener('click',async()=>{
   const name=document.getElementById('bname').value.trim(),phone=document.getElementById('bphone').value.trim(),mail=document.getElementById('bmail').value.trim();
+  const coupon=(document.getElementById('bcoupon').value||'').trim();
   if(!name||!phone||!/^\S+@\S+\.\S+$/.test(mail)){flash('Pon nombre, WhatsApp y un correo válido (ahí te enviamos los boletos)');return;}
   const sel=selectedSeats(); if(!sel.length&&!state.generalQty)return;
   const items=buildItems(sel);
   const b=document.getElementById('mcard'); b.disabled=true; const old=b.textContent; b.textContent='Redirigiendo a Mercado Pago...';
-  try{ const r=await fetch('/api/mercadopago',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({items,buyer:{name,phone,mail},seats:sel.map(s=>s.id)})});
+  try{ const r=await fetch('/api/mercadopago',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({items,buyer:{name,phone,mail},seats:sel.map(s=>s.id),coupon})});
     const d=await r.json(); if(d.url){window.location.href=d.url;return;} flash('Pago: '+(d.error||'no se pudo iniciar')); b.disabled=false;b.textContent=old;
   }catch(e){ flash('Error de conexi&oacute;n con el pago'); b.disabled=false;b.textContent=old; }
 });

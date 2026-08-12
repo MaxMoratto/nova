@@ -22,7 +22,7 @@ module.exports = async (req, res) => {
 
   try {
     const body = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
-    const { items = [], buyer = {}, seats = [] } = body;
+    const { items = [], buyer = {}, seats = [], coupon = '' } = body;
     if (!Array.isArray(items) || !items.length) return res.status(400).json({ error: 'Carrito vacío' });
 
     // Reserva TODOS los asientos numerados (VIP-, VIPA-, PREF-). General va por cantidad, sin asiento.
@@ -58,12 +58,21 @@ module.exports = async (req, res) => {
     }
 
     const origin = req.headers.origin || (req.headers.host ? `https://${req.headers.host}` : 'https://novastrikeseries.com');
-    const mpItems = items.map(i => ({
+    let mpItems = items.map(i => ({
       title: String(i.name || 'Boleto').slice(0, 250),
       quantity: Math.max(1, parseInt(i.qty || 1, 10)),
       unit_price: Math.round(Number(i.price) * 100) / 100,
       currency_id: 'MXN'
     }));
+
+    // Cupón de PRUEBA: si coincide con TEST_COUPON (env de Vercel), el cobro es de $1.
+    // Se valida en el servidor; los boletos se generan normal. Quitar TEST_COUPON al terminar la prueba.
+    const testCoupon = (process.env.TEST_COUPON || '').trim();
+    const isTest = !!testCoupon && String(coupon).trim().toUpperCase() === testCoupon.toUpperCase();
+    if (isTest) {
+      mpItems = [{ title: 'NOVA · cobro de prueba (cupón)', quantity: 1, unit_price: 1, currency_id: 'MXN' }];
+      try { await orderRef.update({ cupon: String(coupon).trim().toUpperCase(), prueba: true, montoPrueba: 1 }); } catch (_) {}
+    }
 
     const preference = {
       items: mpItems,
