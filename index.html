@@ -218,7 +218,7 @@
         </div>
         <div style="margin-top:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
           <span style="font-family:'Bebas Neue',sans-serif;font-size:clamp(18px,3vw,26px);color:#FF0033;letter-spacing:.1em;">{{ me.r.rec }}</span>
-          <span style="font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.14em;text-transform:uppercase;">MMA</span>
+          <span style="font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.14em;text-transform:uppercase;">{{ me.modalidad }}</span>
         </div>
       </div>
     </div>
@@ -238,7 +238,7 @@
           <div>{{ me.a.line2 }}</div>
         </div>
         <div style="margin-top:12px;display:flex;gap:12px;align-items:center;justify-content:{{ f2Align }};flex-wrap:wrap;">
-          <span style="font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.14em;text-transform:uppercase;">MMA</span>
+          <span style="font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.14em;text-transform:uppercase;">{{ me.modalidad }}</span>
           <span style="font-family:'Bebas Neue',sans-serif;font-size:clamp(18px,3vw,26px);color:#00F0FF;letter-spacing:.1em;">{{ me.a.rec }}</span>
         </div>
       </div>
@@ -258,7 +258,7 @@
         <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,5.5vw,60px);color:#fff;line-height:.9;letter-spacing:.04em;">{{ co.r.name }}</div>
         <div style="margin-top:8px;display:flex;gap:10px;align-items:center;">
           <span style="font-family:'Bebas Neue',sans-serif;font-size:clamp(16px,2.5vw,22px);color:#FF0033;letter-spacing:.1em;">{{ co.r.rec }}</span>
-          <span style="font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.12em;text-transform:uppercase;">MMA</span>
+          <span style="font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.12em;text-transform:uppercase;">{{ co.modalidad }}</span>
         </div>
       </div>
     </div>
@@ -276,7 +276,7 @@
         <div style="font-size:12px;font-weight:600;letter-spacing:.1em;color:rgba(0,240,255,.65);margin-bottom:2px;">★ PELEADOR</div>
         <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,5.5vw,60px);color:#fff;line-height:.9;letter-spacing:.04em;">{{ co.a.name }}</div>
         <div style="margin-top:8px;display:flex;gap:10px;align-items:center;justify-content:{{ f2Align }};">
-          <span style="font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.12em;text-transform:uppercase;">MMA</span>
+          <span style="font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.12em;text-transform:uppercase;">{{ co.modalidad }}</span>
           <span style="font-family:'Bebas Neue',sans-serif;font-size:clamp(16px,2.5vw,22px);color:#00F0FF;letter-spacing:.1em;">{{ co.a.rec }}</span>
         </div>
       </div>
@@ -650,13 +650,16 @@ class Component extends DCLogic {
     const plist = Array.isArray(this.state.peleas) ? this.state.peleas : [];
     const principal = plist.find(p => p.tipo === 'principal');
     const coest = plist.find(p => p.tipo === 'coestelar');
+    const cat = (p) => (p && p.categoria) ? String(p.categoria).toUpperCase() + ' · ' : '';
     const me = {
-      banner: '⭐ PELEA PRINCIPAL · ' + ((principal && principal.banner) || 'PESO LIGERO · 155 LB'),
+      banner: '⭐ PELEA PRINCIPAL · ' + cat(principal) + ((principal && principal.banner) || 'PESO LIGERO · 155 LB'),
+      modalidad: (principal && principal.modalidad) || 'MMA',
       r: corner(principal && principal.rojo, 'uploads/1rojo.webp'),
       a: corner(principal && principal.azul, 'uploads/1azul.webp')
     };
     const co = {
-      banner: 'CO-ESTELAR · ' + ((coest && coest.banner) || 'PESO LIGERO · 155 LB'),
+      banner: 'CO-ESTELAR · ' + cat(coest) + ((coest && coest.banner) || 'PESO LIGERO · 155 LB'),
+      modalidad: (coest && coest.modalidad) || 'MMA',
       r: corner(coest && coest.rojo, 'uploads/rojo2.webp'),
       a: corner(coest && coest.azul, 'uploads/azul2.webp')
     };
