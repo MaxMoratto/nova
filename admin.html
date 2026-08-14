@@ -463,7 +463,7 @@ function renderBoletos(){ const q=($('bSearch').value||'').trim().toUpperCase();
   box.querySelectorAll('[data-wa]').forEach(b=>b.addEventListener('click',()=>{ const r=BOLETOS.find(x=>x.token===b.dataset.wa); if(!r)return;
     const tel=waPhone((r.d.comprador&&r.d.comprador.tel)||''); const link=location.origin+'/boleto.html?t='+b.dataset.wa;
     const nom=(r.d.comprador&&r.d.comprador.nombre)?' '+r.d.comprador.nombre.split(' ')[0]:'';
-    const msg='Hola'+nom+'! Aquí está tu boleto para NOVA Strike Series (11 SEP 2026, NOVA Show Center): '+link+' — Presenta el QR en la entrada.';
+    const msg='Hola'+nom+'! Aquí está tu boleto para NOVA Strike Series (11 SEP 2026, Foro San Rafael, CDMX): '+link+' — Presenta el QR en la entrada.';
     window.open('https://wa.me/'+tel+'?text='+encodeURIComponent(msg),'_blank'); }));
   box.querySelectorAll('[data-cancel]').forEach(b=>b.addEventListener('click',()=>cancelBoleto(b.dataset.cancel)));
 }

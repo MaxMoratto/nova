@@ -149,7 +149,7 @@ HTML = r"""<!DOCTYPE html>
     </div>
   </section>
   <aside class="side">
-    <div class="side-head"><h1>Elige tus lugares</h1><div class="meta"><span><span class="dotr"></span>11 SEP 2026</span><span>NOVA Show Center</span></div></div>
+    <div class="side-head"><h1>Elige tus lugares</h1><div class="meta"><span><span class="dotr"></span>11 SEP 2026</span><span>Foro San Rafael · CDMX</span></div></div>
     <div class="side-scroll">
       <div class="sec-t">Zonas y precios</div><div class="zones" id="zones"></div>
       <div class="sec-t">Tus lugares <span id="pickcount" style="color:var(--red2)"></span></div><div id="pickbox"></div>
@@ -185,7 +185,7 @@ const ZONES = {
 const COMISION=0.042;                       // 4.2% comision de compra en linea (cubre el costo real de Mercado Pago)
 const feeOf=sub=>Math.round(sub*COMISION);  // sobre el subtotal, redondeada al peso
 const CONFIG = {
-  whatsapp:"5215633353642", evento:"NOVA - 11 SEP 2026 - NOVA Show Center", spei:{beneficiario:"",banco:"",clabe:""},
+  whatsapp:"5215633353642", evento:"NOVA - 11 SEP 2026 - Foro San Rafael", spei:{beneficiario:"",banco:"",clabe:""},
   firebaseConfig:{ apiKey:"AIzaSyAXxTUFo0CHFZnAs0wGrYHLTwwVzZ_ArZA", authDomain:"nova-dd664.firebaseapp.com", projectId:"nova-dd664", storageBucket:"nova-dd664.firebasestorage.app", messagingSenderId:"967862553249", appId:"1:967862553249:web:3524af97999ce667bafee0" },
   reservaAutomatica:false
 };
