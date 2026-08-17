@@ -164,7 +164,7 @@
         <div class="hint">Agrega los boletos al <b>carrito</b> (numerados y/o general), pon <b>un comprador</b> y el método de pago, y emítelos <b>todos juntos</b> — cada uno con su folio + QR. Los asientos numerados se validan y se bloquean.</div>
       </div>
       <div class="card">
-        <div class="topbar" style="margin-bottom:10px"><h2 style="margin:0">Boletos emitidos</h2><div class="row" style="align-items:center"><button class="mini" id="corteBtn" title="Resumen de ventas por método de pago">&#128176; Corte de caja</button><button class="mini" id="exportBtn" title="Descarga todos los boletos y ventas (respaldo)">&#8681; Respaldo CSV</button><input id="bSearch" placeholder="Buscar folio o nombre" style="max-width:220px;margin:0"/></div></div>
+        <div class="topbar" style="margin-bottom:10px"><h2 style="margin:0">Boletos emitidos</h2><div class="row" style="align-items:center"><button class="mini" id="corteBtn" title="Resumen de ventas por método de pago">&#128176; Corte de caja</button><button class="mini" id="cleanBtn" title="Borra definitivamente los boletos cancelados">&#128465; Limpiar cancelados</button><button class="mini" id="exportBtn" title="Descarga todos los boletos y ventas (respaldo)">&#8681; Respaldo CSV</button><input id="bSearch" placeholder="Buscar folio o nombre" style="max-width:220px;margin:0"/></div></div>
         <div class="sold-list" id="boletoList"><div class="empty">Cargando…</div></div>
       </div>
     </div>
@@ -467,6 +467,16 @@ function watchBoletos(){ db.collection(BOLETOS_COL).onSnapshot(snap=>{ BOLETOS=[
     BOLETOS.sort((a,b)=>(b.d.emitidoAt||0)-(a.d.emitidoAt||0)); renderBoletos();
   }, err=>{ $('boletoList').innerHTML='<div class="empty">Error: '+err.message+'</div>'; }); }
 $('bSearch').addEventListener('input', renderBoletos);
+$('cleanBtn').addEventListener('click',async()=>{
+  const cancels=BOLETOS.filter(r=>r.d.estado==='cancelado');
+  if(!cancels.length){ alert('No hay boletos cancelados para limpiar.'); return; }
+  if(!confirm('¿Borrar definitivamente '+cancels.length+' boleto(s) cancelado(s)? Esto no se puede deshacer.')) return;
+  const b=$('cleanBtn'); b.disabled=true;
+  try{ for(let i=0;i<cancels.length;i+=400){ const batch=db.batch(); cancels.slice(i,i+400).forEach(r=>batch.delete(db.collection(BOLETOS_COL).doc(r.token))); await batch.commit(); }
+    alert('✓ '+cancels.length+' boleto(s) cancelado(s) eliminado(s).');
+  }catch(e){ alert('Error: '+e.message); }
+  b.disabled=false;
+});
 $('corteBtn').addEventListener('click',()=>{
   const valid=BOLETOS.filter(r=>r.d.estado!=='cancelado');
   const lbl={efectivo:'Efectivo',tarjeta:'Tarjeta',transferencia:'Transferencia',linea:'En línea (MP)',cortesia:'Cortesías',otro:'Otro'};
