@@ -125,7 +125,6 @@
           <div class="stat"><div class="k">Boletos vendidos</div><div class="v" id="sVend">0</div></div>
           <div class="stat"><div class="k">VIP mesa</div><div class="v" id="sVip">0</div><div class="sub">de 72</div></div>
           <div class="stat"><div class="k">VIP asiento</div><div class="v" id="sVipa">0</div><div class="sub">de 40</div></div>
-          <div class="stat"><div class="k">Preferente</div><div class="v" id="sPref">0</div><div class="sub">de 74</div></div>
           <div class="stat"><div class="k">General</div><div class="v" id="sGen">0</div><div class="sub">de 250</div></div>
           <div class="stat"><div class="k">Ingresos registrados</div><div class="v" id="sIn">0</div></div>
           <div class="stat warn"><div class="k">Pendientes por ingresar</div><div class="v" id="sPend">0</div></div>
@@ -139,9 +138,8 @@
         <h2>Punto de venta</h2>
         <div class="grid2">
           <div><label>Tipo</label><select id="b_tipo">
-            <option value="VIP">VIP mesa ($950)</option>
-            <option value="VIPA">VIP asiento ($850)</option>
-            <option value="PREF">Preferente ($650)</option>
+            <option value="VIP">VIP mesa ($1500)</option>
+            <option value="VIPA">VIP asiento ($950)</option>
             <option value="GENERAL">General · lugar por llegada ($450)</option>
           </select></div>
           <div id="f_vip"><div class="grid2"><div><label>Mesa</label><select id="b_mesa"></select></div><div><label>Asiento</label><select id="b_asiento"><option>1</option><option>2</option><option>3</option><option>4</option></select></div></div></div>
@@ -221,9 +219,9 @@ const firebaseConfig = {
 };
 const SEATS_COL="asientos_nova", FIGHTS_COL="peleas", BOLETOS_COL="boletos", MAX_FIGHTS=20;
 // Zonas: capacidad real y precio por tipo
-const CAP={VIP:72,VIPA:40,PREF:74,GENERAL:250};           // VIP mesa 18x4, VIP asiento 40, Preferente A25+B25+C24
-const PRECIO={VIP:950,VIPA:850,PREF:650,GENERAL:450};
-const TOTAL_CAP=CAP.VIP+CAP.VIPA+CAP.PREF+CAP.GENERAL;     // 436
+const CAP={VIP:72,VIPA:40,GENERAL:250};                   // VIP mesa 18x4, VIP asiento 40 (Preferente eliminado)
+const PRECIO={VIP:1500,VIPA:950,GENERAL:450};
+const TOTAL_CAP=CAP.VIP+CAP.VIPA+CAP.GENERAL;             // 362
 const TIPO_LBL_B={VIP:'VIP mesa',VIPA:'VIP asiento',PREF:'Preferente',GENERAL:'General'};
 const PREF_MAX={A:25,B:25,C:24};
 const pad2=n=>String(n).padStart(2,'0');
@@ -451,7 +449,7 @@ async function emitSale(){
 let BOLETOS=[];
 function watchBoletos(){ db.collection(BOLETOS_COL).onSnapshot(snap=>{ BOLETOS=[];
     let ingresados=0,pendientes=0,cancelados=0,cortesias=0,ventas=0;
-    const occ={VIP:0,VIPA:0,PREF:0,GENERAL:0}, sold={VIP:0,VIPA:0,PREF:0,GENERAL:0};
+    const occ={VIP:0,VIPA:0,GENERAL:0}, sold={VIP:0,VIPA:0,GENERAL:0};
     snap.forEach(doc=>{ const d=doc.data(); if(d.test) return; BOLETOS.push({token:doc.id,d});
       if(d.estado==='cancelado'){ cancelados++; return; }
       const t=(d.tipo in occ)?d.tipo:'GENERAL'; occ[t]++;
@@ -460,11 +458,11 @@ function watchBoletos(){ db.collection(BOLETOS_COL).onSnapshot(snap=>{ BOLETOS=[
       else { sold[t]++; ventas += (d.precio!=null?Number(d.precio):PRECIO[t]); }
     });
     const money=v=>'$'+Number(v).toLocaleString('es-MX');
-    $('sVend').textContent=sold.VIP+sold.VIPA+sold.PREF+sold.GENERAL;
-    $('sVip').textContent=sold.VIP; $('sVipa').textContent=sold.VIPA; $('sPref').textContent=sold.PREF; $('sGen').textContent=sold.GENERAL;
+    $('sVend').textContent=sold.VIP+sold.VIPA+sold.GENERAL;
+    $('sVip').textContent=sold.VIP; $('sVipa').textContent=sold.VIPA; $('sGen').textContent=sold.GENERAL;
     $('sIn').textContent=ingresados; $('sPend').textContent=pendientes; $('sCanc').textContent=cancelados;
     $('sCort').textContent=cortesias;
-    $('sCap').textContent=(CAP.VIP-occ.VIP)+(CAP.VIPA-occ.VIPA)+(CAP.PREF-occ.PREF)+(CAP.GENERAL-occ.GENERAL);
+    $('sCap').textContent=(CAP.VIP-occ.VIP)+(CAP.VIPA-occ.VIPA)+(CAP.GENERAL-occ.GENERAL);
     $('sMoney').textContent=money(ventas);
     BOLETOS.sort((a,b)=>(b.d.emitidoAt||0)-(a.d.emitidoAt||0)); renderBoletos();
   }, err=>{ $('boletoList').innerHTML='<div class="empty">Error: '+err.message+'</div>'; }); }

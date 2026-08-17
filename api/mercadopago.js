@@ -26,7 +26,7 @@ module.exports = async (req, res) => {
     if (!Array.isArray(items) || !items.length) return res.status(400).json({ error: 'Carrito vacío' });
 
     // Reserva TODOS los asientos numerados (VIP-, VIPA-, PREF-). General va por cantidad, sin asiento.
-    const seatIds = (seats || []).filter(s => typeof s === 'string' && /^(VIP|VIPA|PREF)-/.test(s));
+    const seatIds = (seats || []).filter(s => typeof s === 'string' && /^(VIP|VIPA)-/.test(s));
     const genQty = items.filter(i => /general/i.test(String(i.name)))
       .reduce((a, i) => a + Math.max(1, parseInt(i.qty || 1, 10)), 0);
 

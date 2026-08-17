@@ -10,8 +10,7 @@ for s in d["PB"]["vip"]:
     SEATS.append({"id": s["id"], "zone": "VIP", "floor": "PB", "mesa": s["mesa"], "silla": s["silla"], "x": s["x"], "y": s["y"]})
 for s in d["1PISO"]["vipa"]:
     SEATS.append({"id": s["id"], "zone": "VIPA", "floor": "1P", "n": s["n"], "x": s["x"], "y": s["y"]})
-for s in d["1PISO"]["pref"]:
-    SEATS.append({"id": s["id"], "zone": "PREF", "floor": "1P", "sec": s["sec"], "n": s["n"], "x": s["x"], "y": s["y"]})
+# Preferente eliminado (ya no se vende)
 
 SEATS_JSON = json.dumps(SEATS, ensure_ascii=False)
 PB_VB = d["PB"]["vb"]; P1_VB = d["1PISO"]["vb"]
@@ -177,9 +176,8 @@ HTML = r"""<!DOCTYPE html>
 const SEATS = __SEATS__;
 const FLOORS = __FLOORS__;
 const ZONES = {
-  VIP:  { label:'VIP (mesa)', color:'#e11d2a', bright:'#ff6b76', price:950 },
-  VIPA: { label:'VIP (asiento)', color:'#e11d2a', bright:'#ff8f98', price:850 },
-  PREF: { label:'Preferente', color:'#D2AE6D', bright:'#e6c789', price:650 },
+  VIP:  { label:'VIP (mesa)', color:'#e11d2a', bright:'#ff6b76', price:1500 },
+  VIPA: { label:'VIP (asiento)', color:'#e11d2a', bright:'#ff8f98', price:950 },
   GENERAL: { label:'General', color:'#3b82f6', bright:'#4f8df5', price:450, general:true, total:250 }
 };
 const COMISION=0.042;                       // 4.2% comision de compra en linea (cubre el costo real de Mercado Pago)
@@ -239,7 +237,7 @@ seatsG.addEventListener('mouseleave',()=>tip.classList.remove('on'));
 function avail(zone){let a=0;for(const s of SEATS)if(s.zone===zone&&!state.selected.has(s.id)&&!taken.has(s.id))a++;return a;}
 function zoneTotal(zone){return SEATS.filter(s=>s.zone===zone).length;}
 const zonesBox=document.getElementById('zones');
-const ZFLOOR={VIP:'PB',VIPA:'1P',PREF:'1P',GENERAL:'PB'};
+const ZFLOOR={VIP:'PB',VIPA:'1P',GENERAL:'PB'};
 function goFloor(fl){ if(curFloor===fl)return; curFloor=fl;
   document.querySelectorAll('.floorsw button').forEach(x=>x.classList.toggle('on',x.dataset.f===fl)); renderFloor(); }
 function focusZone(z){                                   // llevar el mapa a la seccion de la zona
@@ -255,7 +253,7 @@ function focusZone(z){                                   // llevar el mapa a la 
   if(innerWidth<=940){const st=document.querySelector('.stage'); if(st)st.scrollIntoView({behavior:'smooth',block:'start'});}
 }
 function buildZones(){ zonesBox.innerHTML='';
-  [['VIP','Planta baja'],['VIPA','1er piso'],['PREF','1er piso']].forEach(([z,fl])=>{ const Z=ZONES[z];
+  [['VIP','Planta baja'],['VIPA','1er piso']].forEach(([z,fl])=>{ const Z=ZONES[z];
     const row=document.createElement('div');row.className='zrow';row.dataset.zone=z;
     row.innerHTML='<span class="sw" style="background:'+Z.bright+'"></span><div class="zn"><b>'+Z.label+'</b><small>'+fl+' &#183; <span class="av">'+zoneTotal(z)+'</span> disp.</small></div><div class="zp"><b style="color:'+Z.bright+'">'+money(Z.price)+'</b><small>c/u</small></div>';
     row.addEventListener('mouseenter',()=>hl(z));row.addEventListener('mouseleave',()=>hl(null));
@@ -273,13 +271,13 @@ function genDec(){ if(state.generalQty>0){state.generalQty--;updateGenPanel();re
 function bindGen(){ ['gplus','gplus2'].forEach(id=>{const e=document.getElementById(id);if(e)e.onclick=genInc;}); ['gminus','gminus2'].forEach(id=>{const e=document.getElementById(id);if(e)e.onclick=genDec;}); }
 function hl(z){seatsG.classList.toggle('dimmed',!!z); if(z){for(const s of SEATS){if(s.floor!==curFloor)continue;const n=nodeOf(s.id);if(n)n.classList.toggle('hl',s.zone===z);}}else seatsG.querySelectorAll('.hl').forEach(n=>n.classList.remove('hl')); }
 function refreshAvail(){zonesBox.querySelectorAll('.zrow').forEach(r=>{const av=r.querySelector('.av');if(av&&r.dataset.zone!=='GENERAL')av.textContent=avail(r.dataset.zone);});}
-document.getElementById('maplegend').innerHTML='<div class="it"><span class="dot" style="background:#D2AE6D"></span>Preferente</div><div class="it"><span class="dot" style="background:#e11d2a"></span>VIP</div><div class="it"><span class="dot" style="background:#25d366"></span>Elegido</div><div class="it"><span class="dot" style="background:#2a2f3a"></span>Vendido</div>';
+document.getElementById('maplegend').innerHTML='<div class="it"><span class="dot" style="background:#e11d2a"></span>VIP</div><div class="it"><span class="dot" style="background:#3b82f6"></span>General</div><div class="it"><span class="dot" style="background:#25d366"></span>Elegido</div><div class="it"><span class="dot" style="background:#2a2f3a"></span>Vendido</div>';
 
 const pickbox=document.getElementById('pickbox');
 function selectedSeats(){ return [...state.selected].map(id=>SEAT_MAP.get(id)); }
 function renderCart(){ const sel=selectedSeats(); const gq=state.generalQty, count=sel.length+gq;
   document.getElementById('pickcount').textContent=count?'('+count+')':'';
-  if(!count){pickbox.innerHTML='<div class="empty"><span>&#127915;</span>Toca asientos en el mapa (VIP / Preferente) o suma boletos General.</div>';}
+  if(!count){pickbox.innerHTML='<div class="empty"><span>&#127915;</span>Toca asientos VIP en el mapa o suma boletos General.</div>';}
   else{const w=document.createElement('div');w.className='picks';
     for(const s of sel){const z=ZONES[s.zone];const d=document.createElement('div');d.className='pick';
       d.innerHTML='<span class="pw" style="background:'+z.bright+'"></span><div class="pi"><b>'+seatLabel(s)+'</b><small>'+z.label+'</small></div><span class="pp">'+money(z.price)+'</span><button class="rm" data-id="'+s.id+'">&times;</button>';w.appendChild(d);}
@@ -322,7 +320,6 @@ function buildItems(sel){ const items=[]; const byZone={};
   for(const s of sel){ byZone[s.zone]=(byZone[s.zone]||0)+1; }
   if(byZone.VIP) items.push({name:'VIP Mesa', price:ZONES.VIP.price, qty:byZone.VIP});
   if(byZone.VIPA) items.push({name:'VIP Asiento', price:ZONES.VIPA.price, qty:byZone.VIPA});
-  if(byZone.PREF) items.push({name:'Preferente', price:ZONES.PREF.price, qty:byZone.PREF});
   if(state.generalQty>0) items.push({name:'General (lugar por llegada)', price:ZONES.GENERAL.price, qty:state.generalQty});
   const sub=sel.reduce((t,s)=>t+ZONES[s.zone].price,0)+state.generalQty*ZONES.GENERAL.price;
   const fee=feeOf(sub); if(fee>0) items.push({name:'Comisión de compra en línea (4.2%)', price:fee, qty:1});
