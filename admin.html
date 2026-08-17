@@ -136,7 +136,7 @@
         </div>
       </div>
       <div class="card">
-        <h2>Emitir boleto</h2>
+        <h2>Punto de venta</h2>
         <div class="grid2">
           <div><label>Tipo</label><select id="b_tipo">
             <option value="VIP">VIP mesa ($950)</option>
@@ -147,18 +147,26 @@
           <div id="f_vip"><div class="grid2"><div><label>Mesa</label><select id="b_mesa"></select></div><div><label>Asiento</label><select id="b_asiento"><option>1</option><option>2</option><option>3</option><option>4</option></select></div></div></div>
           <div id="f_vipa" style="display:none"><label>Asiento VIP (1–40)</label><select id="b_vipa_n"></select></div>
           <div id="f_pref" style="display:none"><div class="grid2"><div><label>Sección</label><select id="b_pref_sec"><option>A</option><option>B</option><option>C</option></select></div><div><label>Número</label><select id="b_pref_n"></select></div></div></div>
-          <div id="f_gen" style="display:none"><label>Cantidad de boletos</label><input id="b_cant" type="number" min="1" max="20" value="1"/></div>
+          <div id="f_gen" style="display:none"><label>Cantidad</label><input id="b_cant" type="number" min="1" max="20" value="1"/></div>
         </div>
+        <div class="grid2" style="align-items:end">
+          <div><label>Precio del boleto (MXN)</label><input id="b_precio" type="number" min="0" step="50" value="850"/></div>
+          <div><button class="btn" id="addCartBtn" style="width:100%">+ Agregar al carrito</button></div>
+        </div>
+        <div id="cartBox" style="margin-top:10px"></div>
+        <div style="border-top:1px solid var(--border,#212836);margin:14px 0 10px"></div>
         <label>Nombre del comprador</label><input id="b_nombre" placeholder="Nombre completo"/>
         <div class="grid2"><div><label>WhatsApp / tel</label><input id="b_tel" placeholder="55..."/></div><div><label>Email (opcional)</label><input id="b_mail" placeholder="correo@..."/></div></div>
-        <div class="grid2"><div><label>Precio del boleto (MXN)</label><input id="b_precio" type="number" min="0" step="50" value="850"/></div><div></div></div>
-        <label class="chk"><input type="checkbox" id="b_cortesia"/> Cortesía — boleto gratis (no cuenta como venta $)</label>
-        <button class="btn red" id="emitBtn">Emitir boleto</button>
+        <div class="grid2">
+          <div><label>Método de pago</label><select id="b_pago"><option value="efectivo">Efectivo</option><option value="tarjeta">Tarjeta</option><option value="transferencia">Transferencia</option></select></div>
+          <div><label>&nbsp;</label><label class="chk" style="margin:0"><input type="checkbox" id="b_cortesia"/> Cortesía — gratis</label></div>
+        </div>
+        <button class="btn red" id="emitSaleBtn">Emitir venta (0)</button>
         <div class="msg" id="bMsg"></div>
-        <div class="hint">Cada boleto genera su propio <b>folio consecutivo</b> + QR. En General puedes emitir <b>varios a la vez</b> (cada uno con su folio y QR). VIP valida que el asiento esté libre y lo bloquea.</div>
+        <div class="hint">Agrega los boletos al <b>carrito</b> (numerados y/o general), pon <b>un comprador</b> y el método de pago, y emítelos <b>todos juntos</b> — cada uno con su folio + QR. Los asientos numerados se validan y se bloquean.</div>
       </div>
       <div class="card">
-        <div class="topbar" style="margin-bottom:10px"><h2 style="margin:0">Boletos emitidos</h2><div class="row" style="align-items:center"><button class="mini" id="exportBtn" title="Descarga todos los boletos y ventas (respaldo)">&#8681; Respaldo CSV</button><input id="bSearch" placeholder="Buscar folio o nombre" style="max-width:220px;margin:0"/></div></div>
+        <div class="topbar" style="margin-bottom:10px"><h2 style="margin:0">Boletos emitidos</h2><div class="row" style="align-items:center"><button class="mini" id="corteBtn" title="Resumen de ventas por método de pago">&#128176; Corte de caja</button><button class="mini" id="exportBtn" title="Descarga todos los boletos y ventas (respaldo)">&#8681; Respaldo CSV</button><input id="bSearch" placeholder="Buscar folio o nombre" style="max-width:220px;margin:0"/></div></div>
         <div class="sold-list" id="boletoList"><div class="empty">Cargando…</div></div>
       </div>
     </div>
@@ -377,49 +385,66 @@ function showEmitted(list){ const m=$('bMsg'); m.className='msg ok';
   $('b_nombre').value=''; $('b_tel').value=''; $('b_mail').value=''; $('b_cant').value='1'; $('b_cortesia').checked=false; $('b_precio').disabled=false; syncEmitFields();
   if(list[0]) window.open('boleto.html?t='+list[0].token,'_blank');
 }
-$('emitBtn').addEventListener('click', emitBoleto);
-async function emitBoleto(){
-  const tipo=$('b_tipo').value, nombre=$('b_nombre').value.trim(), tel=$('b_tel').value.trim(), mail=$('b_mail').value.trim();
+function showSaleEmitted(list, buyer){ const m=$('bMsg'); m.className='msg ok';
+  const links=list.map(x=>'<a class="link" href="boleto.html?t='+x.token+'" target="_blank" style="padding:2px 7px;display:inline-block;margin:2px">'+x.folio+' ↗</a>').join('');
+  let html='✓ Venta emitida — '+list.length+' boleto(s): '+links;
+  if(buyer&&buyer.tel){ const base=location.origin; const tel=(buyer.tel||'').replace(/[^0-9]/g,''); const waTel=tel.length===10?'52'+tel:tel;
+    const msg='Hola '+(buyer.nombre||'')+'! Aquí están tus boletos para NOVA Strike Series (11 SEP 2026, Golden Paradise Casino, CDMX):%0A'+list.map(x=>base+'/boleto.html?t='+x.token).join('%0A')+'%0APresenta el QR de cada uno en la entrada.';
+    html+='<div style="margin-top:8px"><a class="btn red" href="https://wa.me/'+waTel+'?text='+msg+'" target="_blank" style="text-decoration:none;display:inline-block">Enviar todos por WhatsApp</a></div>'; }
+  m.innerHTML=html;
+  $('b_nombre').value=''; $('b_tel').value=''; $('b_mail').value=''; $('b_cant').value='1'; $('b_cortesia').checked=false; $('b_precio').disabled=false; syncEmitFields();
+  if(list[0]) window.open('boleto.html?t='+list[0].token,'_blank');
+}
+const MONEY=v=>'$'+Number(v||0).toLocaleString('es-MX');
+let CART=[];
+function seatFromForm(){ const t=$('b_tipo').value;
+  if(t==='VIP'){ const mesa=Number($('b_mesa').value), asiento=Number($('b_asiento').value); return {tipo:t, seatId:'VIP-M'+pad2(mesa)+'-S'+asiento, extra:{mesa,asiento}, label:'VIP · Mesa '+mesa+' As '+asiento}; }
+  if(t==='VIPA'){ const nn=Number($('b_vipa_n').value); return {tipo:t, seatId:'VIPA-'+pad2(nn), extra:{asiento:nn}, label:'VIP Asiento '+nn}; }
+  const sec=$('b_pref_sec').value, nn=Number($('b_pref_n').value); return {tipo:t, seatId:'PREF-'+sec+'-'+pad2(nn), extra:{sec,num:nn}, label:'Preferente '+sec+'-'+nn}; }
+function cartCount(){ return CART.reduce((a,i)=>a+(i.qty||1),0); }
+function cartTotal(){ return CART.reduce((a,i)=>a+i.precio*(i.qty||1),0); }
+function renderCart(){ const box=$('cartBox');
+  if(!CART.length){ box.innerHTML='<div class="empty" style="padding:12px">Carrito vacío. Agrega boletos.</div>'; }
+  else { box.innerHTML=CART.map((i,idx)=>'<div class="sold-item"><span class="sid">'+(i.qty?('x'+i.qty+' '):'')+i.label+'</span><span class="sinfo">'+MONEY(i.precio*(i.qty||1))+'</span><button class="mini" data-rm="'+idx+'">Quitar</button></div>').join('')
+    +'<div style="text-align:right;font-weight:700;padding:8px 4px 2px">Total: '+MONEY(cartTotal())+' · '+cartCount()+' boleto(s)</div>';
+    box.querySelectorAll('[data-rm]').forEach(b=>b.addEventListener('click',()=>{ CART.splice(Number(b.dataset.rm),1); renderCart(); })); }
+  $('emitSaleBtn').textContent='Emitir venta ('+cartCount()+')';
+}
+$('addCartBtn').addEventListener('click',()=>{ const m=$('bMsg'); m.className='msg'; const t=$('b_tipo').value; const precio=Math.max(0,Number($('b_precio').value)||0);
+  if(t==='GENERAL'){ const qty=Math.min(20,Math.max(1,parseInt($('b_cant').value||'1',10))); CART.push({tipo:'GENERAL', qty, precio, label:'General · lugar por llegada'}); }
+  else { const s=seatFromForm(); if(CART.some(i=>i.seatId===s.seatId)){ m.className='msg err'; m.textContent=s.seatId+' ya está en el carrito'; return; } CART.push({tipo:t, seatId:s.seatId, extra:s.extra, precio, label:s.label}); }
+  renderCart(); });
+renderCart();
+$('emitSaleBtn').addEventListener('click', emitSale);
+async function emitSale(){
   const m=$('bMsg'); m.className='msg';
-  if(!nombre){ m.className='msg err'; m.textContent='Pon al menos el nombre del comprador'; return; }
-  const cortesia=$('b_cortesia').checked; const precio=cortesia?0:Math.max(0, Number($('b_precio').value)||0);
-  const meta={ comprador:{nombre,tel,mail}, estado:'valido', canal:cortesia?'cortesia':'manual', cortesia, precio, emitidoAt:Date.now(), emitidoBy:auth.currentUser.email, evento:'NOVA-11SEP2026' };
-  const foliosRef=db.collection('config').doc('folios');
-  const btn=$('emitBtn'); btn.disabled=true;
+  if(!CART.length){ m.className='msg err'; m.textContent='Agrega al menos un boleto al carrito'; return; }
+  const nombre=$('b_nombre').value.trim(); if(!nombre){ m.className='msg err'; m.textContent='Pon el nombre del comprador'; return; }
+  const tel=$('b_tel').value.trim(), mail=$('b_mail').value.trim();
+  const cortesia=$('b_cortesia').checked; const pago=cortesia?'cortesia':$('b_pago').value; const grupo=genToken();
+  const baseMeta={ comprador:{nombre,tel,mail}, estado:'valido', canal:cortesia?'cortesia':'manual', cortesia, pago, grupo, emitidoAt:Date.now(), emitidoBy:auth.currentUser.email, evento:'NOVA-11SEP2026' };
+  const numbered=CART.filter(i=>i.seatId); const genLines=CART.filter(i=>i.tipo==='GENERAL'); const genQty=genLines.reduce((a,i)=>a+(i.qty||1),0);
+  const foliosRef=db.collection('config').doc('folios'); const gRef=db.collection('config').doc('general');
+  const btn=$('emitSaleBtn'); btn.disabled=true; const emitted=[];
   try{
-    if(tipo!=='GENERAL'){
-      let seatId, extra;
-      if(tipo==='VIP'){ const mesa=Number($('b_mesa').value), asiento=Number($('b_asiento').value);
-        seatId='VIP-M'+pad2(mesa)+'-S'+asiento; extra={mesa,asiento}; }
-      else if(tipo==='VIPA'){ const nn=Number($('b_vipa_n').value); seatId='VIPA-'+pad2(nn); extra={asiento:nn}; }
-      else { const sec=$('b_pref_sec').value, nn=Number($('b_pref_n').value); seatId='PREF-'+sec+'-'+pad2(nn); extra={sec,num:nn}; }
-      const token=genToken(); let folio;
-      await db.runTransaction(async tx=>{
-        const seatRef=db.collection(SEATS_COL).doc(seatId);
-        const [seatSnap, folioSnap]=await Promise.all([tx.get(seatRef), tx.get(foliosRef)]);
-        const sd=seatSnap.data(); if(sd && sd.status==='vendido') throw new Error('El asiento '+seatId+' ya está vendido');
-        const n=((folioSnap.exists&&folioSnap.data().n)||0)+1; folio=fmtFolio(n);
-        tx.set(foliosRef,{n},{merge:true});
-        tx.set(db.collection(BOLETOS_COL).doc(token), Object.assign({tipo, folio, asientoId:seatId, orden:token}, extra, meta));
-        tx.set(seatRef, {status:'vendido', ts:Date.now(), by:auth.currentUser.email, folio});
-      });
-      showEmitted([{token, folio}]);
-    } else {
-      const qty=Math.min(20, Math.max(1, parseInt($('b_cant').value||'1',10)));
-      const tokens=Array.from({length:qty},()=>genToken()); const orden=genToken(); let out=[];
-      await db.runTransaction(async tx=>{
-        const gRef=db.collection('config').doc('general');
-        const [gSnap, folioSnap]=await Promise.all([tx.get(gRef), tx.get(foliosRef)]);
-        const v=(gSnap.exists&&gSnap.data().vendidos)||0;
-        if(v+qty>250) throw new Error('No hay '+qty+' lugares General (quedan '+(250-v)+')');
-        let n=(folioSnap.exists&&folioSnap.data().n)||0; out=[];
-        for(let i=0;i<qty;i++){ n++; const folio=fmtFolio(n); out.push({token:tokens[i], folio});
-          tx.set(db.collection(BOLETOS_COL).doc(tokens[i]), Object.assign({tipo:'GENERAL', folio, orden}, meta)); }
-        tx.set(foliosRef,{n},{merge:true});
-        tx.set(gRef,{vendidos:v+qty},{merge:true});
-      });
-      showEmitted(out);
-    }
+    await db.runTransaction(async tx=>{
+      const seatRefs=numbered.map(i=>db.collection(SEATS_COL).doc(i.seatId));
+      const reads=[...seatRefs.map(r=>tx.get(r)), tx.get(foliosRef)]; if(genQty>0) reads.push(tx.get(gRef));
+      const snaps=await Promise.all(reads);
+      const folioSnap=snaps[seatRefs.length]; const gSnap=genQty>0?snaps[seatRefs.length+1]:null;
+      numbered.forEach((i,idx)=>{ const sd=snaps[idx].data(); if(sd&&sd.status==='vendido') throw new Error('El asiento '+i.seatId+' ya está vendido'); });
+      const gv=(gSnap&&gSnap.exists&&gSnap.data().vendidos)||0;
+      if(genQty>0 && gv+genQty>250) throw new Error('No hay '+genQty+' lugares General (quedan '+(250-gv)+')');
+      let n=(folioSnap.exists&&folioSnap.data().n)||0; emitted.length=0;
+      numbered.forEach((i,idx)=>{ n++; const folio=fmtFolio(n); const token=genToken();
+        tx.set(db.collection(BOLETOS_COL).doc(token), Object.assign({tipo:i.tipo, folio, asientoId:i.seatId, orden:grupo, precio:i.precio}, i.extra||{}, baseMeta));
+        tx.set(seatRefs[idx], {status:'vendido', ts:Date.now(), by:auth.currentUser.email, folio}); emitted.push({token, folio}); });
+      genLines.forEach(line=>{ for(let k=0;k<(line.qty||1);k++){ n++; const folio=fmtFolio(n); const token=genToken();
+        tx.set(db.collection(BOLETOS_COL).doc(token), Object.assign({tipo:'GENERAL', folio, orden:grupo, precio:line.precio}, baseMeta)); emitted.push({token, folio}); } });
+      if(genQty>0) tx.set(gRef,{vendidos:gv+genQty},{merge:true});
+      tx.set(foliosRef,{n},{merge:true});
+    });
+    CART=[]; renderCart(); showSaleEmitted(emitted,{nombre,tel});
   }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; }
   btn.disabled=false;
 }
@@ -444,12 +469,27 @@ function watchBoletos(){ db.collection(BOLETOS_COL).onSnapshot(snap=>{ BOLETOS=[
     BOLETOS.sort((a,b)=>(b.d.emitidoAt||0)-(a.d.emitidoAt||0)); renderBoletos();
   }, err=>{ $('boletoList').innerHTML='<div class="empty">Error: '+err.message+'</div>'; }); }
 $('bSearch').addEventListener('input', renderBoletos);
+$('corteBtn').addEventListener('click',()=>{
+  const valid=BOLETOS.filter(r=>r.d.estado!=='cancelado');
+  const lbl={efectivo:'Efectivo',tarjeta:'Tarjeta',transferencia:'Transferencia',linea:'En línea (MP)',cortesia:'Cortesías',otro:'Otro'};
+  const byPago={}; const byVend={}; let n=0, monto=0;
+  valid.forEach(r=>{ const d=r.d; const p=Number(d.precio)||0; const k=d.cortesia?'cortesia':(d.canal==='mp'?'linea':(d.pago||'otro'));
+    (byPago[k]=byPago[k]||{n:0,m:0}).n++; byPago[k].m+=p;
+    const v=d.emitidoBy||(d.canal==='mp'?'(en línea)':'—'); (byVend[v]=byVend[v]||{n:0,m:0}).n++; byVend[v].m+=p;
+    n++; monto+=p; });
+  let t='CORTE DE CAJA\n\nPor método de pago:\n';
+  Object.keys(byPago).forEach(k=>{ t+='  • '+(lbl[k]||k)+': '+byPago[k].n+' boleto(s) · '+MONEY(byPago[k].m)+'\n'; });
+  t+='\nPor vendedor:\n';
+  Object.keys(byVend).forEach(v=>{ t+='  • '+v+': '+byVend[v].n+' · '+MONEY(byVend[v].m)+'\n'; });
+  t+='\nTOTAL: '+n+' boleto(s) · '+MONEY(monto);
+  alert(t);
+});
 $('exportBtn').addEventListener('click',()=>{
-  const cols=['Folio','Tipo','Asiento','Comprador','Tel','Email','Precio','Estado','Canal','Cortesia','Fecha','Token'];
+  const cols=['Folio','Tipo','Asiento','Comprador','Tel','Email','Precio','Estado','Canal','Pago','Cortesia','Fecha','Token'];
   const esc=v=>{ v=(v==null?'':String(v)); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
   const rows=[...BOLETOS].sort((a,b)=>(a.d.folio||'').localeCompare(b.d.folio||'')).map(r=>{ const d=r.d,c=d.comprador||{};
     const fecha=d.emitidoAt?new Date(d.emitidoAt).toLocaleString('es-MX'):'';
-    return [d.folio||'',(TIPO_LBL_B[d.tipo]||d.tipo||''),seatText(d),c.nombre||'',c.tel||'',c.mail||'',(d.precio!=null?d.precio:''),d.estado||'',d.canal||'',d.cortesia?'si':'',fecha,r.token].map(esc).join(','); });
+    return [d.folio||'',(TIPO_LBL_B[d.tipo]||d.tipo||''),seatText(d),c.nombre||'',c.tel||'',c.mail||'',(d.precio!=null?d.precio:''),d.estado||'',d.canal||'',d.pago||'',d.cortesia?'si':'',fecha,r.token].map(esc).join(','); });
   const csv='﻿'+cols.join(',')+'\n'+rows.join('\n');
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}); const url=URL.createObjectURL(blob);
   const a=document.createElement('a'); a.href=url; a.download='NOVA-boletos-'+new Date().toISOString().slice(0,10)+'.csv';
@@ -472,7 +512,8 @@ function renderBoletos(){ const q=($('bSearch').value||'').trim().toUpperCase();
   box.querySelectorAll('[data-see]').forEach(b=>b.addEventListener('click',()=>window.open('boleto.html?t='+b.dataset.see,'_blank')));
   box.querySelectorAll('[data-info]').forEach(b=>b.addEventListener('click',()=>{ const r=BOLETOS.find(x=>x.token===b.dataset.info); if(!r)return; const c=r.d.comprador||{};
     const canal={mp:'Compra en línea (Mercado Pago)',manual:'Emitido por admin',cortesia:'Cortesía',test:'Prueba'}[r.d.canal]||(r.d.canal||'—');
-    alert('COMPRADOR\n\nNombre: '+(c.nombre||'—')+'\nWhatsApp/Tel: '+(c.tel||'—')+'\nEmail: '+(c.mail||'—')+'\n\nFolio: '+(r.d.folio||'')+'\nTipo: '+(TIPO_LBL_B[r.d.tipo]||r.d.tipo)+' · '+seatText(r.d)+'\nCómo compró: '+canal+(r.d.pagoId?'\nPago MP: '+r.d.pagoId:'')); }));
+    const pagoLbl={efectivo:'Efectivo',tarjeta:'Tarjeta',transferencia:'Transferencia'}[r.d.pago]||'';
+    alert('COMPRADOR\n\nNombre: '+(c.nombre||'—')+'\nWhatsApp/Tel: '+(c.tel||'—')+'\nEmail: '+(c.mail||'—')+'\n\nFolio: '+(r.d.folio||'')+'\nTipo: '+(TIPO_LBL_B[r.d.tipo]||r.d.tipo)+' · '+seatText(r.d)+'\nPrecio: '+MONEY(r.d.precio)+'\nCómo compró: '+canal+(pagoLbl?' · '+pagoLbl:'')+(r.d.pagoId?'\nPago MP: '+r.d.pagoId:'')); }));
   box.querySelectorAll('[data-wa]').forEach(b=>b.addEventListener('click',()=>{ const r=BOLETOS.find(x=>x.token===b.dataset.wa); if(!r)return;
     const tel=waPhone((r.d.comprador&&r.d.comprador.tel)||''); const link=location.origin+'/boleto.html?t='+b.dataset.wa;
     const nom=(r.d.comprador&&r.d.comprador.nombre)?' '+r.d.comprador.nombre.split(' ')[0]:'';
