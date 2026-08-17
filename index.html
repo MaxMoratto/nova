@@ -38,6 +38,10 @@
     @keyframes logoAnim { from{opacity:0;letter-spacing:.4em;filter:blur(8px)} to{opacity:1;letter-spacing:.06em;filter:blur(0)} }
     @keyframes countPop { 0%,100%{transform:scaleY(1)} 45%{transform:scaleY(.88)} }
     @keyframes menuSlideIn { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+    /* ===== Modo estático / ligero: iOS (WebKit) crasheaba por exceso de animaciones,
+       drop-shadows animados y capas GPU. Se apaga todo lo pesado. ===== */
+    *, *::before, *::after { animation: none !important; will-change: auto !important; }
+    nav { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
   </style>
 </helmet>
 
@@ -100,9 +104,9 @@
     <line x1="669" y1="131" x2="131" y2="669" stroke="rgba(255,0,51,.04)" stroke-width="1"></line>
   </svg>
   <!-- Fighters hero: blue team left -->
-  <img class="heroFa" src="uploads/hazul.webp" alt="Equipo azul" style="position:absolute;bottom:0;left:-3%;height:105%;max-width:42%;object-fit:contain;object-position:bottom left;z-index:3;pointer-events:none;filter:drop-shadow(0 0 40px rgba(0,240,255,.4));-webkit-mask-image:linear-gradient(to right,#000 50%,transparent 90%);mask-image:linear-gradient(to right,#000 50%,transparent 90%);">
+  <img class="heroFa" src="uploads/hazul.webp" alt="Equipo azul" style="position:absolute;bottom:0;left:-3%;height:105%;max-width:42%;object-fit:contain;object-position:bottom left;z-index:3;pointer-events:none;-webkit-mask-image:linear-gradient(to right,#000 50%,transparent 90%);mask-image:linear-gradient(to right,#000 50%,transparent 90%);">
   <!-- Fighters hero: red team right -->
-  <img class="heroFr" src="uploads/hrojo.webp" alt="Equipo rojo" style="position:absolute;bottom:0;right:-3%;height:105%;max-width:42%;object-fit:contain;object-position:bottom right;z-index:3;pointer-events:none;filter:drop-shadow(0 0 40px rgba(255,0,51,.4));-webkit-mask-image:linear-gradient(to left,#000 50%,transparent 90%);mask-image:linear-gradient(to left,#000 50%,transparent 90%);">
+  <img class="heroFr" src="uploads/hrojo.webp" alt="Equipo rojo" style="position:absolute;bottom:0;right:-3%;height:105%;max-width:42%;object-fit:contain;object-position:bottom right;z-index:3;pointer-events:none;-webkit-mask-image:linear-gradient(to left,#000 50%,transparent 90%);mask-image:linear-gradient(to left,#000 50%,transparent 90%);">
   <!-- Bloque info izquierda (fecha + lugar) -->
   <div id="hero-info" style="position:absolute;left:clamp(20px,3.2vw,56px);top:clamp(92px,15vh,150px);z-index:5;text-align:left;pointer-events:none;animation:fadeUp 1s ease-out .45s both;text-shadow:0 2px 3px rgba(0,0,0,1),0 3px 12px rgba(0,0,0,1),0 6px 30px rgba(0,0,0,.95);">
     <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,6.5vw,96px);color:#FF0033;line-height:.78;letter-spacing:.02em;text-shadow:0 2px 3px rgba(0,0,0,1),0 4px 16px rgba(0,0,0,1),0 6px 30px rgba(0,0,0,.95),0 0 28px rgba(255,0,51,.5);">11</div>
@@ -113,7 +117,7 @@
     <div style="font-size:clamp(10px,1.5vw,13px);font-weight:700;letter-spacing:.16em;color:rgba(255,255,255,.72);text-transform:uppercase;margin-top:5px;">Foro San Rafael</div>
   </div>
   <div style="position:relative;z-index:4;text-align:center;padding:0 clamp(16px,5vw,60px);animation:fadeUp 1s ease-out .2s both;width:100%;margin-top:clamp(-70px,-6.5vh,-32px);">
-    <img src="uploads/nss-hero.webp" alt="NOVA Strike Series" style="width:clamp(96px,14.6vw,188px);height:auto;display:block;margin:0 auto clamp(10px,1.6vw,16px);filter:drop-shadow(0 0 12px rgba(155,22,55,.9)) drop-shadow(0 0 30px rgba(155,22,55,.7)) drop-shadow(0 0 64px rgba(155,22,55,.5)) drop-shadow(0 0 110px rgba(155,22,55,.32));animation:logoGlow 2.6s ease-in-out infinite;"/>
+    <img src="uploads/nss-hero.webp" alt="NOVA Strike Series" style="width:clamp(96px,14.6vw,188px);height:auto;display:block;margin:0 auto clamp(10px,1.6vw,16px);filter:drop-shadow(0 0 16px rgba(155,22,55,.7));"/>
     <div style="font-family:'Bebas Neue',sans-serif;font-style:italic;line-height:.85;margin-bottom:clamp(14px,2.5vw,22px);animation:fadeUp 1s ease-out .5s both;">
       <div class="heroT1" style="font-size:clamp(37px,7.5vw,81px);color:#fff;letter-spacing:.04em;text-shadow:0 4px 22px rgba(0,0,0,.5);">DONDE NACEN</div>
       <div class="heroT2" style="font-size:clamp(59px,14.6vw,151px);color:#FF0033;letter-spacing:.02em;animation:textRed 4s ease-in-out infinite;">LOS GUERREROS</div>
@@ -208,7 +212,7 @@
   </div>
   <div style="position:relative;display:flex;flex-direction:{{ fightDir }};min-height:{{ fightMainMinH }};">
     <div style="flex:1;background:linear-gradient(135deg,#1C0008 0%,#130510 60%,#0D0510 100%);padding:clamp(28px,5vw,56px) clamp(20px,4vw,48px);display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;min-height:clamp(380px,45vw,500px);">
-      <img src="{{ me.r.img }}" alt="Peleador rojo" style="position:absolute;bottom:0;right:clamp(0px,2vw,20px);height:96%;max-width:60%;object-fit:contain;object-position:bottom right;z-index:1;pointer-events:none;filter:drop-shadow(0 20px 32px rgba(0,0,0,.7));">
+      <img src="{{ me.r.img }}" alt="Peleador rojo" style="position:absolute;bottom:0;right:clamp(0px,2vw,20px);height:96%;max-width:60%;object-fit:contain;object-position:bottom right;z-index:1;pointer-events:none;">
       <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(10,3,8,.95) 0%,rgba(10,3,8,.35) 38%,transparent 65%);z-index:2;pointer-events:none;"></div>
       <div style="position:absolute;top:18px;left:clamp(18px,4vw,48px);font-size:9px;font-weight:700;letter-spacing:.28em;color:#FF0033;border:1px solid rgba(255,0,51,.3);padding:3px 10px;text-transform:uppercase;z-index:3;">Esquina Roja</div>
       <div style="position:relative;z-index:3;">
@@ -229,7 +233,7 @@
       </div>
     </div>
     <div style="flex:1;background:linear-gradient(225deg,#001525 0%,#050F1A 60%,#050810 100%);padding:clamp(28px,5vw,56px) clamp(20px,4vw,48px);display:flex;flex-direction:column;justify-content:flex-end;align-items:{{ f2Align }};position:relative;overflow:hidden;min-height:clamp(380px,45vw,500px);">
-      <img src="{{ me.a.img }}" alt="Peleador azul" style="position:absolute;bottom:0;left:clamp(0px,2vw,20px);height:96%;max-width:60%;object-fit:contain;object-position:bottom left;z-index:1;pointer-events:none;filter:drop-shadow(0 20px 32px rgba(0,0,0,.7));">
+      <img src="{{ me.a.img }}" alt="Peleador azul" style="position:absolute;bottom:0;left:clamp(0px,2vw,20px);height:96%;max-width:60%;object-fit:contain;object-position:bottom left;z-index:1;pointer-events:none;">
       <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(3,8,18,.95) 0%,rgba(3,8,18,.35) 38%,transparent 65%);z-index:2;pointer-events:none;"></div>
       <div style="position:absolute;top:18px;right:clamp(18px,4vw,48px);font-size:9px;font-weight:700;letter-spacing:.28em;color:#00F0FF;border:1px solid rgba(0,240,255,.3);padding:3px 10px;text-transform:uppercase;z-index:3;">Esquina Azul</div>
       <div style="position:relative;z-index:3;text-align:{{ f2TextAlign }};">
@@ -250,7 +254,7 @@
   </div>
   <div style="position:relative;display:flex;flex-direction:{{ fightDir }};min-height:{{ fightCoMinH }};background:#070510;">
     <div style="flex:1;background:linear-gradient(135deg,#150008 0%,#100410 60%,#080410 100%);padding:clamp(22px,4vw,44px) clamp(18px,3.5vw,44px);display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;min-height:clamp(340px,40vw,400px);">
-      <img src="{{ co.r.img }}" alt="Peleador rojo" style="position:absolute;bottom:0;right:clamp(0px,2vw,16px);height:95%;max-width:56%;object-fit:contain;object-position:bottom right;z-index:1;pointer-events:none;filter:drop-shadow(0 16px 28px rgba(0,0,0,.55));">
+      <img src="{{ co.r.img }}" alt="Peleador rojo" style="position:absolute;bottom:0;right:clamp(0px,2vw,16px);height:95%;max-width:56%;object-fit:contain;object-position:bottom right;z-index:1;pointer-events:none;">
       <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(8,4,16,.92) 0%,rgba(8,4,16,.32) 34%,transparent 62%);z-index:2;pointer-events:none;"></div>
       <div style="position:absolute;font-family:'Bebas Neue',sans-serif;font-size:clamp(80px,18vw,230px);color:rgba(255,0,51,.04);right:-5px;bottom:-30px;line-height:1;pointer-events:none;user-select:none;">A</div>
       <div style="position:absolute;top:16px;left:clamp(16px,3.5vw,44px);font-size:9px;font-weight:700;letter-spacing:.24em;color:#FF0033;border:1px solid rgba(255,0,51,.25);padding:3px 9px;text-transform:uppercase;">Esquina Roja</div>
@@ -269,7 +273,7 @@
       </div>
     </div>
     <div style="flex:1;background:linear-gradient(225deg,#001218 0%,#050D18 60%,#05080F 100%);padding:clamp(22px,4vw,44px) clamp(18px,3.5vw,44px);display:flex;flex-direction:column;justify-content:flex-end;align-items:{{ f2Align }};position:relative;overflow:hidden;min-height:clamp(340px,40vw,400px);">
-      <img src="{{ co.a.img }}" alt="Peleador azul" style="position:absolute;bottom:0;left:clamp(0px,2vw,16px);height:95%;max-width:56%;object-fit:contain;object-position:bottom left;z-index:1;pointer-events:none;filter:drop-shadow(0 16px 28px rgba(0,0,0,.55));">
+      <img src="{{ co.a.img }}" alt="Peleador azul" style="position:absolute;bottom:0;left:clamp(0px,2vw,16px);height:95%;max-width:56%;object-fit:contain;object-position:bottom left;z-index:1;pointer-events:none;">
       <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(5,8,15,.92) 0%,rgba(5,8,15,.32) 34%,transparent 62%);z-index:2;pointer-events:none;"></div>
       <div style="position:absolute;font-family:'Bebas Neue',sans-serif;font-size:clamp(80px,18vw,230px);color:rgba(0,240,255,.04);left:-5px;bottom:-30px;line-height:1;pointer-events:none;user-select:none;">Y</div>
       <div style="position:absolute;top:16px;right:clamp(16px,3.5vw,44px);font-size:9px;font-weight:700;letter-spacing:.24em;color:#00F0FF;border:1px solid rgba(0,240,255,.25);padding:3px 9px;text-transform:uppercase;">Esquina Azul</div>
@@ -421,7 +425,7 @@
     </div>
   </div>
   <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,3,7,.85) 0%,transparent 22%,transparent 78%,rgba(7,3,7,.85) 100%);"></div>
-  <img src="uploads/logos/nssblanco.webp" alt="NOVA Strike Series" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);height:clamp(66px,11vw,120px);filter:drop-shadow(0 0 24px rgba(0,0,0,.9)) drop-shadow(0 0 40px rgba(255,0,51,.4));z-index:5;">
+  <img src="uploads/logos/nssblanco.webp" alt="NOVA Strike Series" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);height:clamp(66px,11vw,120px);filter:drop-shadow(0 0 18px rgba(0,0,0,.85));z-index:5;">
 </section>
 
 <!-- FOOTER -->
