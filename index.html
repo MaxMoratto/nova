@@ -293,7 +293,8 @@
   <div style="padding:0 clamp(16px,4vw,40px) 68px;max-width:1200px;margin:0 auto;">
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2px;">
       <sc-for list="{{ prelims }}" as="fight" hint-placeholder-count="6">
-        <div style="background:rgba(255,255,255,.018);border:1px solid rgba(255,255,255,.05);padding:clamp(13px,2vw,20px) clamp(14px,2.5vw,26px);display:flex;align-items:center;gap:10px;cursor:pointer;transition:background .2s,border-color .2s;" style-hover="background:rgba(255,0,51,.04);border-color:rgba(255,0,51,.18);">
+        <div style="background:rgba(255,255,255,.018);border:1px solid rgba(255,255,255,.05);padding:clamp(11px,1.8vw,18px) clamp(12px,2.2vw,22px);display:flex;align-items:center;gap:clamp(8px,1.4vw,12px);cursor:pointer;transition:background .2s,border-color .2s;" style-hover="background:rgba(255,0,51,.04);border-color:rgba(255,0,51,.18);">
+          <img src="{{ fight.r1img }}" alt="" style="width:clamp(42px,6.5vw,56px);height:clamp(42px,6.5vw,56px);border-radius:50%;object-fit:cover;object-position:top center;background:#141821;border:1.5px solid rgba(255,0,51,.35);flex-shrink:0;">
           <div style="flex:1;min-width:0;">
             <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(13px,2.2vw,19px);color:#fff;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ fight.r1 }}</div>
             <div style="font-size:11px;color:#FF0033;letter-spacing:.1em;margin-top:2px;font-weight:700;">{{ fight.r1rec }}</div>
@@ -305,6 +306,7 @@
             <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(13px,2.2vw,19px);color:#fff;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ fight.r2 }}</div>
             <div style="font-size:11px;color:#00F0FF;letter-spacing:.1em;margin-top:2px;font-weight:700;text-align:right;">{{ fight.r2rec }}</div>
           </div>
+          <img src="{{ fight.r2img }}" alt="" style="width:clamp(42px,6.5vw,56px);height:clamp(42px,6.5vw,56px);border-radius:50%;object-fit:cover;object-position:top center;background:#141821;border:1.5px solid rgba(0,240,255,.35);flex-shrink:0;">
         </div>
       </sc-for>
     </div>
@@ -670,14 +672,9 @@ class Component extends DCLogic {
       a: corner(coest && coest.azul, 'uploads/azul2.webp')
     };
     const prelimList = plist.filter(p => p.tipo === 'preliminar').sort((a, b) => (a.orden || 99) - (b.orden || 99));
-    const prelims = prelimList.length ? prelimList.map(p => ({ r1: nm(p.rojo), r1rec: rec(p.rojo), r2: nm(p.azul), r2rec: rec(p.azul) })) : [
-      { r1: 'POR REVELAR', r1rec: '0-0-0', r2: 'POR REVELAR', r2rec: '0-0-0' },
-      { r1: 'POR REVELAR', r1rec: '0-0-0', r2: 'POR REVELAR', r2rec: '0-0-0' },
-      { r1: 'POR REVELAR', r1rec: '0-0-0', r2: 'POR REVELAR', r2rec: '0-0-0' },
-      { r1: 'POR REVELAR', r1rec: '0-0-0', r2: 'POR REVELAR', r2rec: '0-0-0' },
-      { r1: 'POR REVELAR', r1rec: '0-0-0', r2: 'POR REVELAR', r2rec: '0-0-0' },
-      { r1: 'POR REVELAR', r1rec: '0-0-0', r2: 'POR REVELAR', r2rec: '0-0-0' }
-    ];
+    const av = (f) => (f && f.fotos && f.fotos[0]) || 'uploads/silueta.webp';
+    const ph = { r1: 'POR REVELAR', r1rec: '0-0-0', r1img: 'uploads/silueta.webp', r2: 'POR REVELAR', r2rec: '0-0-0', r2img: 'uploads/silueta.webp' };
+    const prelims = prelimList.length ? prelimList.map(p => ({ r1: nm(p.rojo), r1rec: rec(p.rojo), r1img: av(p.rojo), r2: nm(p.azul), r2rec: rec(p.azul), r2img: av(p.azul) })) : [ph, ph, ph, ph, ph, ph];
 
     const feedItems = [
       { title: 'FACE-OFF: MENDEZ vs VOLKOV', views: '284K', dur: '0:45', bg: 'linear-gradient(180deg,#3a0008 0%,#1a0010 50%,#0a0008 100%)' },
