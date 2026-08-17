@@ -121,22 +121,22 @@
     <p style="font-size:clamp(9px,2vw,12px);font-weight:700;letter-spacing:clamp(.2em,.5em,.5em);color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:clamp(14px,2.5vw,24px);">El combate comienza en</p>
     <div style="display:flex;align-items:flex-start;justify-content:center;gap:{{ cdGap }};margin-bottom:clamp(30px,5vw,48px);">
       <div style="text-align:center;">
-        <div style="width:{{ cdBox }};height:{{ cdBox }};background:rgba(0,0,0,.7);border:1px solid rgba(255,0,51,.35);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:{{ cdFont }};color:#fff;box-shadow:0 0 20px rgba(255,0,51,.12),inset 0 0 20px rgba(0,0,0,.5);animation:countPop 1s ease-in-out infinite;">{{ days }}</div>
+        <div style="width:{{ cdBox }};height:{{ cdBox }};background:rgba(0,0,0,.7);border:1px solid rgba(255,0,51,.35);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:{{ cdFont }};color:#fff;box-shadow:0 0 20px rgba(255,0,51,.12),inset 0 0 20px rgba(0,0,0,.5);animation:countPop 1s ease-in-out infinite;" id="cd-days">{{ days }}</div>
         <div style="font-size:9px;font-weight:700;letter-spacing:.2em;color:rgba(255,0,51,.7);margin-top:5px;text-transform:uppercase;">Días</div>
       </div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:{{ cdSep }};color:#FF0033;padding-top:{{ cdSepPad }};line-height:1;">:</div>
       <div style="text-align:center;">
-        <div style="width:{{ cdBox }};height:{{ cdBox }};background:rgba(0,0,0,.7);border:1px solid rgba(255,0,51,.35);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:{{ cdFont }};color:#fff;box-shadow:0 0 20px rgba(255,0,51,.12),inset 0 0 20px rgba(0,0,0,.5);">{{ hours }}</div>
+        <div style="width:{{ cdBox }};height:{{ cdBox }};background:rgba(0,0,0,.7);border:1px solid rgba(255,0,51,.35);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:{{ cdFont }};color:#fff;box-shadow:0 0 20px rgba(255,0,51,.12),inset 0 0 20px rgba(0,0,0,.5);" id="cd-hours">{{ hours }}</div>
         <div style="font-size:9px;font-weight:700;letter-spacing:.2em;color:rgba(255,0,51,.7);margin-top:5px;text-transform:uppercase;">Horas</div>
       </div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:{{ cdSep }};color:#FF0033;padding-top:{{ cdSepPad }};line-height:1;">:</div>
       <div style="text-align:center;">
-        <div style="width:{{ cdBox }};height:{{ cdBox }};background:rgba(0,0,0,.7);border:1px solid rgba(0,240,255,.3);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:{{ cdFont }};color:#fff;box-shadow:0 0 20px rgba(0,240,255,.1),inset 0 0 20px rgba(0,0,0,.5);">{{ mins }}</div>
+        <div style="width:{{ cdBox }};height:{{ cdBox }};background:rgba(0,0,0,.7);border:1px solid rgba(0,240,255,.3);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:{{ cdFont }};color:#fff;box-shadow:0 0 20px rgba(0,240,255,.1),inset 0 0 20px rgba(0,0,0,.5);" id="cd-mins">{{ mins }}</div>
         <div style="font-size:9px;font-weight:700;letter-spacing:.2em;color:rgba(0,240,255,.7);margin-top:5px;text-transform:uppercase;">Min</div>
       </div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:{{ cdSep }};color:#00F0FF;padding-top:{{ cdSepPad }};line-height:1;">:</div>
       <div style="text-align:center;">
-        <div style="width:{{ cdBox }};height:{{ cdBox }};background:rgba(0,0,0,.7);border:1px solid rgba(0,240,255,.3);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:{{ cdFont }};color:#fff;box-shadow:0 0 20px rgba(0,240,255,.1),inset 0 0 20px rgba(0,0,0,.5);animation:countPop 1s ease-in-out infinite;">{{ secs }}</div>
+        <div style="width:{{ cdBox }};height:{{ cdBox }};background:rgba(0,0,0,.7);border:1px solid rgba(0,240,255,.3);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:{{ cdFont }};color:#fff;box-shadow:0 0 20px rgba(0,240,255,.1),inset 0 0 20px rgba(0,0,0,.5);animation:countPop 1s ease-in-out infinite;" id="cd-secs">{{ secs }}</div>
         <div style="font-size:9px;font-weight:700;letter-spacing:.2em;color:rgba(0,240,255,.7);margin-top:5px;text-transform:uppercase;">Seg</div>
       </div>
     </div>
@@ -593,14 +593,18 @@ class Component extends DCLogic {
 
   componentDidMount() {
     const eventDate = new Date('2026-09-11T21:00:00');
+    const p2 = n => String(Math.floor(n)).padStart(2, '0');
+    // El contador actualiza SOLO sus 4 números por DOM directo, sin setState.
+    // Así no se re-renderiza toda la app (hero + cartelera con imágenes) cada segundo,
+    // lo que hacía crashear a iOS/WebKit por memoria. Se mantiene this.state sincronizado
+    // (sin re-render) para que cualquier render real posterior muestre el valor correcto.
     const tick = () => {
       const diff = Math.max(0, eventDate - Date.now());
-      this.setState({
-        days: Math.floor(diff / 86400000),
-        hours: Math.floor((diff % 86400000) / 3600000),
-        mins: Math.floor((diff % 3600000) / 60000),
-        secs: Math.floor((diff % 60000) / 1000)
-      });
+      const d = Math.floor(diff / 86400000), h = Math.floor((diff % 86400000) / 3600000),
+            m = Math.floor((diff % 3600000) / 60000), s = Math.floor((diff % 60000) / 1000);
+      this.state.days = d; this.state.hours = h; this.state.mins = m; this.state.secs = s;
+      const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+      set('cd-days', p2(d)); set('cd-hours', p2(h)); set('cd-mins', p2(m)); set('cd-secs', p2(s));
     };
     tick();
     this._iv = setInterval(tick, 1000);
