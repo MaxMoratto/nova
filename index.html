@@ -295,20 +295,20 @@
   <div style="padding:0 clamp(16px,4vw,40px) 68px;max-width:1200px;margin:0 auto;">
     <div style="display:flex;flex-direction:column;gap:10px;">
       <sc-for list="{{ prelims }}" as="fight" hint-placeholder-count="6">
-        <div style="position:relative;overflow:hidden;background:linear-gradient(90deg,rgba(255,0,51,.06) 0%,rgba(255,255,255,.02) 30%,rgba(255,255,255,.02) 70%,rgba(0,240,255,.06) 100%);border:1px solid rgba(255,255,255,.06);min-height:clamp(128px,20vw,166px);display:flex;align-items:center;gap:clamp(4px,1.2vw,12px);padding:0 clamp(8px,1.8vw,18px);cursor:pointer;transition:border-color .2s;" style-hover="border-color:rgba(255,0,51,.22);">
-          <img src="{{ fight.r1img }}" alt="" style="align-self:flex-end;height:97%;width:auto;max-width:23%;object-fit:contain;object-position:bottom center;flex-shrink:0;">
-          <div style="flex:1;min-width:0;padding-left:clamp(2px,1vw,10px);z-index:2;">
+        <div style="position:relative;overflow:hidden;background:linear-gradient(90deg,rgba(255,0,51,.06) 0%,rgba(255,255,255,.02) 30%,rgba(255,255,255,.02) 70%,rgba(0,240,255,.06) 100%);border:1px solid rgba(255,255,255,.06);min-height:clamp(140px,20vw,176px);display:flex;align-items:center;gap:clamp(4px,1.2vw,14px);padding:0 clamp(14px,3vw,40px);cursor:pointer;transition:border-color .2s;" style-hover="border-color:rgba(255,0,51,.22);">
+          <img src="{{ fight.r1img }}" alt="" style="align-self:flex-end;height:92%;width:auto;max-width:20%;object-fit:contain;object-position:bottom center;flex-shrink:0;">
+          <div style="flex:1;min-width:0;padding-left:clamp(6px,1.5vw,18px);z-index:2;">
             <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(15px,2.6vw,26px);color:#fff;letter-spacing:.04em;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ fight.r1 }}</div>
-            <div style="font-size:clamp(11px,1.4vw,13px);color:#FF0033;letter-spacing:.1em;margin-top:4px;font-weight:700;">{{ fight.r1rec }}</div>
+            <div style="font-size:clamp(11px,1.4vw,13px);color:#FF0033;letter-spacing:.1em;margin-top:5px;font-weight:700;">{{ fight.r1rec }}</div>
           </div>
           <div style="width:clamp(30px,4vw,38px);height:clamp(30px,4vw,38px);border:1px solid rgba(255,0,51,.4);display:flex;align-items:center;justify-content:center;transform:rotate(45deg);flex-shrink:0;background:rgba(9,7,15,.65);z-index:2;">
             <span style="transform:rotate(-45deg);display:block;font-family:'Bebas Neue',sans-serif;font-size:clamp(10px,1.4vw,13px);color:#FF0033;">VS</span>
           </div>
-          <div style="flex:1;min-width:0;text-align:right;padding-right:clamp(2px,1vw,10px);z-index:2;">
+          <div style="flex:1;min-width:0;text-align:right;padding-right:clamp(6px,1.5vw,18px);z-index:2;">
             <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(15px,2.6vw,26px);color:#fff;letter-spacing:.04em;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ fight.r2 }}</div>
-            <div style="font-size:clamp(11px,1.4vw,13px);color:#00F0FF;letter-spacing:.1em;margin-top:4px;font-weight:700;text-align:right;">{{ fight.r2rec }}</div>
+            <div style="font-size:clamp(11px,1.4vw,13px);color:#00F0FF;letter-spacing:.1em;margin-top:5px;font-weight:700;text-align:right;">{{ fight.r2rec }}</div>
           </div>
-          <img src="{{ fight.r2img }}" alt="" style="align-self:flex-end;height:97%;width:auto;max-width:23%;object-fit:contain;object-position:bottom center;flex-shrink:0;">
+          <img src="{{ fight.r2img }}" alt="" style="align-self:flex-end;height:92%;width:auto;max-width:20%;object-fit:contain;object-position:bottom center;flex-shrink:0;">
         </div>
       </sc-for>
     </div>
