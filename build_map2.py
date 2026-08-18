@@ -15,7 +15,7 @@ for s in d["1PISO"]["vipa"]:
 SEATS_JSON = json.dumps(SEATS, ensure_ascii=False)
 PB_VB = d["PB"]["vb"]; P1_VB = d["1PISO"]["vb"]
 FLOORS = {
-    "PB": {"bg": "uploads/pb.webp", "vb": f"0 0 {PB_VB[0]} {PB_VB[1]}", "label": "Planta Baja", "r": 1150},
+    "PB": {"bg": "uploads/pb.webp", "vb": f"0 0 {PB_VB[0]} {PB_VB[1]}", "label": "Planta Baja", "r": 105},
     "1P": {"bg": "uploads/1piso.webp", "vb": f"0 0 {P1_VB[0]} {P1_VB[1]}", "label": "1er Piso", "r": 760},
 }
 FLOORS_JSON = json.dumps(FLOORS, ensure_ascii=False)
@@ -177,7 +177,7 @@ const SEATS = __SEATS__;
 const FLOORS = __FLOORS__;
 const ZONES = {
   VIP:  { label:'VIP (mesa)', color:'#e11d2a', bright:'#ff6b76', price:1500 },
-  VIPA: { label:'VIP (asiento)', color:'#e11d2a', bright:'#ff8f98', price:950 },
+  VIPA: { label:'VIP (asiento)', color:'#e11d2a', bright:'#ff8f98', price:950, general:true, total:120 },
   GENERAL: { label:'General', color:'#3b82f6', bright:'#4f8df5', price:450, general:true, total:250 }
 };
 const COMISION=0.042;                       // 4.2% comision de compra en linea (cubre el costo real de Mercado Pago)
@@ -194,7 +194,7 @@ const el=(t,a={})=>{const n=document.createElementNS(NS,t);for(const k in a)n.se
 const SEAT_MAP=new Map(SEATS.map(s=>[s.id,s]));
 const svg=document.getElementById('map'),viewport=document.getElementById('viewport'),seatsG=document.getElementById('seats'),base=document.getElementById('base'),tip=document.getElementById('tip');
 let curFloor='PB';
-const state={selected:new Set(),generalQty:0,scale:1,tx:0,ty:0}; const MAX=12;
+const state={selected:new Set(),generalQty:0,vipaQty:0,scale:1,tx:0,ty:0}; const MAX=12;
 
 function seatLabel(s){ if(s.zone==='VIP') return 'Mesa '+s.mesa+' &#183; Silla '+s.silla; if(s.zone==='VIPA') return 'VIP Asiento '+s.n; if(s.zone==='PREF') return 'Preferente '+s.sec+'-'+String(s.n).padStart(2,'0'); return s.id; }
 function seatShort(s){ if(s.zone==='VIP') return 'M'+s.mesa+' S'+s.silla; if(s.zone==='VIPA') return 'Asiento '+s.n; if(s.zone==='PREF') return s.sec+String(s.n).padStart(2,'0'); return s.id; }
@@ -213,14 +213,15 @@ function nodeOf(id){return seatsG.querySelector('[data-id="'+CSS.escape(id)+'"]'
 const taken=new Set();
 function markTaken(id){taken.add(id);const n=nodeOf(id);if(n)n.classList.add('vendido');if(state.selected.has(id)){state.selected.delete(id);const n2=nodeOf(id);if(n2)n2.classList.remove('sel');renderCart();}}
 function unTake(id){if(!taken.has(id))return;taken.delete(id);const n=nodeOf(id);if(n)n.classList.remove('vendido');}
-let db=null,generalSold=0;
+let db=null,generalSold=0,vipaSold=0;
 function loadScript(src){return new Promise((ok,err)=>{const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=err;document.head.appendChild(s);});}
 async function initFirebase(){ try{
     await loadScript("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js");
     await loadScript("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js");
     firebase.initializeApp(CONFIG.firebaseConfig); db=firebase.firestore();
     db.collection(FS_COLLECTION).onSnapshot(s=>{const now=Date.now(); s.docChanges().forEach(c=>{const d=c.doc.data(); if(c.type==='removed'){unTake(c.doc.id);return;} if(d&&(d.status==='vendido'||(d.status==='reservado'&&d.expira>now)))markTaken(c.doc.id); else unTake(c.doc.id);}); refreshAvail();});
-    db.collection('config').doc('general').onSnapshot(d=>{ generalSold=(d&&d.exists&&(d.data().vendidos||0))||0; updateGenPanel(); },()=>{});
+    db.collection('config').doc('general').onSnapshot(d=>{ generalSold=(d&&d.exists&&(d.data().vendidos||0))||0; updateQty(); },()=>{});
+    db.collection('config').doc('vipa').onSnapshot(d=>{ vipaSold=(d&&d.exists&&(d.data().vendidos||0))||0; updateQty(); },()=>{});
   }catch(e){console.warn('Firebase:',e);} }
 initFirebase();
 
@@ -252,45 +253,49 @@ function focusZone(z){                                   // llevar el mapa a la 
   } else { state.scale=1;state.tx=0;state.ty=0;apply(); }
   if(innerWidth<=940){const st=document.querySelector('.stage'); if(st)st.scrollIntoView({behavior:'smooth',block:'start'});}
 }
+function qtyRow(z,sub,pfx){ const Z=ZONES[z]; const row=document.createElement('div');row.className='zrow';row.dataset.zone=z;
+  row.innerHTML='<span class="sw" style="background:'+Z.bright+'"></span><div class="zn"><b>'+Z.label+'</b><small>'+sub+'</small></div><div class="gqty"><button class="qb" id="'+pfx+'minus">&#8722;</button><b id="'+pfx+'qty">0</b><button class="qb" id="'+pfx+'plus">+</button></div><div class="zp"><b style="color:'+Z.bright+'">'+money(Z.price)+'</b><small>c/u</small></div>';
+  row.addEventListener('click',e=>{if(e.target.closest('.qb'))return; focusZone(z);}); zonesBox.appendChild(row); }
 function buildZones(){ zonesBox.innerHTML='';
-  [['VIP','Planta baja'],['VIPA','1er piso']].forEach(([z,fl])=>{ const Z=ZONES[z];
-    const row=document.createElement('div');row.className='zrow';row.dataset.zone=z;
-    row.innerHTML='<span class="sw" style="background:'+Z.bright+'"></span><div class="zn"><b>'+Z.label+'</b><small>'+fl+' &#183; <span class="av">'+zoneTotal(z)+'</span> disp.</small></div><div class="zp"><b style="color:'+Z.bright+'">'+money(Z.price)+'</b><small>c/u</small></div>';
-    row.addEventListener('mouseenter',()=>hl(z));row.addEventListener('mouseleave',()=>hl(null));
-    row.addEventListener('click',()=>focusZone(z)); zonesBox.appendChild(row); });
-  const g=ZONES.GENERAL; const row=document.createElement('div');row.className='zrow';row.dataset.zone='GENERAL';
-  row.innerHTML='<span class="sw" style="background:'+g.bright+'"></span><div class="zn"><b>General</b><small>planta baja &#183; lugar por llegada</small></div><div class="gqty"><button class="qb" id="gminus">&#8722;</button><b id="gqty">0</b><button class="qb" id="gplus">+</button></div><div class="zp"><b style="color:'+g.bright+'">'+money(g.price)+'</b><small>c/u</small></div>';
-  row.addEventListener('click',e=>{if(e.target.closest('.qb'))return; focusZone('GENERAL');}); zonesBox.appendChild(row);
+  const Z=ZONES.VIP; const row=document.createElement('div');row.className='zrow';row.dataset.zone='VIP';
+  row.innerHTML='<span class="sw" style="background:'+Z.bright+'"></span><div class="zn"><b>'+Z.label+'</b><small>planta baja &#183; <span class="av">'+zoneTotal('VIP')+'</span> disp. (elige en el mapa)</small></div><div class="zp"><b style="color:'+Z.bright+'">'+money(Z.price)+'</b><small>c/u</small></div>';
+  row.addEventListener('mouseenter',()=>hl('VIP'));row.addEventListener('mouseleave',()=>hl(null));
+  row.addEventListener('click',()=>focusZone('VIP')); zonesBox.appendChild(row);
+  qtyRow('VIPA','1er piso &#183; lugar por llegada','v');
+  qtyRow('GENERAL','planta baja &#183; lugar por llegada','g');
 }
-function updateGenPanel(){ const total=ZONES.GENERAL.total; const used=Math.min(total,generalSold+state.generalQty); const av=total-used;
-  const w=document.getElementById('gpavailwrap'); if(w)w.innerHTML='<b>'+av+'</b> de '+total+' disponibles';
-  const f=document.getElementById('gpfill'); if(f)f.style.width=(total?used/total*100:0)+'%';
-  ['gqty','gqty2'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=state.generalQty;}); }
-function genInc(){ if(generalSold+state.generalQty<ZONES.GENERAL.total){state.generalQty++;updateGenPanel();renderCart();} else flash('No quedan m&aacute;s boletos General'); }
-function genDec(){ if(state.generalQty>0){state.generalQty--;updateGenPanel();renderCart();} }
-function bindGen(){ ['gplus','gplus2'].forEach(id=>{const e=document.getElementById(id);if(e)e.onclick=genInc;}); ['gminus','gminus2'].forEach(id=>{const e=document.getElementById(id);if(e)e.onclick=genDec;}); }
+function qtyGet(z){ return z==='VIPA'?state.vipaQty:state.generalQty; }
+function qtySet(z,v){ if(z==='VIPA')state.vipaQty=v; else state.generalQty=v; }
+function soldOf(z){ return z==='VIPA'?vipaSold:generalSold; }
+function updateQty(){ const g=document.getElementById('gqty'); if(g)g.textContent=state.generalQty; const v=document.getElementById('vqty'); if(v)v.textContent=state.vipaQty;
+  const w=document.getElementById('gpavailwrap'); if(w){const t=ZONES.GENERAL.total,u=Math.min(t,generalSold+state.generalQty); w.innerHTML='<b>'+(t-u)+'</b> de '+t+' disponibles'; const f=document.getElementById('gpfill'); if(f)f.style.width=(t?u/t*100:0)+'%';} }
+function qtyInc(z){ if(soldOf(z)+qtyGet(z)<ZONES[z].total){qtySet(z,qtyGet(z)+1);updateQty();renderCart();} else flash('No quedan m&aacute;s lugares '+ZONES[z].label); }
+function qtyDec(z){ if(qtyGet(z)>0){qtySet(z,qtyGet(z)-1);updateQty();renderCart();} }
+function bindGen(){ const b=(id,fn)=>{const e=document.getElementById(id);if(e)e.onclick=fn;}; b('gplus',()=>qtyInc('GENERAL')); b('gminus',()=>qtyDec('GENERAL')); b('vplus',()=>qtyInc('VIPA')); b('vminus',()=>qtyDec('VIPA')); }
 function hl(z){seatsG.classList.toggle('dimmed',!!z); if(z){for(const s of SEATS){if(s.floor!==curFloor)continue;const n=nodeOf(s.id);if(n)n.classList.toggle('hl',s.zone===z);}}else seatsG.querySelectorAll('.hl').forEach(n=>n.classList.remove('hl')); }
 function refreshAvail(){zonesBox.querySelectorAll('.zrow').forEach(r=>{const av=r.querySelector('.av');if(av&&r.dataset.zone!=='GENERAL')av.textContent=avail(r.dataset.zone);});}
 document.getElementById('maplegend').innerHTML='<div class="it"><span class="dot" style="background:#e11d2a"></span>VIP</div><div class="it"><span class="dot" style="background:#3b82f6"></span>General</div><div class="it"><span class="dot" style="background:#25d366"></span>Elegido</div><div class="it"><span class="dot" style="background:#2a2f3a"></span>Vendido</div>';
 
 const pickbox=document.getElementById('pickbox');
 function selectedSeats(){ return [...state.selected].map(id=>SEAT_MAP.get(id)); }
-function renderCart(){ const sel=selectedSeats(); const gq=state.generalQty, count=sel.length+gq;
+function renderCart(){ const sel=selectedSeats(); const gq=state.generalQty, vq=state.vipaQty, count=sel.length+gq+vq;
   document.getElementById('pickcount').textContent=count?'('+count+')':'';
-  if(!count){pickbox.innerHTML='<div class="empty"><span>&#127915;</span>Toca asientos VIP en el mapa o suma boletos General.</div>';}
+  if(!count){pickbox.innerHTML='<div class="empty"><span>&#127915;</span>Toca asientos VIP en el mapa, o suma VIP asiento / General.</div>';}
   else{const w=document.createElement('div');w.className='picks';
     for(const s of sel){const z=ZONES[s.zone];const d=document.createElement('div');d.className='pick';
       d.innerHTML='<span class="pw" style="background:'+z.bright+'"></span><div class="pi"><b>'+seatLabel(s)+'</b><small>'+z.label+'</small></div><span class="pp">'+money(z.price)+'</span><button class="rm" data-id="'+s.id+'">&times;</button>';w.appendChild(d);}
+    if(vq>0){const z=ZONES.VIPA;const d=document.createElement('div');d.className='pick';
+      d.innerHTML='<span class="pw" style="background:'+z.bright+'"></span><div class="pi"><b>VIP Asiento &#215; '+vq+'</b><small>1er piso &#183; por orden de llegada</small></div><span class="pp">'+money(z.price*vq)+'</span><button class="rm" data-vipa="1">&times;</button>';w.appendChild(d);}
     if(gq>0){const z=ZONES.GENERAL;const d=document.createElement('div');d.className='pick';
-      d.innerHTML='<span class="pw" style="background:'+z.bright+'"></span><div class="pi"><b>General &#215; '+gq+'</b><small>silla &#183; por orden de llegada</small></div><span class="pp">'+money(z.price*gq)+'</span><button class="rm" data-gen="1">&times;</button>';w.appendChild(d);}
+      d.innerHTML='<span class="pw" style="background:'+z.bright+'"></span><div class="pi"><b>General &#215; '+gq+'</b><small>por orden de llegada</small></div><span class="pp">'+money(z.price*gq)+'</span><button class="rm" data-gen="1">&times;</button>';w.appendChild(d);}
     pickbox.innerHTML='';pickbox.appendChild(w);}
-  const sub=sel.reduce((t,s)=>t+ZONES[s.zone].price,0)+gq*ZONES.GENERAL.price, fee=feeOf(sub);
+  const sub=sel.reduce((t,s)=>t+ZONES[s.zone].price,0)+gq*ZONES.GENERAL.price+vq*ZONES.VIPA.price, fee=feeOf(sub);
   document.getElementById('nq').textContent='('+count+')';document.getElementById('subt').textContent=money(sub);
   document.getElementById('fee').textContent=money(fee);
   document.getElementById('tot').textContent=money(sub+fee)+' MXN';
-  document.getElementById('buy').disabled=count===0;refreshAvail();updateGenPanel();}
-pickbox.addEventListener('click',e=>{const b=e.target.closest('.rm');if(!b)return; if(b.dataset.gen){state.generalQty=0;renderCart();} else toggle(b.dataset.id);});
-document.getElementById('clear').addEventListener('click',()=>{state.selected.forEach(id=>{const n=nodeOf(id);if(n)n.classList.remove('sel');});state.selected.clear();state.generalQty=0;renderCart();});
+  document.getElementById('buy').disabled=count===0;refreshAvail();updateQty();}
+pickbox.addEventListener('click',e=>{const b=e.target.closest('.rm');if(!b)return; if(b.dataset.gen){state.generalQty=0;renderCart();} else if(b.dataset.vipa){state.vipaQty=0;renderCart();} else toggle(b.dataset.id);});
+document.getElementById('clear').addEventListener('click',()=>{state.selected.forEach(id=>{const n=nodeOf(id);if(n)n.classList.remove('sel');});state.selected.clear();state.generalQty=0;state.vipaQty=0;renderCart();});
 let flashT;function flash(m){let f=document.getElementById('flashmsg');if(!f){f=document.createElement('div');f.id='flashmsg';f.style.cssText='position:fixed;left:50%;top:20px;transform:translateX(-50%);background:#2a1116;border:1px solid #e11d2a;color:#ff8f98;padding:10px 18px;border-radius:10px;z-index:90;font-size:13px';document.body.appendChild(f);}f.innerHTML=m;f.style.opacity='1';clearTimeout(flashT);flashT=setTimeout(()=>f.style.opacity='0',1800);}
 
 // floor switch
@@ -298,9 +303,10 @@ document.getElementById('floorsw').addEventListener('click',e=>{const b=e.target
 
 // checkout modal
 const modalbg=document.getElementById('modalbg');
-document.getElementById('buy').addEventListener('click',()=>{const sel=selectedSeats();if(!sel.length&&!state.generalQty)return;
+document.getElementById('buy').addEventListener('click',()=>{const sel=selectedSeats();if(!sel.length&&!state.generalQty&&!state.vipaQty)return;
   const ml=document.getElementById('mlist');ml.innerHTML='';let sub=0;
   for(const s of sel){sub+=ZONES[s.zone].price;const r=document.createElement('div');r.className='mrow';r.innerHTML='<span>'+seatLabel(s)+'</span><b>'+money(ZONES[s.zone].price)+'</b>';ml.appendChild(r);}
+  if(state.vipaQty>0){sub+=state.vipaQty*ZONES.VIPA.price;const r=document.createElement('div');r.className='mrow';r.innerHTML='<span>VIP Asiento &#215; '+state.vipaQty+'</span><b>'+money(state.vipaQty*ZONES.VIPA.price)+'</b>';ml.appendChild(r);}
   if(state.generalQty>0){sub+=state.generalQty*ZONES.GENERAL.price;const r=document.createElement('div');r.className='mrow';r.innerHTML='<span>General &#215; '+state.generalQty+'</span><b>'+money(state.generalQty*ZONES.GENERAL.price)+'</b>';ml.appendChild(r);}
   const fee=feeOf(sub);
   if(fee>0){const r=document.createElement('div');r.className='mrow';r.innerHTML='<span>Comisión de compra en línea (4.2%)</span><b>'+money(fee)+'</b>';ml.appendChild(r);}
@@ -319,9 +325,9 @@ modalbg.addEventListener('click',e=>{if(e.target===modalbg)modalbg.classList.rem
 function buildItems(sel){ const items=[]; const byZone={};
   for(const s of sel){ byZone[s.zone]=(byZone[s.zone]||0)+1; }
   if(byZone.VIP) items.push({name:'VIP Mesa', price:ZONES.VIP.price, qty:byZone.VIP});
-  if(byZone.VIPA) items.push({name:'VIP Asiento', price:ZONES.VIPA.price, qty:byZone.VIPA});
+  if(state.vipaQty>0) items.push({name:'VIP Asiento (lugar por llegada)', price:ZONES.VIPA.price, qty:state.vipaQty});
   if(state.generalQty>0) items.push({name:'General (lugar por llegada)', price:ZONES.GENERAL.price, qty:state.generalQty});
-  const sub=sel.reduce((t,s)=>t+ZONES[s.zone].price,0)+state.generalQty*ZONES.GENERAL.price;
+  const sub=sel.reduce((t,s)=>t+ZONES[s.zone].price,0)+state.generalQty*ZONES.GENERAL.price+state.vipaQty*ZONES.VIPA.price;
   const fee=feeOf(sub); if(fee>0) items.push({name:'Comisión de compra en línea (4.2%)', price:fee, qty:1});
   return items;
 }
@@ -329,7 +335,7 @@ document.getElementById('mcard').addEventListener('click',async()=>{
   const name=document.getElementById('bname').value.trim(),phone=document.getElementById('bphone').value.trim(),mail=document.getElementById('bmail').value.trim();
   const coupon=(document.getElementById('bcoupon').value||'').trim();
   if(!name||!phone||!/^\S+@\S+\.\S+$/.test(mail)){flash('Pon nombre, WhatsApp y un correo válido (ahí te enviamos los boletos)');return;}
-  const sel=selectedSeats(); if(!sel.length&&!state.generalQty)return;
+  const sel=selectedSeats(); if(!sel.length&&!state.generalQty&&!state.vipaQty)return;
   const items=buildItems(sel);
   const b=document.getElementById('mcard'); b.disabled=true; const old=b.textContent; b.textContent='Redirigiendo a Mercado Pago...';
   try{ const r=await fetch('/api/mercadopago',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({items,buyer:{name,phone,mail},seats:sel.map(s=>s.id),coupon})});
@@ -339,7 +345,7 @@ document.getElementById('mcard').addEventListener('click',async()=>{
 document.getElementById('mpay').addEventListener('click',()=>{
   const name=document.getElementById('bname').value.trim(),phone=document.getElementById('bphone').value.trim(),mail=document.getElementById('bmail').value.trim();
   if(!name||!phone){flash('Pon tu nombre y WhatsApp/telefono');return;}
-  const sel=selectedSeats(); if(!sel.length&&!state.generalQty)return;
+  const sel=selectedSeats(); if(!sel.length&&!state.generalQty&&!state.vipaQty)return;
   const sub=sel.reduce((t,s)=>t+ZONES[s.zone].price,0)+state.generalQty*ZONES.GENERAL.price, fee=feeOf(sub);
   let msg='Hola! Quiero apartar para '+CONFIG.evento+':\n';
   for(const s of sel){msg+='&#8226; '+ZONES[s.zone].label+' '+seatShort(s)+' - '+money(ZONES[s.zone].price)+'\n';}

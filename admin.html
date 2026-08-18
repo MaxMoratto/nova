@@ -123,8 +123,8 @@
           <a class="link" href="acceso.html" target="_blank">Abrir escáner de acceso ↗</a></div>
         <div class="stats">
           <div class="stat"><div class="k">Boletos vendidos</div><div class="v" id="sVend">0</div></div>
-          <div class="stat"><div class="k">VIP mesa</div><div class="v" id="sVip">0</div><div class="sub">de 72</div></div>
-          <div class="stat"><div class="k">VIP asiento</div><div class="v" id="sVipa">0</div><div class="sub">de 40</div></div>
+          <div class="stat"><div class="k">VIP mesa</div><div class="v" id="sVip">0</div><div class="sub">de 24</div></div>
+          <div class="stat"><div class="k">VIP asiento</div><div class="v" id="sVipa">0</div><div class="sub">de 120</div></div>
           <div class="stat"><div class="k">General</div><div class="v" id="sGen">0</div><div class="sub">de 250</div></div>
           <div class="stat"><div class="k">Ingresos registrados</div><div class="v" id="sIn">0</div></div>
           <div class="stat warn"><div class="k">Pendientes por ingresar</div><div class="v" id="sPend">0</div></div>
@@ -219,7 +219,7 @@ const firebaseConfig = {
 };
 const SEATS_COL="asientos_nova", FIGHTS_COL="peleas", BOLETOS_COL="boletos", MAX_FIGHTS=20;
 // Zonas: capacidad real y precio por tipo
-const CAP={VIP:72,VIPA:40,GENERAL:250};                   // VIP mesa 18x4, VIP asiento 40 (Preferente eliminado)
+const CAP={VIP:24,VIPA:120,GENERAL:250};                  // VIP mesa 6x4, VIP asiento 120 (lugar por llegada)
 const PRECIO={VIP:1500,VIPA:950,GENERAL:450};
 const TOTAL_CAP=CAP.VIP+CAP.VIPA+CAP.GENERAL;             // 362
 const TIPO_LBL_B={VIP:'VIP mesa',VIPA:'VIP asiento',PREF:'Preferente',GENERAL:'General'};
@@ -363,7 +363,7 @@ $('seedBtn').addEventListener('click',async()=>{ if(!confirm('Agregar las 2 pele
 
 /* ===== BOLETOS ===== */
 function fillNums(sel,max,pre){ sel.innerHTML=''; for(let i=1;i<=max;i++){ const o=document.createElement('option'); o.value=i; o.textContent=(pre||'')+i; sel.appendChild(o); } }
-(function(){ const sel=$('b_mesa'); for(let i=1;i<=18;i++){ const o=document.createElement('option'); o.value=i; o.textContent='Mesa '+i; sel.appendChild(o); } })();
+(function(){ const sel=$('b_mesa'); for(let i=1;i<=6;i++){ const o=document.createElement('option'); o.value=i; o.textContent='Mesa '+i; sel.appendChild(o); } })();
 fillNums($('b_vipa_n'),CAP.VIPA,'Asiento ');
 function fillPrefNums(){ fillNums($('b_pref_n'),PREF_MAX[$('b_pref_sec').value]||25); }
 fillPrefNums(); $('b_pref_sec').addEventListener('change',fillPrefNums);

@@ -29,6 +29,8 @@ module.exports = async (req, res) => {
     const seatIds = (seats || []).filter(s => typeof s === 'string' && /^(VIP|VIPA)-/.test(s));
     const genQty = items.filter(i => /general/i.test(String(i.name)))
       .reduce((a, i) => a + Math.max(1, parseInt(i.qty || 1, 10)), 0);
+    const vipaQty = items.filter(i => /vip\s*asiento/i.test(String(i.name)))
+      .reduce((a, i) => a + Math.max(1, parseInt(i.qty || 1, 10)), 0);
 
     const orderRef = firestore.collection('ordenes').doc();
     const orderId = orderRef.id;
@@ -47,7 +49,7 @@ module.exports = async (req, res) => {
         });
         refs.forEach((r) => tx.set(r, { status: 'reservado', expira, orderId, ts: now }, { merge: true }));
         tx.set(orderRef, {
-          estado: 'pendiente', seats: seatIds, general: genQty,
+          estado: 'pendiente', seats: seatIds, general: genQty, vipa: vipaQty,
           comprador: { nombre: buyer.name || '', tel: buyer.phone || '', mail: buyer.mail || '' },
           items, creado: now, expira, evento: 'NOVA-11SEP2026'
         });

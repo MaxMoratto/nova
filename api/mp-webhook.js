@@ -41,15 +41,19 @@ async function generateTickets(firestore, orderId, pay) {
     const orderRef = firestore.collection('ordenes').doc(orderId);
     const foliosRef = firestore.collection('config').doc('folios');
     const genRef = firestore.collection('config').doc('general');
-    const [oSnap, fSnap, gSnap] = await Promise.all([tx.get(orderRef), tx.get(foliosRef), tx.get(genRef)]);
+    const vipaRef = firestore.collection('config').doc('vipa');
+    const [oSnap, fSnap, gSnap, vaSnap] = await Promise.all([tx.get(orderRef), tx.get(foliosRef), tx.get(genRef), tx.get(vipaRef)]);
     if (!oSnap.exists) throw new Error('orden no existe');
     const o = oSnap.data();
     if (o.estado === 'pagado') return null; // idempotente: no duplica boletos ni reenvia correo
     const seats = o.seats || [];
     const genQty = o.general || 0;
+    const vipaQty = o.vipa || 0;
     let n = (fSnap.exists && fSnap.data().n) || 0;
     const vend = (gSnap.exists && gSnap.data().vendidos) || 0;
+    const vaVend = (vaSnap.exists && vaSnap.data().vendidos) || 0;
     if (vend + genQty > 250) throw new Error('General agotado');
+    if (vaVend + vipaQty > 120) throw new Error('VIP Asiento agotado');
     const comprador = o.comprador || {};
     const meta = { comprador, estado: 'valido', canal: 'mp', cortesia: false, emitidoAt: Date.now(), evento: 'NOVA-11SEP2026', orden: orderId, pagoId: String(pay.id) };
     const tokens = []; const emailItems = [];
@@ -65,6 +69,11 @@ async function generateTickets(firestore, orderId, pay) {
       tx.set(firestore.collection('asientos_nova').doc(seatId), { status: 'vendido', ts: Date.now(), orderId, folio }, { merge: true });
       tokens.push(tok); emailItems.push({ token: tok, folio, label: inf.label });
     }
+    for (let i = 0; i < vipaQty; i++) {
+      n++; const folio = fmtFolio(n); const tok = randToken();
+      tx.set(firestore.collection('boletos').doc(tok), Object.assign({ tipo: 'VIPA', folio, precio: 950, label: 'VIP Asiento · lugar por llegada' }, meta));
+      tokens.push(tok); emailItems.push({ token: tok, folio, label: 'VIP Asiento · lugar por llegada' });
+    }
     for (let i = 0; i < genQty; i++) {
       n++; const folio = fmtFolio(n); const tok = randToken();
       tx.set(firestore.collection('boletos').doc(tok), Object.assign({ tipo: 'GENERAL', folio, precio: 450 }, meta));
@@ -72,6 +81,7 @@ async function generateTickets(firestore, orderId, pay) {
     }
     tx.set(foliosRef, { n }, { merge: true });
     if (genQty > 0) tx.set(genRef, { vendidos: vend + genQty }, { merge: true });
+    if (vipaQty > 0) tx.set(vipaRef, { vendidos: vaVend + vipaQty }, { merge: true });
     tx.update(orderRef, { estado: 'pagado', boletos: tokens, pagoId: String(pay.id), pagadoAt: Date.now() });
     return { comprador, boletos: emailItems }; // datos para el correo
   });
