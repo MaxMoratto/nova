@@ -15,8 +15,8 @@ for s in d["1PISO"]["vipa"]:
 SEATS_JSON = json.dumps(SEATS, ensure_ascii=False)
 PB_VB = d["PB"]["vb"]; P1_VB = d["1PISO"]["vb"]
 FLOORS = {
-    "PB": {"bg": "uploads/pb.webp", "vb": f"0 0 {PB_VB[0]} {PB_VB[1]}", "label": "Planta Baja", "r": 105},
-    "1P": {"bg": "uploads/1piso.webp", "vb": f"0 0 {P1_VB[0]} {P1_VB[1]}", "label": "1er Piso", "r": 760},
+    "PB": {"bg": "uploads/pb.webp?v=3", "vb": f"0 0 {PB_VB[0]} {PB_VB[1]}", "label": "Planta Baja", "r": 105},
+    "1P": {"bg": "uploads/1piso.webp?v=3", "vb": f"0 0 {P1_VB[0]} {P1_VB[1]}", "label": "1er Piso", "r": 760},
 }
 FLOORS_JSON = json.dumps(FLOORS, ensure_ascii=False)
 
