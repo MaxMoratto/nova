@@ -15,7 +15,7 @@ for s in d["1PISO"]["vipa"]:
 SEATS_JSON = json.dumps(SEATS, ensure_ascii=False)
 PB_VB = d["PB"]["vb"]; P1_VB = d["1PISO"]["vb"]
 FLOORS = {
-    "PB": {"bg": "uploads/pb.webp?v=4", "vb": f"0 0 {PB_VB[0]} {PB_VB[1]}", "label": "Planta Baja", "r": 105},
+    "PB": {"bg": "uploads/pb.webp?v=6", "vb": f"0 0 {PB_VB[0]} {PB_VB[1]}", "label": "Planta Baja", "r": 105},
     "1P": {"bg": "uploads/1piso.webp?v=5", "vb": f"0 0 {P1_VB[0]} {P1_VB[1]}", "label": "1er Piso", "r": 760},
 }
 FLOORS_JSON = json.dumps(FLOORS, ensure_ascii=False)
@@ -46,12 +46,12 @@ HTML = r"""<!DOCTYPE html>
   .canvas-wrap{position:relative;flex:1;min-height:0;overflow:hidden;cursor:grab;background:radial-gradient(1200px 900px at 50% 45%,#0e1219,#05070b)}
   .canvas-wrap.grabbing{cursor:grabbing}
   svg#map{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
-  .seat{fill:rgba(255,255,255,0.001);stroke:transparent;stroke-width:300;cursor:pointer;transition:fill .1s,stroke .1s}
+  .seat{fill:rgba(255,255,255,0.001);stroke:transparent;stroke-width:55;cursor:pointer;transition:fill .1s,stroke .1s}
   .seat:hover{fill:rgba(242,210,30,0.30);stroke:rgba(242,210,30,0.95)}
-  .seat.sel{fill:rgba(37,211,102,0.42);stroke:#25d366;stroke-width:520}
-  .seat.vendido{fill:rgba(12,13,18,0.55);stroke:#e11d2a;stroke-width:300;cursor:not-allowed}
+  .seat.sel{fill:rgba(37,211,102,0.5);stroke:#25d366;stroke-width:60}
+  .seat.vendido{fill:rgba(12,13,18,0.62);stroke:#e11d2a;stroke-width:45;cursor:not-allowed}
   .seats.dimmed .seat:not(.hl){opacity:.18}
-  .seat.hl:not(.sel):not(.vendido){fill:rgba(255,255,255,.14);stroke:#fff;stroke-width:420;stroke-opacity:.95;animation:hlpulse 1s ease-in-out infinite}
+  .seat.hl:not(.sel):not(.vendido){fill:rgba(255,255,255,.14);stroke:#fff;stroke-width:55;stroke-opacity:.95;animation:hlpulse 1s ease-in-out infinite}
   @keyframes hlpulse{0%,100%{stroke-opacity:.35}50%{stroke-opacity:1}}
   .zoombar{position:absolute;left:18px;bottom:18px;display:flex;flex-direction:column;gap:6px;z-index:6}
   .zoombar button{width:40px;height:40px;border-radius:11px;border:1px solid var(--border2);background:rgba(17,21,29,.92);color:var(--txt);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px)}

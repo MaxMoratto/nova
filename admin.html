@@ -123,7 +123,7 @@
           <a class="link" href="acceso.html" target="_blank">Abrir escáner de acceso ↗</a></div>
         <div class="stats">
           <div class="stat"><div class="k">Boletos vendidos</div><div class="v" id="sVend">0</div></div>
-          <div class="stat"><div class="k">VIP mesa</div><div class="v" id="sVip">0</div><div class="sub">de 24</div></div>
+          <div class="stat"><div class="k">VIP mesa</div><div class="v" id="sVip">0</div><div class="sub">de 30</div></div>
           <div class="stat"><div class="k">VIP asiento</div><div class="v" id="sVipa">0</div><div class="sub">de 120</div></div>
           <div class="stat"><div class="k">General</div><div class="v" id="sGen">0</div><div class="sub">de 250</div></div>
           <div class="stat"><div class="k">Ingresos registrados</div><div class="v" id="sIn">0</div></div>
@@ -142,7 +142,7 @@
             <option value="VIPA">VIP asiento ($950)</option>
             <option value="GENERAL">General · lugar por llegada ($450)</option>
           </select></div>
-          <div id="f_vip"><div class="grid2"><div><label>Mesa</label><select id="b_mesa"></select></div><div><label>Asiento</label><select id="b_asiento"><option>1</option><option>2</option><option>3</option><option>4</option></select></div></div></div>
+          <div id="f_vip"><div class="grid2"><div><label>Mesa</label><select id="b_mesa"></select></div><div><label>Asiento</label><select id="b_asiento"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div></div></div>
           <div id="f_vipa" style="display:none"><label>Asiento VIP (1–40)</label><select id="b_vipa_n"></select></div>
           <div id="f_pref" style="display:none"><div class="grid2"><div><label>Sección</label><select id="b_pref_sec"><option>A</option><option>B</option><option>C</option></select></div><div><label>Número</label><select id="b_pref_n"></select></div></div></div>
           <div id="f_gen" style="display:none"><label>Cantidad</label><input id="b_cant" type="number" min="1" max="20" value="1"/></div>
@@ -219,7 +219,7 @@ const firebaseConfig = {
 };
 const SEATS_COL="asientos_nova", FIGHTS_COL="peleas", BOLETOS_COL="boletos", MAX_FIGHTS=20;
 // Zonas: capacidad real y precio por tipo
-const CAP={VIP:24,VIPA:120,GENERAL:250};                  // VIP mesa 6x4, VIP asiento 120 (lugar por llegada)
+const CAP={VIP:30,VIPA:120,GENERAL:250};                  // VIP mesa 6x5, VIP asiento 120 (lugar por llegada)
 const PRECIO={VIP:1500,VIPA:950,GENERAL:450};
 const TOTAL_CAP=CAP.VIP+CAP.VIPA+CAP.GENERAL;             // 362
 const TIPO_LBL_B={VIP:'VIP mesa',VIPA:'VIP asiento',PREF:'Preferente',GENERAL:'General'};
