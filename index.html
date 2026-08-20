@@ -660,7 +660,8 @@ class Component extends DCLogic {
     // ===== Cartelera dinámica (se llena desde el admin / Firestore) =====
     const nm = (f) => { const raw = ((f && f.nombre) || '').trim(); const ph = !raw || /^pendiente$/i.test(raw) || /^por revelar$/i.test(raw); return ph ? 'POR REVELAR' : raw.toUpperCase(); };
     const rec = (f) => (((f && f.record) || '').trim()) || '0-0-0';
-    const corner = (f, defImg) => { const name = nm(f); const parts = name.split(/\s+/); const md = ((f && f.modalidad) || 'MMA').toUpperCase(); const ct = ((f && f.categoria) || '').toUpperCase(); return { img: (f && f.fotos && f.fotos[0]) || defImg, name, line1: parts[0], line2: parts.slice(1).join(' '), rec: rec(f), modalidad: md, meta: ct ? (md + ' · ' + ct) : md }; };
+    const noneVal = (v) => { const s = (v || '').trim(); return (!s || /^ningun/i.test(s)) ? '' : s.toUpperCase(); };
+    const corner = (f, defImg) => { const name = nm(f); const parts = name.split(/\s+/); const md = noneVal(f && f.modalidad); const ct = noneVal(f && f.categoria); return { img: (f && f.fotos && f.fotos[0]) || defImg, name, line1: parts[0], line2: parts.slice(1).join(' '), rec: rec(f), modalidad: md, meta: [md, ct].filter(Boolean).join(' · ') }; };
     const plist = Array.isArray(this.state.peleas) ? this.state.peleas : [];
     const principal = plist.find(p => p.tipo === 'principal');
     const coest = plist.find(p => p.tipo === 'coestelar');
