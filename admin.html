@@ -327,7 +327,9 @@ $('saveFightBtn').addEventListener('click',async()=>{ const m=$('fightMsg'); m.c
   if(!data.rojo.nombre||!data.azul.nombre){ m.className='msg err'; m.textContent='Pon el nombre de los dos peleadores'; return; }
   const b=$('saveFightBtn'); b.disabled=true;
   try{ if(F.editId){ await db.collection(FIGHTS_COL).doc(F.editId).set(data); m.className='msg ok'; m.textContent='✓ Pelea actualizada'; }
-    else { const snap=await db.collection(FIGHTS_COL).get(); if(snap.size>=MAX_FIGHTS){ m.className='msg err'; m.textContent='Máximo '+MAX_FIGHTS+' peleas. Borra una para agregar otra.'; b.disabled=false; return; } await db.collection(FIGHTS_COL).add(data); m.className='msg ok'; m.textContent='✓ Pelea agregada'; }
+    else { const snap=await db.collection(FIGHTS_COL).get(); if(snap.size>=MAX_FIGHTS){ m.className='msg err'; m.textContent='Máximo '+MAX_FIGHTS+' peleas. Borra una para agregar otra.'; b.disabled=false; return; }
+      let maxO=0; snap.forEach(x=>{ const o=Number(x.data().orden)||0; if(o>maxO)maxO=o; }); data.orden=maxO+1; // siempre al final
+      await db.collection(FIGHTS_COL).add(data); m.className='msg ok'; m.textContent='✓ Pelea agregada'; }
     clearForm();
   }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; } b.disabled=false; });
 const TIPO_LBL={principal:'Pelea principal',coestelar:'Co-estelar',preliminar:'Preliminar'};
