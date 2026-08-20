@@ -515,6 +515,7 @@ function renderBoletos(){ const q=($('bSearch').value||'').trim().toUpperCase();
       '<button class="mini" data-see="'+r.token+'">Ver</button>'+
       '<button class="mini" data-info="'+r.token+'">Datos</button>'+
       ((d.comprador&&d.comprador.tel&&d.estado!=='cancelado')?'<button class="mini" data-wa="'+r.token+'">WhatsApp</button>':'')+
+      ((d.tipo==='VIP'&&d.estado!=='cancelado')?'<button class="mini" data-move="'+r.token+'">Cambiar asiento</button>':'')+
       (d.estado!=='cancelado'?'<button class="mini" data-cancel="'+r.token+'">Cancelar</button>':'');
     box.appendChild(el); }
   box.querySelectorAll('[data-see]').forEach(b=>b.addEventListener('click',()=>window.open('boleto.html?t='+b.dataset.see,'_blank')));
@@ -528,6 +529,27 @@ function renderBoletos(){ const q=($('bSearch').value||'').trim().toUpperCase();
     const msg='Hola'+nom+'! Aquí está tu boleto para NOVA Strike Series (11 SEP 2026, Golden Paradise Casino, CDMX): '+link+' — Presenta el QR en la entrada.';
     window.open('https://wa.me/'+tel+'?text='+encodeURIComponent(msg),'_blank'); }));
   box.querySelectorAll('[data-cancel]').forEach(b=>b.addEventListener('click',()=>cancelBoleto(b.dataset.cancel)));
+  box.querySelectorAll('[data-move]').forEach(b=>b.addEventListener('click',()=>moveSeat(b.dataset.move)));
+}
+async function moveSeat(token){ const r=BOLETOS.find(x=>x.token===token); if(!r) return; const d=r.d;
+  if(d.tipo!=='VIP'){ alert('Solo aplica a VIP mesa (asiento numerado).'); return; }
+  const oldSeat=d.asientoId||('VIP-M'+pad2(d.mesa)+'-S'+d.asiento);
+  const mesa=parseInt(prompt('Nueva MESA (1 a 6):', d.mesa||'')||'',10);
+  if(!(mesa>=1&&mesa<=6)){ if(!isNaN(mesa)) alert('Mesa inválida (1-6)'); return; }
+  const silla=parseInt(prompt('Nueva SILLA (1 a 5):','')||'',10);
+  if(!(silla>=1&&silla<=5)){ if(!isNaN(silla)) alert('Silla inválida (1-5)'); return; }
+  const newSeat='VIP-M'+pad2(mesa)+'-S'+silla;
+  if(newSeat===oldSeat){ alert('Es el mismo asiento.'); return; }
+  if(!confirm('Cambiar boleto '+(d.folio||'')+'\nde  '+oldSeat+'\na    '+newSeat+' ?')) return;
+  try{ await db.runTransaction(async tx=>{
+      const newRef=db.collection(SEATS_COL).doc(newSeat); const s=await tx.get(newRef); const sd=s.data();
+      if(sd&&sd.status==='vendido') throw new Error('El asiento '+newSeat+' ya está vendido');
+      tx.delete(db.collection(SEATS_COL).doc(oldSeat));
+      tx.set(newRef,{status:'vendido',ts:Date.now(),by:auth.currentUser.email,folio:d.folio||''});
+      tx.update(db.collection(BOLETOS_COL).doc(token),{asientoId:newSeat,mesa,asiento:silla,label:'VIP Mesa '+mesa+' · Silla '+silla});
+    });
+    alert('✓ Boleto '+(d.folio||'')+' movido a Mesa '+mesa+' · Silla '+silla);
+  }catch(e){ alert('Error: '+e.message); }
 }
 async function cancelBoleto(token){ const r=BOLETOS.find(x=>x.token===token); if(!r) return; const d=r.d;
   if(!confirm('¿Cancelar el boleto '+(d.folio||'')+'? Se libera el lugar.')) return;
