@@ -179,9 +179,10 @@
             <select id="p_tipo">
               <option value="principal">Pelea principal (estelar)</option>
               <option value="coestelar">Co-estelar</option>
+              <option value="cartelera">Cartelera principal</option>
               <option value="preliminar">Preliminar</option>
             </select>
-            <div style="font-size:11px;color:#7a8699;margin-top:4px;line-height:1.35">Solo 1 principal y 1 co-estelar. <b>Todas las demás van como "Preliminar"</b>.</div>
+            <div style="font-size:11px;color:#7a8699;margin-top:4px;line-height:1.35">Solo 1 principal y 1 co-estelar. Las peleas fuertes → <b>"Cartelera principal"</b>; las de apertura → <b>"Preliminar"</b>.</div>
           </div>
           <div>
             <label>Número de pelea (1 = primera del evento)</label>
@@ -336,7 +337,7 @@ $('saveFightBtn').addEventListener('click',async()=>{ const m=$('fightMsg'); m.c
       await db.collection(FIGHTS_COL).add(data); m.className='msg ok'; m.textContent='✓ Pelea agregada'; }
     clearForm();
   }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; } b.disabled=false; });
-const TIPO_LBL={principal:'Pelea principal',coestelar:'Co-estelar',preliminar:'Preliminar'};
+const TIPO_LBL={principal:'Pelea principal',coestelar:'Co-estelar',cartelera:'Cartelera principal',preliminar:'Preliminar'};
 let FIGHTS_ROWS=[], FIGHTS_COUNT=0;
 async function moveFight(id, dir){
   const ids=FIGHTS_ROWS.map(r=>r.id); const i=ids.indexOf(id); const j=i+dir;
