@@ -181,7 +181,12 @@
               <option value="coestelar">Co-estelar</option>
               <option value="preliminar">Preliminar</option>
             </select>
-            <div style="font-size:11px;color:#7a8699;margin-top:4px;line-height:1.35">Solo 1 principal y 1 co-estelar. <b>Todas las demás van como "Preliminar"</b>. No te preocupes por el orden: se acomoda solo y lo cambias después con las flechas ▲▼ de la lista.</div>
+            <div style="font-size:11px;color:#7a8699;margin-top:4px;line-height:1.35">Solo 1 principal y 1 co-estelar. <b>Todas las demás van como "Preliminar"</b>.</div>
+          </div>
+          <div>
+            <label>Número de pelea (1 = primera del evento)</label>
+            <input id="p_orden" type="number" min="1" max="20" placeholder="1"/>
+            <div style="font-size:11px;color:#7a8699;margin-top:4px;line-height:1.35">El <b>1</b> es la primera pelea del evento, y así en orden. También puedes reordenar con las flechas ▲▼ de la lista.</div>
           </div>
         </div>
         <label>Banner / peso (ej. PESO LIGERO · 155 LB)</label><input id="p_banner" placeholder="PESO GALLO FEMENIL · 61 KG"/>
@@ -318,17 +323,16 @@ window.addEventListener('drop',e=>{ if(!e.target.closest('.pslot')) e.preventDef
 
 const F={editId:null};
 function readCorner(p){ return { nombre:$(p+'_nombre').value.trim(),apodo:$(p+'_apodo').value.trim(),edad:$(p+'_edad').value.trim(),altura:$(p+'_altura').value.trim(),peso:$(p+'_peso').value.trim(),record:$(p+'_record').value.trim(),ciudad:$(p+'_ciudad').value.trim(),modalidad:$(p+'_modalidad').value,categoria:$(p+'_categoria').value,fotos:[0,1,2,3].map(i=>$(p+'_foto'+i).value.trim()).filter(Boolean) }; }
-function readForm(){ return { tipo:$('p_tipo').value, orden:F.orden||1, banner:$('p_banner').value.trim(), rojo:readCorner('r'), azul:readCorner('a'), activo:true }; }
+function readForm(){ return { tipo:$('p_tipo').value, orden:Number($('p_orden').value)||1, banner:$('p_banner').value.trim(), rojo:readCorner('r'), azul:readCorner('a'), activo:true }; }
 function fillCorner(p,c){ c=c||{}; $(p+'_nombre').value=c.nombre||''; $(p+'_apodo').value=c.apodo||''; $(p+'_edad').value=c.edad||''; $(p+'_altura').value=c.altura||''; $(p+'_peso').value=c.peso||''; $(p+'_record').value=c.record||''; $(p+'_ciudad').value=c.ciudad||''; $(p+'_modalidad').value=c.modalidad||'Ninguna'; $(p+'_categoria').value=c.categoria||'Ninguna'; const f=c.fotos||[]; for(let i=0;i<4;i++){ $(p+'_foto'+i).value=f[i]||''; refThumb(p,i); } }
-function fillForm(d){ $('p_tipo').value=d.tipo||'preliminar'; F.orden=d.orden||1; $('p_banner').value=d.banner||''; fillCorner('r',d.rojo); fillCorner('a',d.azul); }
-function clearForm(){ $('p_tipo').selectedIndex=0; F.orden=Math.min(MAX_FIGHTS,(FIGHTS_COUNT||0)+1); $('p_banner').value=''; fillCorner('r',{}); fillCorner('a',{}); F.editId=null; $('formTitle').textContent='Nueva pelea'; $('cancelEditBtn').style.display='none'; }
+function fillForm(d){ $('p_tipo').value=d.tipo||'preliminar'; $('p_orden').value=d.orden||1; $('p_banner').value=d.banner||''; fillCorner('r',d.rojo); fillCorner('a',d.azul); }
+function clearForm(){ $('p_tipo').selectedIndex=0; $('p_orden').value=Math.min(MAX_FIGHTS,(FIGHTS_COUNT||0)+1); $('p_banner').value=''; fillCorner('r',{}); fillCorner('a',{}); F.editId=null; $('formTitle').textContent='Nueva pelea'; $('cancelEditBtn').style.display='none'; }
 $('cancelEditBtn').addEventListener('click',clearForm);
 $('saveFightBtn').addEventListener('click',async()=>{ const m=$('fightMsg'); m.className='msg'; const data=readForm();
   if(!data.rojo.nombre||!data.azul.nombre){ m.className='msg err'; m.textContent='Pon el nombre de los dos peleadores'; return; }
   const b=$('saveFightBtn'); b.disabled=true;
   try{ if(F.editId){ await db.collection(FIGHTS_COL).doc(F.editId).set(data); m.className='msg ok'; m.textContent='✓ Pelea actualizada'; }
     else { const snap=await db.collection(FIGHTS_COL).get(); if(snap.size>=MAX_FIGHTS){ m.className='msg err'; m.textContent='Máximo '+MAX_FIGHTS+' peleas. Borra una para agregar otra.'; b.disabled=false; return; }
-      let maxO=0; snap.forEach(x=>{ const o=Number(x.data().orden)||0; if(o>maxO)maxO=o; }); data.orden=maxO+1; // siempre al final
       await db.collection(FIGHTS_COL).add(data); m.className='msg ok'; m.textContent='✓ Pelea agregada'; }
     clearForm();
   }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; } b.disabled=false; });
@@ -347,7 +351,7 @@ function watchFights(){ db.collection(FIGHTS_COL).onSnapshot(snap=>{ const box=$
     rows.forEach((r,i)=>{ const d=r.d; const el=document.createElement('div'); el.className='fight-item';
       const up = i>0 ? '<button class="mini" data-up="'+r.id+'" title="Subir">▲</button>' : '<button class="mini" disabled style="opacity:.25">▲</button>';
       const dn = i<rows.length-1 ? '<button class="mini" data-down="'+r.id+'" title="Bajar">▼</button>' : '<button class="mini" disabled style="opacity:.25">▼</button>';
-      el.innerHTML='<div class="fdata"><div class="ft">#'+(i+1)+' · '+(TIPO_LBL[d.tipo]||d.tipo)+(d.banner?' · '+d.banner:'')+'</div><div class="fn"><span class="corner-red">'+(d.rojo?d.rojo.nombre:'')+'</span><span class="vs">vs</span><span class="corner-blue">'+(d.azul?d.azul.nombre:'')+'</span></div></div><div class="row">'+up+dn+'<button class="mini" data-edit="'+r.id+'">Editar</button><button class="mini" data-del="'+r.id+'">Borrar</button></div>'; box.appendChild(el); });
+      el.innerHTML='<div class="fdata"><div class="ft">#'+(d.orden||i+1)+' · '+(TIPO_LBL[d.tipo]||d.tipo)+(d.banner?' · '+d.banner:'')+'</div><div class="fn"><span class="corner-red">'+(d.rojo?d.rojo.nombre:'')+'</span><span class="vs">vs</span><span class="corner-blue">'+(d.azul?d.azul.nombre:'')+'</span></div></div><div class="row">'+up+dn+'<button class="mini" data-edit="'+r.id+'">Editar</button><button class="mini" data-del="'+r.id+'">Borrar</button></div>'; box.appendChild(el); });
     box.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>{ const row=rows.find(x=>x.id===b.dataset.edit); fillForm(row.d); F.editId=row.id; $('formTitle').textContent='Editar pelea'; $('cancelEditBtn').style.display='inline-block'; window.scrollTo({top:0,behavior:'smooth'}); }));
     box.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',async()=>{ if(!confirm('¿Borrar esta pelea?'))return; b.disabled=true; try{ await db.collection(FIGHTS_COL).doc(b.dataset.del).delete(); }catch(e){ alert('Error: '+e.message); b.disabled=false; } }));
     box.querySelectorAll('[data-up]').forEach(b=>b.addEventListener('click',()=>moveFight(b.dataset.up,-1)));
