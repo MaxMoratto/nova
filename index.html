@@ -44,6 +44,9 @@
     nav { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
     .prelim2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
     @media (max-width:600px){ .prelim2 { grid-template-columns:1fr; } }
+    .ccard { position:relative; display:flex; flex-direction:row; min-height:clamp(340px,40vw,430px); background:#070510; margin-bottom:10px; border:1px solid rgba(255,255,255,.05); overflow:hidden; }
+    .ccard .cp { flex:1; min-height:clamp(340px,40vw,430px); }
+    @media (max-width:600px){ .ccard { flex-direction:column; } .ccard .cp { min-height:clamp(230px,56vw,320px); } .ccard .cpblue { align-items:flex-start !important; } .ccard .cbtext { text-align:left !important; } .ccard .cbrec { justify-content:flex-start !important; } }
   </style>
 </helmet>
 
@@ -295,25 +298,43 @@
     <span style="font-size:10px;font-weight:700;letter-spacing:.45em;color:#D4A017;text-transform:uppercase;">— Cartelera Principal —</span>
   </div>
   <div style="padding:0 clamp(16px,4vw,40px);max-width:1200px;margin:0 auto;display:{{ carteleraDisp }};">
-    <div style="display:flex;flex-direction:column;gap:10px;">
-      <sc-for list="{{ carteleraFoto }}" as="fight" hint-placeholder-count="1">
-        <div style="position:relative;overflow:hidden;background:linear-gradient(90deg,rgba(255,0,51,.06) 0%,rgba(255,255,255,.02) 30%,rgba(255,255,255,.02) 70%,rgba(0,240,255,.06) 100%);border:1px solid rgba(255,255,255,.06);min-height:clamp(340px,43vw,560px);display:flex;align-items:center;gap:clamp(4px,1.2vw,12px);padding:clamp(8px,1.4vw,12px) clamp(14px,3vw,40px);cursor:pointer;transition:border-color .2s;" style-hover="border-color:rgba(255,0,51,.22);">
-          <img src="{{ fight.r1img }}" alt="" style="display:{{ fight.r1disp }};align-self:flex-end;height:clamp(320px,41vw,560px);width:auto;max-width:31%;object-fit:contain;object-position:bottom center;flex-shrink:0;margin-bottom:calc(-1 * clamp(8px,1.4vw,12px));">
-          <div style="flex:1;min-width:0;padding-left:clamp(6px,1.5vw,18px);z-index:2;">
-            <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(25px,4.3vw,56px);color:#fff;letter-spacing:.04em;line-height:.92;">{{ fight.r1 }}</div>
-            <div style="font-size:clamp(14px,2vw,23px);color:#FF0033;letter-spacing:.1em;margin-top:4px;font-weight:700;">{{ fight.r1rec }}</div>
+    <sc-for list="{{ carteleraFoto }}" as="fight" hint-placeholder-count="1">
+      <div class="ccard">
+        <div class="cp" style="background:linear-gradient(135deg,#150008 0%,#100410 60%,#080410 100%);padding:clamp(22px,4vw,44px) clamp(18px,3.5vw,44px);display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;">
+          <img src="{{ fight.r1img }}" alt="" style="display:{{ fight.r1disp }};position:absolute;bottom:0;right:clamp(0px,2vw,16px);height:95%;max-width:56%;object-fit:contain;object-position:bottom right;z-index:1;pointer-events:none;">
+          <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(8,4,16,.92) 0%,rgba(8,4,16,.32) 34%,transparent 62%);z-index:2;pointer-events:none;"></div>
+          <div style="position:absolute;font-family:'Bebas Neue',sans-serif;font-size:clamp(80px,18vw,230px);color:rgba(255,0,51,.04);right:-5px;bottom:-30px;line-height:1;pointer-events:none;user-select:none;">A</div>
+          <div style="position:absolute;top:16px;left:clamp(16px,3.5vw,44px);font-size:9px;font-weight:700;letter-spacing:.24em;color:#FF0033;border:1px solid rgba(255,0,51,.25);padding:3px 9px;text-transform:uppercase;">Esquina Roja</div>
+          <div style="position:relative;z-index:3;">
+            <div style="font-size:12px;font-weight:600;letter-spacing:.1em;color:rgba(255,0,51,.65);margin-bottom:2px;">★ PELEADOR</div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(26px,5vw,54px);color:#fff;line-height:.9;letter-spacing:.04em;">{{ fight.r1 }}</div>
+            <div style="margin-top:8px;display:flex;gap:10px;align-items:center;">
+              <span style="font-family:'Bebas Neue',sans-serif;font-size:clamp(16px,2.5vw,22px);color:#FF0033;letter-spacing:.1em;">{{ fight.r1rec }}</span>
+              <span style="font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.12em;text-transform:uppercase;">{{ fight.r1meta }}</span>
+            </div>
           </div>
-          <div style="width:clamp(54px,7.2vw,88px);height:clamp(54px,7.2vw,88px);border:1px solid rgba(255,0,51,.4);display:flex;align-items:center;justify-content:center;transform:rotate(45deg);flex-shrink:0;background:rgba(9,7,15,.65);z-index:2;">
-            <span style="transform:rotate(-45deg);display:block;font-family:'Bebas Neue',sans-serif;font-size:clamp(16px,2.3vw,26px);color:#FF0033;">VS</span>
-          </div>
-          <div style="flex:1;min-width:0;text-align:right;padding-right:clamp(6px,1.5vw,18px);z-index:2;">
-            <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(25px,4.3vw,56px);color:#fff;letter-spacing:.04em;line-height:.92;">{{ fight.r2 }}</div>
-            <div style="font-size:clamp(14px,2vw,23px);color:#00F0FF;letter-spacing:.1em;margin-top:4px;font-weight:700;text-align:right;">{{ fight.r2rec }}</div>
-          </div>
-          <img src="{{ fight.r2img }}" alt="" style="display:{{ fight.r2disp }};align-self:flex-end;height:clamp(320px,41vw,560px);width:auto;max-width:31%;object-fit:contain;object-position:bottom center;flex-shrink:0;margin-bottom:calc(-1 * clamp(8px,1.4vw,12px));">
         </div>
-      </sc-for>
-    </div>
+        <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:10;">
+          <div style="width:clamp(42px,6vw,56px);height:clamp(42px,6vw,56px);border:1.5px solid rgba(255,0,51,.55);background:#070510;display:flex;align-items:center;justify-content:center;box-shadow:0 0 18px rgba(255,0,51,.3);">
+            <span style="transform:rotate(-45deg);display:block;font-family:'Bebas Neue',sans-serif;font-size:clamp(11px,1.8vw,16px);color:#FF0033;">VS</span>
+          </div>
+        </div>
+        <div class="cp cpblue" style="background:linear-gradient(225deg,#001218 0%,#050D18 60%,#05080F 100%);padding:clamp(22px,4vw,44px) clamp(18px,3.5vw,44px);display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-end;position:relative;overflow:hidden;">
+          <img src="{{ fight.r2img }}" alt="" style="display:{{ fight.r2disp }};position:absolute;bottom:0;left:clamp(0px,2vw,16px);height:95%;max-width:56%;object-fit:contain;object-position:bottom left;z-index:1;pointer-events:none;">
+          <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(5,8,15,.92) 0%,rgba(5,8,15,.32) 34%,transparent 62%);z-index:2;pointer-events:none;"></div>
+          <div style="position:absolute;font-family:'Bebas Neue',sans-serif;font-size:clamp(80px,18vw,230px);color:rgba(0,240,255,.04);left:-5px;bottom:-30px;line-height:1;pointer-events:none;user-select:none;">Y</div>
+          <div style="position:absolute;top:16px;right:clamp(16px,3.5vw,44px);font-size:9px;font-weight:700;letter-spacing:.24em;color:#00F0FF;border:1px solid rgba(0,240,255,.25);padding:3px 9px;text-transform:uppercase;">Esquina Azul</div>
+          <div class="cbtext" style="position:relative;z-index:3;text-align:right;">
+            <div style="font-size:12px;font-weight:600;letter-spacing:.1em;color:rgba(0,240,255,.65);margin-bottom:2px;">★ PELEADOR</div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(26px,5vw,54px);color:#fff;line-height:.9;letter-spacing:.04em;">{{ fight.r2 }}</div>
+            <div class="cbrec" style="margin-top:8px;display:flex;gap:10px;align-items:center;justify-content:flex-end;">
+              <span style="font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.12em;text-transform:uppercase;">{{ fight.r2meta }}</span>
+              <span style="font-family:'Bebas Neue',sans-serif;font-size:clamp(16px,2.5vw,22px);color:#00F0FF;letter-spacing:.1em;">{{ fight.r2rec }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </sc-for>
     <div class="prelim2" style="margin-top:10px;">
       <sc-for list="{{ carteleraSinFoto }}" as="fight" hint-placeholder-count="2">
         <div style="overflow:hidden;background:linear-gradient(90deg,rgba(255,0,51,.06) 0%,rgba(255,255,255,.02) 30%,rgba(255,255,255,.02) 70%,rgba(0,240,255,.06) 100%);border:1px solid rgba(255,255,255,.06);min-height:64px;display:flex;align-items:center;gap:8px;padding:12px clamp(14px,2vw,22px);cursor:pointer;transition:border-color .2s;" style-hover="border-color:rgba(255,0,51,.22);">
@@ -745,7 +766,8 @@ class Component extends DCLogic {
     const prelims = prelimList.length ? prelimList.map(p => { const a = av(p.rojo), b = av(p.azul); return { r1: nm(p.rojo), r1rec: rec(p.rojo), r1img: a, r1disp: dsp(a), r2: nm(p.azul), r2rec: rec(p.azul), r2img: b, r2disp: dsp(b) }; }) : [ph, ph, ph, ph, ph, ph];
     const prelimsFoto = prelims.filter(p => p.r1disp === 'block' || p.r2disp === 'block');
     const prelimsSinFoto = prelims.filter(p => p.r1disp !== 'block' && p.r2disp !== 'block');
-    const buildRow = (p) => { const a = av(p.rojo), b = av(p.azul); return { r1: nm(p.rojo), r1rec: rec(p.rojo), r1img: a, r1disp: dsp(a), r2: nm(p.azul), r2rec: rec(p.azul), r2img: b, r2disp: dsp(b) }; };
+    const metaOf = (f) => [noneVal(f && f.modalidad), noneVal(f && f.categoria)].filter(Boolean).join(' · ');
+    const buildRow = (p) => { const a = av(p.rojo), b = av(p.azul); return { r1: nm(p.rojo), r1rec: rec(p.rojo), r1img: a, r1disp: dsp(a), r1meta: metaOf(p.rojo), r2: nm(p.azul), r2rec: rec(p.azul), r2img: b, r2disp: dsp(b), r2meta: metaOf(p.azul) }; };
     const carteleraList = plist.filter(p => p.tipo === 'cartelera').sort((a, b) => (a.orden || 99) - (b.orden || 99));
     const carteleraRows = carteleraList.map(buildRow);
     const carteleraFoto = carteleraRows.filter(p => p.r1disp === 'block' || p.r2disp === 'block');
