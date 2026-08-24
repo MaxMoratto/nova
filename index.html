@@ -44,9 +44,9 @@
     nav { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
     .prelim2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
     @media (max-width:600px){ .prelim2 { grid-template-columns:1fr; } }
-    .ccard { position:relative; display:flex; flex-direction:row; min-height:clamp(340px,40vw,430px); background:#070510; margin-bottom:10px; border:1px solid rgba(255,255,255,.05); overflow:hidden; }
-    .ccard .cp { flex:1; min-height:clamp(340px,40vw,430px); }
-    @media (max-width:600px){ .ccard { flex-direction:column; } .ccard .cp { min-height:clamp(240px,58vw,330px); } }
+    .ccard { position:relative; display:flex; flex-direction:row; min-height:clamp(250px,30vw,350px); background:#070510; margin-bottom:10px; border:1px solid rgba(255,255,255,.05); overflow:hidden; }
+    .ccard .cp { flex:1; min-height:clamp(250px,30vw,350px); }
+    @media (max-width:600px){ .ccard { flex-direction:column; } .ccard .cp { min-height:clamp(205px,52vw,290px); } }
   </style>
 </helmet>
 
@@ -307,7 +307,7 @@
           <div style="position:absolute;top:16px;left:clamp(16px,3.5vw,44px);font-size:9px;font-weight:700;letter-spacing:.24em;color:#fff;background:#0b0b0d;border:1px solid rgba(255,255,255,.4);padding:3px 9px;text-transform:uppercase;">Esquina Negra</div>
           <div style="position:relative;z-index:3;">
             <div style="font-size:12px;font-weight:600;letter-spacing:.1em;color:rgba(203,207,217,.65);margin-bottom:2px;">★ PELEADOR</div>
-            <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(26px,5vw,54px);color:#fff;line-height:.9;letter-spacing:.04em;">{{ fight.r1 }}</div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(22px,4.2vw,46px);color:#fff;line-height:.9;letter-spacing:.04em;">{{ fight.r1 }}</div>
             <div style="margin-top:8px;display:flex;gap:10px;align-items:center;">
               <span style="font-family:'Bebas Neue',sans-serif;font-size:clamp(16px,2.5vw,22px);color:#cbcfd9;letter-spacing:.1em;">{{ fight.r1rec }}</span>
               <span style="font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.12em;text-transform:uppercase;">{{ fight.r1meta }}</span>
@@ -326,7 +326,7 @@
           <div class="cblabel" style="position:absolute;top:16px;right:clamp(16px,3.5vw,44px);font-size:9px;font-weight:700;letter-spacing:.24em;color:#0a0a0a;background:#eef0f4;border:1px solid rgba(255,255,255,.55);padding:3px 9px;text-transform:uppercase;">Esquina Blanca</div>
           <div class="cbtext" style="position:relative;z-index:3;text-align:right;">
             <div style="font-size:12px;font-weight:600;letter-spacing:.1em;color:rgba(255,255,255,.65);margin-bottom:2px;">★ PELEADOR</div>
-            <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(26px,5vw,54px);color:#fff;line-height:.9;letter-spacing:.04em;">{{ fight.r2 }}</div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(22px,4.2vw,46px);color:#fff;line-height:.9;letter-spacing:.04em;">{{ fight.r2 }}</div>
             <div class="cbrec" style="margin-top:8px;display:flex;gap:10px;align-items:center;justify-content:flex-end;">
               <span style="font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.12em;text-transform:uppercase;">{{ fight.r2meta }}</span>
               <span style="font-family:'Bebas Neue',sans-serif;font-size:clamp(16px,2.5vw,22px);color:#ffffff;letter-spacing:.1em;">{{ fight.r2rec }}</span>
