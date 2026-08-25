@@ -171,6 +171,7 @@ HTML = r"""<!DOCTYPE html>
   <button class="cta" id="mcard" style="background:linear-gradient(180deg,#00b1ea,#009ee3);box-shadow:0 8px 24px rgba(0,158,227,.4)">Pagar con Mercado Pago</button>
   <div style="font-size:10.5px;color:var(--muted2);text-align:center;margin-top:9px;line-height:1.5">Al continuar aceptas los <a href="terminos.html" target="_blank" style="color:var(--muted)">Términos</a>, el <a href="privacidad.html" target="_blank" style="color:var(--muted)">Aviso de Privacidad</a> y la <a href="reembolsos.html" target="_blank" style="color:var(--muted)">Política de Reembolsos</a>.</div>
   <div style="text-align:center;font-size:10.5px;color:var(--muted2);margin-top:8px">Tarjeta &#183; OXXO &#183; SPEI</div>
+  <div style="font-size:11px;color:var(--muted);margin-top:9px;line-height:1.55;background:var(--panel2);border:1px solid var(--border);border-left:3px solid #f0a020;border-radius:9px;padding:9px 11px;text-align:left"><b style="color:#f0b840">&#191;Pagas en OXXO, efectivo o punto de venta?</b> Tu lugar se aparta <b>solo 10 minutos</b>. Si el pago tarda m&aacute;s, el asiento puede venderse a otra persona. Manda tu comprobante por <a href="https://wa.me/5215633353642" target="_blank" rel="noopener" style="color:#25d366;font-weight:bold">WhatsApp</a> para dar seguimiento y confirmar tu lugar.</div>
   <button class="cta" id="mpay" style="background:transparent;border:1px solid var(--border2);color:var(--muted);box-shadow:none;margin-top:10px;font-size:13px">o apartar por WhatsApp</button><div id="speibox" style="font-size:11.5px;color:var(--muted);margin-top:12px;line-height:1.6;background:var(--panel2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;display:none"></div></div></div></div>
 <script>
 const SEATS = __SEATS__;
@@ -393,6 +394,6 @@ HTML = HTML.replace("__SEATS__", SEATS_JSON).replace("__FLOORS__", FLOORS_JSON)
 HTML = HTML.replace("__PBVB__", FLOORS["PB"]["vb"]).replace("__PBBG__", FLOORS["PB"]["bg"])
 HTML = HTML.replace("__PBW__", str(PB_VB[0])).replace("__PBH__", str(PB_VB[1]))
 
-out = r"C:/Users/Lenovo/3D Objects/nova/mapa-asientos.html"
+out = os.path.join(HERE, "mapa-asientos.html")  # junto al script, sirve en cualquier computadora
 open(out, "w", encoding="utf-8").write(HTML)
 print("mapa-asientos.html generado |", len(SEATS), "asientos |", len(HTML), "bytes")

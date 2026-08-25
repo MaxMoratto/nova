@@ -42,11 +42,27 @@ async function generateTickets(firestore, orderId, pay) {
     const foliosRef = firestore.collection('config').doc('folios');
     const genRef = firestore.collection('config').doc('general');
     const vipaRef = firestore.collection('config').doc('vipa');
-    const [oSnap, fSnap, gSnap, vaSnap] = await Promise.all([tx.get(orderRef), tx.get(foliosRef), tx.get(genRef), tx.get(vipaRef)]);
+    // La orden se lee primero: de ahi salen los asientos que hay que revalidar.
+    // (Firestore exige que TODAS las lecturas ocurran antes de cualquier escritura.)
+    const oSnap = await tx.get(orderRef);
     if (!oSnap.exists) throw new Error('orden no existe');
     const o = oSnap.data();
     if (o.estado === 'pagado') return null; // idempotente: no duplica boletos ni reenvia correo
     const seats = o.seats || [];
+    const seatRefs = seats.map((id) => firestore.collection('asientos_nova').doc(id));
+    const [fSnap, gSnap, vaSnap] = await Promise.all([tx.get(foliosRef), tx.get(genRef), tx.get(vipaRef)]);
+    const seatSnaps = await Promise.all(seatRefs.map((r) => tx.get(r)));
+
+    // Anti doble-venta: si la reserva expiro mientras el pago venia en camino
+    // (tarjeta lenta, OXXO/SPEI) y otra orden ya pago ese asiento, NO se emite
+    // el boleto; se marca como conflicto para resolverlo a mano.
+    const okSeats = [], conflictos = [];
+    seats.forEach((seatId, i) => {
+      const sd = seatSnaps[i].data();
+      if (sd && sd.status === 'vendido' && sd.orderId !== orderId) conflictos.push(seatId);
+      else okSeats.push(seatId);
+    });
+
     const genQty = o.general || 0;
     const vipaQty = o.vipa || 0;
     let n = (fSnap.exists && fSnap.data().n) || 0;
@@ -57,7 +73,7 @@ async function generateTickets(firestore, orderId, pay) {
     const comprador = o.comprador || {};
     const meta = { comprador, estado: 'valido', canal: 'mp', cortesia: false, emitidoAt: Date.now(), evento: 'NOVA-11SEP2026', orden: orderId, pagoId: String(pay.id) };
     const tokens = []; const emailItems = [];
-    for (const seatId of seats) {
+    for (const seatId of okSeats) {
       const inf = seatInfo(seatId);
       n++; const folio = fmtFolio(n); const tok = randToken();
       const boleto = { tipo: inf.tipo, folio, precio: inf.precio, asientoId: seatId, label: inf.label };
@@ -82,8 +98,10 @@ async function generateTickets(firestore, orderId, pay) {
     tx.set(foliosRef, { n }, { merge: true });
     if (genQty > 0) tx.set(genRef, { vendidos: vend + genQty }, { merge: true });
     if (vipaQty > 0) tx.set(vipaRef, { vendidos: vaVend + vipaQty }, { merge: true });
-    tx.update(orderRef, { estado: 'pagado', boletos: tokens, pagoId: String(pay.id), pagadoAt: Date.now() });
-    return { comprador, boletos: emailItems }; // datos para el correo
+    const upd = { estado: 'pagado', boletos: tokens, pagoId: String(pay.id), pagadoAt: Date.now() };
+    if (conflictos.length) { upd.conflictos = conflictos; upd.requiereAtencion = true; }
+    tx.update(orderRef, upd);
+    return { comprador, boletos: emailItems, conflictos }; // datos para el correo
   });
 }
 
@@ -147,7 +165,13 @@ module.exports = async (req, res) => {
     const firestore = db();
     if (pay.status === 'approved') {
       const result = await generateTickets(firestore, orderId, pay);
-      if (result) { try { await sendTicketEmail(result); } catch (_) {} } // recien generados => enviar 1 sola vez
+      if (result) {
+        // Asiento que otra orden ya habia pagado: queda registrado para atenderlo a mano.
+        if (result.conflictos && result.conflictos.length)
+          console.error("CONFLICTO_ASIENTO", orderId, result.conflictos.join(","), (result.comprador && result.comprador.mail) || "");
+        // recien generados => enviar 1 sola vez (sin boletos emitidos no se manda correo)
+        if (result.boletos.length) { try { await sendTicketEmail(result); } catch (_) {} }
+      }
       res.status(200).send('ok');
     } else if (pay.status === 'rejected' || pay.status === 'cancelled') {
       await releaseOrder(firestore, orderId);
