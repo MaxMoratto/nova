@@ -48,7 +48,7 @@
       .heroFr{ opacity:.6 !important; }
       /* Oscurece de la mitad hacia abajo para que el texto se despegue de las fotos. */
       #inicio::after{ content:""; position:absolute; left:0; right:0; top:42%; bottom:0;
-        background:linear-gradient(to bottom,transparent 0%,rgba(5,5,8,.42) 55%,rgba(5,5,8,.8) 100%);
+        background:linear-gradient(to bottom,transparent 0%,rgba(5,5,8,.34) 48%,rgba(5,5,8,.55) 76%,rgba(5,5,8,.88) 90%,#050508 100%);
         z-index:3; pointer-events:none; }
       /* La sede se partia en dos lineas. */
       .heroMeta{ font-size:8.5px !important; letter-spacing:.1em !important; }
@@ -57,10 +57,13 @@
       .heroEvent{ display:none !important; }
       .heroMeta{ display:none !important; }
       /* Los dos botones en una sola fila. */
-      .heroBtns{ flex-direction:row !important; flex-wrap:nowrap !important; gap:9px !important;
-        width:100%; padding:0 6px; }
-      .heroBtns > a{ flex:1 1 0; min-width:0; text-align:center; white-space:nowrap;
-        padding:13px 8px !important; font-size:9.5px !important; letter-spacing:.09em !important; } }
+      .heroBtns{ flex-direction:row !important; flex-wrap:nowrap !important; gap:8px !important;
+        width:100% !important; max-width:100% !important; padding:0 !important; }
+      .heroBtns, .heroBtns > a{ box-sizing:border-box !important; }
+      .heroBtns > a{ flex:1 1 0 !important; min-width:0 !important; width:auto !important;
+        display:flex !important; align-items:center !important; justify-content:center !important;
+        gap:5px !important; text-align:center; white-space:nowrap; overflow:hidden;
+        padding:14px 6px !important; font-size:9px !important; letter-spacing:.06em !important; } }
     @keyframes btnPulse { 0%,100%{box-shadow:0 0 15px rgba(255,0,51,.5),0 0 30px rgba(255,0,51,.2)} 50%{box-shadow:0 0 30px rgba(255,0,51,.9),0 0 60px rgba(255,0,51,.4)} }
     @keyframes logoAnim { from{opacity:0;letter-spacing:.4em;filter:blur(8px)} to{opacity:1;letter-spacing:.06em;filter:blur(0)} }
     @keyframes countPop { 0%,100%{transform:scaleY(1)} 45%{transform:scaleY(.88)} }
