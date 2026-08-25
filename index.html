@@ -31,7 +31,7 @@
     @keyframes strokeDraw { from{stroke-dashoffset:2400} to{stroke-dashoffset:0} }
     @keyframes strokeDrawInner { from{stroke-dashoffset:1900} to{stroke-dashoffset:0} }
     @keyframes scanH { 0%{top:0;opacity:.5} 100%{top:100%;opacity:0} }
-    @media (max-width:880px){ #hero-info{ display:none !important; } .hcorner{ display:none !important; } }
+    @media (max-width:880px){ .hcorner{ display:none !important; } }
     @media (max-width:600px){ .heroT1{ font-size:min(6.6vw,30px) !important } .heroT2{ font-size:min(9.6vw,40px) !important }
       .heroFa,.heroFr{ height:100% !important; max-width:54% !important; object-fit:cover !important; object-position:bottom center !important; opacity:.68 !important; } }
     @keyframes btnPulse { 0%,100%{box-shadow:0 0 15px rgba(255,0,51,.5),0 0 30px rgba(255,0,51,.2)} 50%{box-shadow:0 0 30px rgba(255,0,51,.9),0 0 60px rgba(255,0,51,.4)} }
@@ -122,9 +122,9 @@
     <line x1="669" y1="131" x2="131" y2="669" stroke="rgba(255,0,51,.04)" stroke-width="1"></line>
   </svg>
   <!-- Fighters hero: blue team left -->
-  <img class="heroFa" src="uploads/hazul.webp" alt="Equipo azul" style="position:absolute;bottom:0;left:-3%;height:105%;max-width:42%;object-fit:contain;object-position:bottom left;z-index:3;pointer-events:none;-webkit-mask-image:linear-gradient(to right,#000 50%,transparent 90%);mask-image:linear-gradient(to right,#000 50%,transparent 90%);">
+  <img class="heroFa" src="uploads/equipo-negro.webp" alt="Equipo negro" style="position:absolute;bottom:0;left:-3%;height:105%;max-width:42%;object-fit:contain;object-position:bottom left;z-index:3;pointer-events:none;-webkit-mask-image:linear-gradient(to right,#000 50%,transparent 90%);mask-image:linear-gradient(to right,#000 50%,transparent 90%);">
   <!-- Fighters hero: red team right -->
-  <img class="heroFr" src="uploads/hrojo.webp" alt="Equipo rojo" style="position:absolute;bottom:0;right:-3%;height:105%;max-width:42%;object-fit:contain;object-position:bottom right;z-index:3;pointer-events:none;-webkit-mask-image:linear-gradient(to left,#000 50%,transparent 90%);mask-image:linear-gradient(to left,#000 50%,transparent 90%);">
+  <img class="heroFr" src="uploads/equipo-blanco.webp" alt="Equipo blanco" style="position:absolute;bottom:0;right:-3%;height:105%;max-width:42%;object-fit:contain;object-position:bottom right;z-index:3;pointer-events:none;-webkit-mask-image:linear-gradient(to left,#000 50%,transparent 90%);mask-image:linear-gradient(to left,#000 50%,transparent 90%);">
   <!-- Etiquetas de esquina -->
   <div class="hcorner" style="position:absolute;left:clamp(20px,3vw,56px);top:60%;z-index:5;pointer-events:none;font-family:'Bebas Neue',sans-serif;font-style:italic;line-height:.82;text-shadow:0 2px 12px rgba(0,0,0,.95);">
     <div style="font-size:clamp(28px,3.6vw,54px);color:rgba(214,218,226,.95);letter-spacing:.02em;">BLACK</div>
@@ -137,21 +137,14 @@
     <div style="width:40px;height:2px;background:#FF0033;margin-top:9px;margin-left:auto;"></div>
   </div>
   <!-- Bloque info izquierda (fecha + lugar) -->
-  <div id="hero-info" style="position:absolute;left:clamp(20px,3.2vw,56px);top:clamp(92px,15vh,150px);z-index:5;text-align:left;pointer-events:none;animation:fadeUp 1s ease-out .45s both;text-shadow:0 2px 3px rgba(0,0,0,1),0 3px 12px rgba(0,0,0,1),0 6px 30px rgba(0,0,0,.95);">
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,6.5vw,96px);color:#FF0033;line-height:.78;letter-spacing:.02em;text-shadow:0 2px 3px rgba(0,0,0,1),0 4px 16px rgba(0,0,0,1),0 6px 30px rgba(0,0,0,.95),0 0 28px rgba(255,0,51,.5);">11</div>
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(19px,2.6vw,34px);color:#fff;line-height:1.02;letter-spacing:.06em;margin-top:4px;">SEPTIEMBRE</div>
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(19px,2.6vw,34px);color:rgba(255,255,255,.75);line-height:1;letter-spacing:.2em;">2026</div>
-    <div style="width:48px;height:2px;background:#FF0033;margin:15px 0 12px;"></div>
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(24px,2.8vw,36px);color:#fff;letter-spacing:.16em;">CDMX</div>
-    <a href="sede.html" target="_blank" rel="noopener" title="Ver dirección y mapa" style="display:block;text-align:center;text-decoration:none;pointer-events:auto;cursor:pointer;font-family:'Bebas Neue',sans-serif;font-size:clamp(19px,2.6vw,30px);letter-spacing:.1em;text-transform:uppercase;margin-top:8px;line-height:1.02;color:#E6B34A;text-shadow:0 0 1px rgba(0,0,0,.9),0 1px 3px rgba(0,0,0,1),0 0 9px rgba(210,150,50,.3);">Golden Paradise<br>Casino<span style="display:block;font-family:'Inter',sans-serif;font-size:9px;font-weight:700;letter-spacing:.22em;color:rgba(230,179,74,.65);margin-top:5px;">📍 Ver ubicación</span></a>
-  </div>
   <div style="position:relative;z-index:4;text-align:center;padding:0 clamp(16px,5vw,60px);animation:fadeUp 1s ease-out .2s both;width:100%;margin-top:clamp(-70px,-6.5vh,-32px);">
     <img src="uploads/nss-hero.webp" alt="NOVA Strike Series" style="width:clamp(96px,14.6vw,188px);height:auto;display:block;margin:0 auto clamp(10px,1.6vw,16px);filter:drop-shadow(0 0 16px rgba(155,22,55,.7));"/>
+    <div style="font-size:clamp(9px,1.6vw,12px);font-weight:700;letter-spacing:.4em;color:#FF0033;text-transform:uppercase;margin-bottom:clamp(8px,1.4vw,13px);animation:fadeUp 1s ease-out .35s both;">Nova Strike Series 47</div>
     <div style="font-family:'Bebas Neue',sans-serif;font-style:italic;line-height:.85;margin-bottom:clamp(14px,2.5vw,22px);animation:fadeUp 1s ease-out .5s both;">
       <div class="heroT1" style="font-size:clamp(37px,7.5vw,81px);color:#fff;letter-spacing:.04em;text-shadow:0 4px 22px rgba(0,0,0,.5);">DONDE NACEN</div>
       <div class="heroT2" style="font-size:clamp(59px,14.6vw,151px);color:#FF0033;letter-spacing:.02em;animation:textRed 4s ease-in-out infinite;">LOS GUERREROS</div>
     </div>
-    <p style="font-size:clamp(9px,2vw,12px);font-weight:700;letter-spacing:clamp(.2em,.5em,.5em);color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:clamp(14px,2.5vw,24px);">El combate comienza en</p>
+    <p style="font-size:clamp(9px,1.7vw,13px);font-weight:700;letter-spacing:clamp(.14em,.26em,.26em);color:rgba(255,255,255,.82);text-transform:uppercase;margin-bottom:clamp(20px,3.4vw,34px);"><span style="color:#FF0033;">&#183;</span> 11 Septiembre 2026 <span style="color:#FF0033;">&#183;</span> CDMX <span style="color:#FF0033;">&#183;</span> <a href="sede.html" target="_blank" rel="noopener" title="Ver direccion y mapa" style="color:inherit;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.28);padding-bottom:1px;">Golden Paradise Casino</a> <span style="color:#FF0033;">&#183;</span></p>
     <div style="display:flex;align-items:flex-start;justify-content:center;gap:{{ cdGap }};margin-bottom:clamp(30px,5vw,48px);">
       <div style="text-align:center;">
         <div style="width:{{ cdBox }};height:{{ cdBox }};background:rgba(0,0,0,.7);border:1px solid rgba(255,0,51,.35);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:{{ cdFont }};color:#fff;box-shadow:0 0 20px rgba(255,0,51,.12),inset 0 0 20px rgba(0,0,0,.5);animation:countPop 1s ease-in-out infinite;" id="cd-days">{{ days }}</div>
