@@ -128,7 +128,7 @@ async function sendTicketEmail(data) {
     <div style="max-width:520px;margin:0 auto;background:#11151d;border:1px solid #232a38;border-radius:16px;padding:28px">
       <div style="font-family:Arial,sans-serif;color:#ff3646;font-weight:bold;letter-spacing:2px;font-size:13px">NOVA STRIKE SERIES</div>
       <h1 style="font-family:Arial,sans-serif;color:#ffffff;font-size:22px;margin:12px 0 4px">¡Tus boletos están listos!</h1>
-      <p style="font-family:Arial,sans-serif;color:#8a92a6;font-size:13px;line-height:1.6;margin:0 0 16px">11 de septiembre 2026 · NOVA Show Center, CDMX.<br>Presenta el QR de cada boleto en la entrada (puedes mostrarlo desde el celular o descargarlo).</p>
+      <p style="font-family:Arial,sans-serif;color:#8a92a6;font-size:13px;line-height:1.6;margin:0 0 16px">11 de septiembre 2026 · Golden Paradise Casino, CDMX.<br>Presenta el QR de cada boleto en la entrada (puedes mostrarlo desde el celular o descargarlo).</p>
       <table width="100%" cellpadding="0" cellspacing="0" role="presentation">${rows}</table>
       <p style="font-family:Arial,sans-serif;color:#5f6779;font-size:12px;line-height:1.6;margin-top:20px">Guarda este correo. Cada boleto es válido una sola vez. ¿Dudas? Responde a este mensaje.</p>
     </div>
