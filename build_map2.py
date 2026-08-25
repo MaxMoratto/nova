@@ -27,7 +27,7 @@ HTML = r"""<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
-  :root{--bg:#080a0e;--panel:#11151d;--panel2:#161b26;--border:#212836;--border2:#2d3547;--txt:#e8eaf0;--muted:#8a92a6;--muted2:#5f6779;--red:#e11d2a;--red2:#ff3646;--gold:#D2AE6D;--general:#3b82f6;--ok:#25d366;--shadow:0 10px 40px rgba(0,0,0,.55)}
+  :root{--bg:#080a0e;--panel:#11151d;--panel2:#161b26;--border:#212836;--border2:#2d3547;--txt:#e8eaf0;--muted:#8a92a6;--muted2:#5f6779;--red:#e11d2a;--red2:#ff3646;--gold:#D2AE6D;--general:#c8ccd4;--ok:#25d366;--shadow:0 10px 40px rgba(0,0,0,.55)}
   *{box-sizing:border-box}html,body{height:100%}
   body{margin:0;background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
   .app{display:grid;grid-template-columns:1fr 380px;height:100vh}
@@ -110,10 +110,10 @@ HTML = r"""<!DOCTYPE html>
   #genpanel.show{display:block}
   #genpanel .gp-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
   #genpanel .gp-t{font-family:'Oswald',sans-serif;font-size:15px;letter-spacing:.6px;text-transform:uppercase;color:#fff;display:flex;align-items:center;gap:8px}
-  #genpanel .gp-t .gdot{width:10px;height:10px;border-radius:50%;background:#4f8df5}
-  #genpanel .gp-price{font-family:'Oswald',sans-serif;font-size:18px;color:#4f8df5}
+  #genpanel .gp-t .gdot{width:10px;height:10px;border-radius:50%;background:#c8ccd4}
+  #genpanel .gp-price{font-family:'Oswald',sans-serif;font-size:18px;color:#c8ccd4}
   #genpanel .gp-bar{height:9px;border-radius:6px;background:#1b2230;overflow:hidden;margin-bottom:10px;border:1px solid #232a38}
-  #genpanel .gp-fill{height:100%;background:linear-gradient(90deg,#3b82f6,#60a5fa);transition:width .35s}
+  #genpanel .gp-fill{height:100%;background:linear-gradient(90deg,#8d939d,#d7dae0);transition:width .35s}
   #genpanel .gp-row{display:flex;justify-content:space-between;align-items:center}
   #genpanel .gp-avail{font-size:12.5px;color:var(--muted)}#genpanel .gp-avail b{color:#fff;font-family:'Oswald',sans-serif;font-size:17px}
   #genpanel .gp-step{display:flex;align-items:center;gap:11px}#genpanel .gp-step .qb{width:30px;height:30px}#genpanel .gp-step b{font-family:'Oswald',sans-serif;font-size:17px;min-width:22px;text-align:center;color:#fff}
@@ -134,7 +134,7 @@ HTML = r"""<!DOCTYPE html>
 <div class="app">
   <section class="stage">
     <div class="topbar">
-      <div class="brand"><div class="logo"><span style="color:#FF0033">NOVA</span><span style="color:#fff">STRIKE</span><span style="color:#00F0FF">SERIES</span></div><div class="sub">Mapa de asientos</div></div>
+      <div class="brand"><div class="logo"><span style="color:#FF0033">NOVA</span><span style="color:#fff">STRIKE</span><span style="color:#FF0033">SERIES</span></div><div class="sub">Mapa de asientos</div></div>
       <div class="spacer"></div>
       <div class="floorsw" id="floorsw"><button data-f="PB" class="on">Planta Baja</button><button data-f="1P">1er Piso</button></div>
       <a class="back" href="index.html">&#8592; Volver</a>
@@ -179,7 +179,7 @@ const FLOORS = __FLOORS__;
 const ZONES = {
   VIP:  { label:'VIP (mesa)', color:'#e11d2a', bright:'#ff6b76', price:1500 },
   VIPA: { label:'VIP (asiento)', color:'#e11d2a', bright:'#ff8f98', price:950, general:true, total:120 },
-  GENERAL: { label:'General', color:'#3b82f6', bright:'#4f8df5', price:450, general:true, total:250 }
+  GENERAL: { label:'General', color:'#c8ccd4', bright:'#e8eaee', price:450, general:true, total:250 }
 };
 const COMISION=0.042;                       // 4.2% comision de compra en linea (cubre el costo real de Mercado Pago)
 const feeOf=sub=>Math.round(sub*COMISION);  // sobre el subtotal, redondeada al peso
@@ -275,7 +275,7 @@ function qtyDec(z){ if(qtyGet(z)>0){qtySet(z,qtyGet(z)-1);updateQty();renderCart
 function bindGen(){ const b=(id,fn)=>{const e=document.getElementById(id);if(e)e.onclick=fn;}; b('gplus',()=>qtyInc('GENERAL')); b('gminus',()=>qtyDec('GENERAL')); b('vplus',()=>qtyInc('VIPA')); b('vminus',()=>qtyDec('VIPA')); }
 function hl(z){seatsG.classList.toggle('dimmed',!!z); if(z){for(const s of SEATS){if(s.floor!==curFloor)continue;const n=nodeOf(s.id);if(n)n.classList.toggle('hl',s.zone===z);}}else seatsG.querySelectorAll('.hl').forEach(n=>n.classList.remove('hl')); }
 function refreshAvail(){zonesBox.querySelectorAll('.zrow').forEach(r=>{const av=r.querySelector('.av');if(av&&r.dataset.zone!=='GENERAL')av.textContent=avail(r.dataset.zone);});}
-document.getElementById('maplegend').innerHTML='<div class="it"><span class="dot" style="background:#e11d2a"></span>VIP</div><div class="it"><span class="dot" style="background:#3b82f6"></span>General</div><div class="it"><span class="dot" style="background:#25d366"></span>Elegido</div><div class="it"><span class="dot" style="background:#2a2f3a"></span>Vendido</div>';
+document.getElementById('maplegend').innerHTML='<div class="it"><span class="dot" style="background:#e11d2a"></span>VIP</div><div class="it"><span class="dot" style="background:#c8ccd4"></span>General</div><div class="it"><span class="dot" style="background:#25d366"></span>Elegido</div><div class="it"><span class="dot" style="background:#2a2f3a"></span>Vendido</div>';
 
 const pickbox=document.getElementById('pickbox');
 function selectedSeats(){ return [...state.selected].map(id=>SEAT_MAP.get(id)); }
