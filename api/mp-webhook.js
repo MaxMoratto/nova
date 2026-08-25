@@ -145,6 +145,25 @@ async function sendTicketEmail(data) {
   } catch (e) { console.error('MAIL_ERR', e.message || e); }
 }
 
+// Aviso al operador cuando un pago cobrado no se convirtio en boletos.
+// Destino: ALERTA_EMAIL (o MAIL_REPLY_TO) en las variables de Vercel.
+const NL = String.fromCharCode(10);
+async function sendAlert(subject, lineas) {
+  const key = process.env.RESEND_API_KEY;
+  const to = process.env.ALERTA_EMAIL || process.env.MAIL_REPLY_TO;
+  const text = lineas.join(NL);
+  if (!key || !to) { console.error("ALERTA_SIN_DESTINO", subject, text); return; }
+  const from = process.env.MAIL_FROM || "NOVA Strike Series <boletos@novastrikeseries.com>";
+  try {
+    const r = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { Authorization: "Bearer " + key, "Content-Type": "application/json" },
+      body: JSON.stringify({ from, to, subject, text })
+    });
+    if (!r.ok) console.error("ALERTA_ERR", r.status, (await r.text()).slice(0, 300));
+  } catch (e) { console.error("ALERTA_ERR", e.message || e); }
+}
+
 module.exports = async (req, res) => {
   const token = process.env.MP_ACCESS_TOKEN;
   try {
@@ -164,11 +183,43 @@ module.exports = async (req, res) => {
 
     const firestore = db();
     if (pay.status === 'approved') {
-      const result = await generateTickets(firestore, orderId, pay);
+      let result;
+      try {
+        result = await generateTickets(firestore, orderId, pay);
+      } catch (e) {
+        // Cobrado pero sin boletos: se marca la orden y se avisa al operador.
+        // Se relanza el error para responder 500 y que Mercado Pago reintente.
+        const motivo = String((e && e.message) || e);
+        try {
+          await firestore.collection("ordenes").doc(orderId).update({
+            requiereAtencion: true, emisionError: motivo, emisionErrorAt: Date.now(), pagoId: String(pay.id)
+          });
+        } catch (_) {}
+        console.error("EMISION_FALLIDA", orderId, String(pay.id), motivo);
+        await sendAlert("NOVA - pago cobrado SIN boletos (orden " + orderId + ")", [
+          "La orden " + orderId + " tiene un pago APROBADO en Mercado Pago (pago " + pay.id + "),",
+          "pero no se pudieron emitir los boletos.",
+          "",
+          "Motivo: " + motivo,
+          "",
+          "Esa persona ya pago y no recibio nada. Contactala.",
+          "Mercado Pago reintentara el aviso, asi que puede resolverse solo si el motivo desaparece."
+        ]);
+        throw e;
+      }
       if (result) {
         // Asiento que otra orden ya habia pagado: queda registrado para atenderlo a mano.
-        if (result.conflictos && result.conflictos.length)
+        if (result.conflictos && result.conflictos.length) {
           console.error("CONFLICTO_ASIENTO", orderId, result.conflictos.join(","), (result.comprador && result.comprador.mail) || "");
+          await sendAlert("NOVA - asiento pagado dos veces (orden " + orderId + ")", [
+            "La orden " + orderId + " pago " + result.conflictos.join(", ") + ",",
+            "pero ese lugar ya se le habia vendido a alguien mas.",
+            "",
+            "No se emitio boleto duplicado (eso evita dos personas en la misma silla).",
+            "Contacta a " + ((result.comprador && result.comprador.mail) || "el comprador") +
+              " (" + ((result.comprador && result.comprador.tel) || "sin telefono") + ") para reubicarlo o reembolsarle."
+          ]);
+        }
         // recien generados => enviar 1 sola vez (sin boletos emitidos no se manda correo)
         if (result.boletos.length) { try { await sendTicketEmail(result); } catch (_) {} }
       }
