@@ -11,6 +11,20 @@ service cloud.firestore {
       ];
     }
 
+    // Staff de puerta: los admins, más los correos listados en config/staff
+    // (campo "correos", un arreglo). Asi se da o quita acceso desde la base de
+    // datos, sin volver a publicar estas reglas.
+    // OJO: NO basta con estar logueado. La llave de Firebase es publica y
+    // cualquiera puede crearse una cuenta; sin esta lista, un desconocido
+    // podria marcar todos los boletos como usados.
+    function isStaff() {
+      return isAdmin() || (
+        request.auth != null &&
+        exists(/databases/$(database)/documents/config/staff) &&
+        request.auth.token.email in get(/databases/$(database)/documents/config/staff).data.get('correos', [])
+      );
+    }
+
     // Asientos: lectura pública (el mapa en vivo), escritura solo admin
     match /asientos_nova/{id} {
       allow read: if true;
@@ -23,7 +37,7 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // Config (cupo general, etc.): lectura pública, escritura solo admin
+    // Config (cupo general, lista de staff, etc.): lectura pública, escritura solo admin
     match /config/{id} {
       allow read: if true;
       allow write: if isAdmin();
@@ -31,13 +45,13 @@ service cloud.firestore {
 
     // Boletos:
     //  - get  (ver 1 boleto por su token/QR): público
-    //  - list (contadores del escáner): cualquier staff logueado
-    //  - update (marcar ingreso en la puerta): cualquier staff logueado
+    //  - list (contadores del escáner): solo staff autorizado
+    //  - update (marcar ingreso en la puerta): solo staff autorizado
     //  - create/delete (emitir/borrar): solo admin
     match /boletos/{token} {
       allow get: if true;
-      allow list: if request.auth != null;
-      allow update: if request.auth != null;
+      allow list: if isStaff();
+      allow update: if isStaff();
       allow create, delete: if isAdmin();
     }
 
