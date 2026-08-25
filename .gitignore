@@ -34,3 +34,29 @@ build/
 .env*.local
 PB_Images/
 1PISO_Images/
+
+# --- Crudos de diseno (el sitio usa los .webp/.svg aplanados) ---
+*.eps
+*_Images/
+musica/
+blanco.png
+negro.png
+stripe-sample-code.zip
+uploads/E1.png
+uploads/E2.png
+uploads/1azul.png
+uploads/1rojo.png
+uploads/2azul.png
+uploads/2rojo.png
+uploads/azul 2.png
+uploads/rojo 2.png
+uploads/*.jfif
+uploads/SIPCRED.PNG
+
+# Logos duplicados en la raiz (la copia buena vive en uploads/logos/)
+/bds.svg
+/golden.svg
+/king.svg
+/lil.svg
+/ormi.svg
+/logo F.svg
