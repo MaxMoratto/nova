@@ -45,10 +45,14 @@
         width:76% !important; max-width:76% !important;
         object-fit:cover !important; object-position:center top !important; }
       .heroFa{ opacity:.8 !important; }
-      .heroFr{ opacity:.6 !important; }
+      .heroFr{ opacity:.6 !important;
+        -webkit-mask-image:linear-gradient(to left,#000 50%,transparent 90%),linear-gradient(to bottom,#000 58%,transparent 92%) !important;
+        -webkit-mask-composite:source-in !important;
+        mask-image:linear-gradient(to left,#000 50%,transparent 90%),linear-gradient(to bottom,#000 58%,transparent 92%) !important;
+        mask-composite:intersect !important; }
       /* Oscurece de la mitad hacia abajo para que el texto se despegue de las fotos. */
       #inicio::after{ content:""; position:absolute; left:0; right:0; top:42%; bottom:0;
-        background:linear-gradient(to bottom,transparent 0%,rgba(5,5,8,.34) 48%,rgba(5,5,8,.55) 76%,rgba(5,5,8,.88) 90%,#050508 100%);
+        background:linear-gradient(to bottom,transparent 0%,rgba(5,5,8,.3) 42%,rgba(5,5,8,.62) 66%,rgba(5,5,8,.9) 84%,#050508 96%);
         z-index:3; pointer-events:none; }
       /* La sede se partia en dos lineas. */
       .heroMeta{ font-size:8.5px !important; letter-spacing:.1em !important; }
