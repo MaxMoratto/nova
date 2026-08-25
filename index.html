@@ -31,7 +31,14 @@
     @keyframes scanH { 0%{top:0;opacity:.5} 100%{top:100%;opacity:0} }
     @media (max-width:880px){ .hcorner{ display:none !important; } }
     @media (max-width:600px){ .heroT1{ font-size:min(6.6vw,30px) !important } .heroT2{ font-size:min(9.6vw,40px) !important }
-      .heroFa,.heroFr{ height:100% !important; max-width:54% !important; object-fit:cover !important; object-position:bottom center !important; opacity:.68 !important; } }
+      /* En movil se quita el desvanecido hacia el centro: con la pantalla angosta se
+         comia el area visible y dejaba el fondo vacio. Queda partido negro | blanco. */
+      .heroFa,.heroFr{ height:100% !important; width:50% !important; max-width:50% !important;
+        object-fit:cover !important; object-position:center bottom !important;
+        -webkit-mask-image:none !important; mask-image:none !important; }
+      .heroFa{ opacity:.62 !important; }
+      .heroFr{ opacity:.46 !important; }
+      .heroFa{ box-shadow:6px 0 18px rgba(0,0,0,.55); } }
     @keyframes btnPulse { 0%,100%{box-shadow:0 0 15px rgba(255,0,51,.5),0 0 30px rgba(255,0,51,.2)} 50%{box-shadow:0 0 30px rgba(255,0,51,.9),0 0 60px rgba(255,0,51,.4)} }
     @keyframes logoAnim { from{opacity:0;letter-spacing:.4em;filter:blur(8px)} to{opacity:1;letter-spacing:.06em;filter:blur(0)} }
     @keyframes countPop { 0%,100%{transform:scaleY(1)} 45%{transform:scaleY(.88)} }
