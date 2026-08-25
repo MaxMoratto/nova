@@ -53,6 +53,11 @@
       .sponsor-row img { height:auto !important; max-height:40px; max-width:100%; }
     }
     @media (max-width:400px){ .sponsor-row img { max-height:32px; } }
+    /* Barra de categoria al pie de cada pelea (como el diseno de referencia). */
+    .fightbar { border-top:1px solid rgba(255,255,255,.07); background:#0c0c10; padding:11px 12px; text-align:center; }
+    .fightbar span { font-size:clamp(9px,1.4vw,11px); font-weight:700; letter-spacing:.42em; color:rgba(255,255,255,.62); text-transform:uppercase; }
+    .cwrap { margin-bottom:10px; }
+    .cwrap .ccard { margin-bottom:0; }
   </style>
 </helmet>
 
@@ -231,9 +236,6 @@
     <h2 style="font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,8vw,80px);color:#fff;letter-spacing:.1em;">CARTELERA OFICIAL</h2>
     <div style="width:80px;height:2px;background:linear-gradient(90deg,#FF0033,#ffffff);margin:12px auto 44px;"></div>
   </div>
-  <div style="border-top:1px solid rgba(212,160,23,.2);border-bottom:1px solid rgba(212,160,23,.12);background:rgba(212,160,23,.03);padding:10px 0;text-align:center;">
-    <span style="font-size:clamp(9px,2vw,11px);font-weight:700;letter-spacing:clamp(.2em,.45em,.45em);color:#D4A017;text-transform:uppercase;animation:textGold 3s ease-in-out infinite;">{{ me.banner }}</span>
-  </div>
   <div style="position:relative;display:flex;flex-direction:{{ fightDir }};min-height:{{ fightMainMinH }};">
     <div style="flex:1;background:linear-gradient(135deg,#161619 0%,#0f0f12 60%,#0a0a0c 100%);padding:clamp(28px,5vw,56px) clamp(20px,4vw,48px);display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;min-height:clamp(380px,45vw,500px);">
       <img src="{{ me.r.img }}" alt="Peleador rojo" style="position:absolute;bottom:0;right:clamp(0px,2vw,20px);height:96%;max-width:60%;object-fit:contain;object-position:bottom right;z-index:1;pointer-events:none;">
@@ -273,9 +275,7 @@
       </div>
     </div>
   </div>
-  <div style="border-top:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.015);padding:7px 0;text-align:center;">
-    <span style="font-size:clamp(9px,2vw,10px);font-weight:700;letter-spacing:clamp(.18em,.38em,.38em);color:rgba(255,255,255,.4);text-transform:uppercase;">{{ co.banner }}</span>
-  </div>
+  <div class="fightbar"><span>{{ me.banner }}</span></div>
   <div style="position:relative;display:flex;flex-direction:{{ fightDir }};min-height:{{ fightCoMinH }};background:#070510;">
     <div style="flex:1;background:linear-gradient(135deg,#161619 0%,#0f0f12 60%,#0a0a0c 100%);padding:clamp(22px,4vw,44px) clamp(18px,3.5vw,44px);display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;min-height:clamp(340px,40vw,400px);">
       <img src="{{ co.r.img }}" alt="Peleador rojo" style="position:absolute;bottom:0;right:clamp(0px,2vw,16px);height:95%;max-width:56%;object-fit:contain;object-position:bottom right;z-index:1;pointer-events:none;">
@@ -284,7 +284,7 @@
       <div style="position:absolute;top:16px;left:clamp(16px,3.5vw,44px);font-size:9px;font-weight:700;letter-spacing:.24em;color:#fff;background:#0b0b0d;border:1px solid rgba(255,255,255,.4);padding:3px 9px;text-transform:uppercase;">Esquina Negra</div>
       <div style="position:relative;z-index:3;">
         <div style="font-size:12px;font-weight:600;letter-spacing:.1em;color:rgba(255,0,51,.65);margin-bottom:2px;">★ PELEADOR</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,5.5vw,60px);color:#fff;line-height:.9;letter-spacing:.04em;">{{ co.r.name }}</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,5.5vw,60px);color:#fff;line-height:.88;letter-spacing:.04em;"><div>{{ co.r.line1 }}</div><div>{{ co.r.line2 }}</div></div>
         <div style="margin-top:8px;display:flex;gap:10px;align-items:center;">
           <span style="font-family:'Bebas Neue',sans-serif;font-size:clamp(16px,2.5vw,22px);color:#FF0033;letter-spacing:.1em;">{{ co.r.rec }}</span>
           <span style="font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.12em;text-transform:uppercase;">{{ co.r.meta }}</span>
@@ -303,7 +303,7 @@
       <div style="position:absolute;top:16px;right:clamp(16px,3.5vw,44px);font-size:9px;font-weight:700;letter-spacing:.24em;color:#0a0a0a;background:#eef0f4;border:1px solid rgba(0,0,0,.18);padding:3px 9px;text-transform:uppercase;">Esquina Blanca</div>
       <div style="position:relative;z-index:3;text-align:{{ f2TextAlign }};">
         <div style="font-size:12px;font-weight:600;letter-spacing:.1em;color:rgba(0,0,0,.5);margin-bottom:2px;">★ PELEADOR</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,5.5vw,60px);color:#141414;line-height:.9;letter-spacing:.04em;">{{ co.a.name }}</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,5.5vw,60px);color:#141414;line-height:.88;letter-spacing:.04em;"><div>{{ co.a.line1 }}</div><div>{{ co.a.line2 }}</div></div>
         <div style="margin-top:8px;display:flex;gap:10px;align-items:center;justify-content:{{ f2Align }};">
           <span style="font-size:10px;color:rgba(0,0,0,.45);letter-spacing:.12em;text-transform:uppercase;">{{ co.a.meta }}</span>
           <span style="font-family:'Bebas Neue',sans-serif;font-size:clamp(16px,2.5vw,22px);color:#FF0033;letter-spacing:.1em;">{{ co.a.rec }}</span>
@@ -311,11 +311,13 @@
       </div>
     </div>
   </div>
+  <div class="fightbar"><span>{{ co.banner }}</span></div>
   <div style="padding:40px clamp(16px,4vw,40px) 18px;text-align:center;display:{{ carteleraDisp }};">
     <span style="font-size:10px;font-weight:700;letter-spacing:.45em;color:#D4A017;text-transform:uppercase;">— Cartelera Principal —</span>
   </div>
   <div style="padding:0 clamp(16px,4vw,40px);max-width:1200px;margin:0 auto;display:{{ carteleraDisp }};">
     <sc-for list="{{ carteleraFoto }}" as="fight" hint-placeholder-count="1">
+      <div class="cwrap">
       <div class="ccard">
         <div class="cp" style="background:linear-gradient(135deg,#161619 0%,#0f0f12 60%,#0a0a0c 100%);padding:clamp(22px,4vw,44px) clamp(18px,3.5vw,44px);display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;">
           <img src="{{ fight.r1img }}" alt="" style="display:{{ fight.r1disp }};position:absolute;bottom:0;right:clamp(0px,2vw,16px);height:95%;max-width:56%;object-fit:contain;object-position:bottom right;z-index:1;pointer-events:none;">
@@ -324,7 +326,7 @@
           <div style="position:absolute;top:16px;left:clamp(16px,3.5vw,44px);font-size:9px;font-weight:700;letter-spacing:.24em;color:#fff;background:#0b0b0d;border:1px solid rgba(255,255,255,.4);padding:3px 9px;text-transform:uppercase;">Esquina Negra</div>
           <div style="position:relative;z-index:3;">
             <div style="font-size:12px;font-weight:600;letter-spacing:.1em;color:rgba(255,0,51,.65);margin-bottom:2px;">★ PELEADOR</div>
-            <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(22px,4.2vw,46px);color:#fff;line-height:.9;letter-spacing:.04em;">{{ fight.r1 }}</div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(22px,4.2vw,46px);color:#fff;line-height:.88;letter-spacing:.04em;"><div>{{ fight.r1l1 }}</div><div>{{ fight.r1l2 }}</div></div>
             <div style="margin-top:8px;display:flex;gap:10px;align-items:center;">
               <span style="font-family:'Bebas Neue',sans-serif;font-size:clamp(16px,2.5vw,22px);color:#FF0033;letter-spacing:.1em;">{{ fight.r1rec }}</span>
               <span style="font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.12em;text-transform:uppercase;">{{ fight.r1meta }}</span>
@@ -343,13 +345,15 @@
           <div class="cblabel" style="position:absolute;top:16px;right:clamp(16px,3.5vw,44px);font-size:9px;font-weight:700;letter-spacing:.24em;color:#0a0a0a;background:#eef0f4;border:1px solid rgba(0,0,0,.18);padding:3px 9px;text-transform:uppercase;">Esquina Blanca</div>
           <div class="cbtext" style="position:relative;z-index:3;text-align:right;">
             <div style="font-size:12px;font-weight:600;letter-spacing:.1em;color:rgba(0,0,0,.5);margin-bottom:2px;">★ PELEADOR</div>
-            <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(22px,4.2vw,46px);color:#141414;line-height:.9;letter-spacing:.04em;">{{ fight.r2 }}</div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(22px,4.2vw,46px);color:#141414;line-height:.88;letter-spacing:.04em;"><div>{{ fight.r2l1 }}</div><div>{{ fight.r2l2 }}</div></div>
             <div class="cbrec" style="margin-top:8px;display:flex;gap:10px;align-items:center;justify-content:flex-end;">
               <span style="font-size:10px;color:rgba(0,0,0,.45);letter-spacing:.12em;text-transform:uppercase;">{{ fight.r2meta }}</span>
               <span style="font-family:'Bebas Neue',sans-serif;font-size:clamp(16px,2.5vw,22px);color:#FF0033;letter-spacing:.1em;">{{ fight.r2rec }}</span>
             </div>
           </div>
         </div>
+      </div>
+      <div class="fightbar"><span>{{ fight.banner }}</span></div>
       </div>
     </sc-for>
     <div class="prelim2" style="margin-top:10px;">
@@ -767,7 +771,7 @@ class Component extends DCLogic {
     const principal = plist.find(p => p.tipo === 'principal');
     const coest = plist.find(p => p.tipo === 'coestelar');
     const me = {
-      banner: '⭐ PELEA PRINCIPAL · ' + ((principal && principal.banner) || 'PESO LIGERO · 155 LB'),
+      banner: 'PELEA PRINCIPAL · ' + ((principal && principal.banner) || 'PESO LIGERO · 155 LB'),
       r: corner(principal && principal.rojo, 'uploads/1rojo.webp'),
       a: corner(principal && principal.azul, 'uploads/1azul.webp')
     };
@@ -784,7 +788,8 @@ class Component extends DCLogic {
     const prelimsFoto = prelims.filter(p => p.r1disp === 'block' || p.r2disp === 'block');
     const prelimsSinFoto = prelims.filter(p => p.r1disp !== 'block' && p.r2disp !== 'block');
     const metaOf = (f) => [noneVal(f && f.modalidad), noneVal(f && f.categoria)].filter(Boolean).join(' · ');
-    const buildRow = (p) => { const a = av(p.rojo), b = av(p.azul); return { r1: nm(p.rojo), r1rec: rec(p.rojo), r1img: a, r1disp: dsp(a), r1meta: metaOf(p.rojo), r2: nm(p.azul), r2rec: rec(p.azul), r2img: b, r2disp: dsp(b), r2meta: metaOf(p.azul) }; };
+    const dosLineas = (s) => { const t = String(s).split(/\s+/); return { l1: t[0] || '', l2: t.slice(1).join(' ') }; };
+    const buildRow = (p) => { const a = av(p.rojo), b = av(p.azul); const n1 = dosLineas(nm(p.rojo)), n2 = dosLineas(nm(p.azul)); const bn = ((p && p.banner) || '').trim(); return { r1: nm(p.rojo), r1l1: n1.l1, r1l2: n1.l2, r1rec: rec(p.rojo), r1img: a, r1disp: dsp(a), r1meta: metaOf(p.rojo), r2: nm(p.azul), r2l1: n2.l1, r2l2: n2.l2, r2rec: rec(p.azul), r2img: b, r2disp: dsp(b), r2meta: metaOf(p.azul), banner: 'CARTELERA PRINCIPAL' + (bn ? ' · ' + bn.toUpperCase() : '') }; };
     const carteleraList = plist.filter(p => p.tipo === 'cartelera').sort((a, b) => (a.orden || 99) - (b.orden || 99));
     const carteleraRows = carteleraList.map(buildRow);
     const carteleraFoto = carteleraRows.filter(p => p.r1disp === 'block' || p.r2disp === 'block');
