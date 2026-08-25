@@ -37,18 +37,18 @@
          su contenido. Antes sobraba un hueco negro abajo y, como todo se centra en
          ese espacio, el texto quedaba flotando lejos de las fotos. */
       #inicio{ height:auto !important; min-height:0 !important;
-        padding:96px 0 54px !important; justify-content:flex-start !important; }
+        padding:92px 0 30px !important; justify-content:flex-start !important; }
       /* Las figuras cubren TODO el alto del hero (top y bottom a la vez), no una
          fraccion: asi no hay corte y, al ser el hero mas bajo, el recorte es suave
          y se ve la composicion completa del equipo. */
       .heroFa,.heroFr{ top:0 !important; bottom:0 !important; height:auto !important;
-        width:64% !important; max-width:64% !important;
+        width:76% !important; max-width:76% !important;
         object-fit:cover !important; object-position:center top !important; }
       .heroFa{ opacity:.8 !important; }
       .heroFr{ opacity:.6 !important; }
       /* Oscurece de la mitad hacia abajo para que el texto se despegue de las fotos. */
-      #inicio::after{ content:""; position:absolute; left:0; right:0; top:30%; bottom:0;
-        background:linear-gradient(to bottom,transparent 0%,rgba(5,5,8,.55) 48%,rgba(5,5,8,.94) 100%);
+      #inicio::after{ content:""; position:absolute; left:0; right:0; top:42%; bottom:0;
+        background:linear-gradient(to bottom,transparent 0%,rgba(5,5,8,.42) 55%,rgba(5,5,8,.8) 100%);
         z-index:3; pointer-events:none; }
       /* La sede se partia en dos lineas. */
       .heroMeta{ font-size:8.5px !important; letter-spacing:.1em !important; }
