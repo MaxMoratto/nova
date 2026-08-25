@@ -21,9 +21,7 @@
     ::-webkit-scrollbar-thumb { background: #FF0033; border-radius: 2px; }
     @keyframes glowRed { 0%,100%{filter:drop-shadow(0 0 6px rgba(255,0,51,.8)) drop-shadow(0 0 12px rgba(255,0,51,.4))} 50%{filter:drop-shadow(0 0 14px rgba(255,0,51,1)) drop-shadow(0 0 28px rgba(255,0,51,.7)) drop-shadow(0 0 50px rgba(255,0,51,.3))} }
     @keyframes logoGlow { 0%,100%{filter:drop-shadow(0 0 16px rgba(155,22,55,.9)) drop-shadow(0 0 40px rgba(155,22,55,.77)) drop-shadow(0 0 84px rgba(155,22,55,.5))} 50%{filter:drop-shadow(0 0 26px rgba(155,22,55,.9)) drop-shadow(0 0 64px rgba(155,22,55,.9)) drop-shadow(0 0 140px rgba(155,22,55,.72))} }
-    @keyframes glowCyan { 0%,100%{filter:drop-shadow(0 0 6px rgba(0,240,255,.8)) drop-shadow(0 0 12px rgba(0,240,255,.4))} 50%{filter:drop-shadow(0 0 14px rgba(0,240,255,1)) drop-shadow(0 0 28px rgba(0,240,255,.7))} }
     @keyframes textRed { 0%,100%{text-shadow:0 0 10px rgba(255,0,51,.8),0 0 20px rgba(255,0,51,.5),0 0 40px rgba(255,0,51,.3)} 50%{text-shadow:0 0 20px rgba(255,0,51,1),0 0 40px rgba(255,0,51,.8),0 0 80px rgba(255,0,51,.5)} }
-    @keyframes textCyan { 0%,100%{text-shadow:0 0 10px rgba(0,240,255,.8),0 0 20px rgba(0,240,255,.5)} 50%{text-shadow:0 0 20px rgba(0,240,255,1),0 0 40px rgba(0,240,255,.8),0 0 60px rgba(0,240,255,.4)} }
     @keyframes textGold { 0%,100%{text-shadow:0 0 10px rgba(212,160,23,.8),0 0 20px rgba(212,160,23,.4)} 50%{text-shadow:0 0 20px rgba(212,160,23,1),0 0 40px rgba(212,160,23,.6)} }
     @keyframes particleRise { 0%{transform:translateY(0) scale(1);opacity:0} 10%{opacity:.8} 90%{opacity:.3} 100%{transform:translateY(-600px) scale(.2);opacity:0} }
     @keyframes fadeUp { from{opacity:0;transform:translateY(40px)} to{opacity:1;transform:translateY(0)} }
@@ -92,8 +90,8 @@
 
 <!-- HERO SECTION -->
 <section id="inicio" style="position:relative;height:100vh;min-height:640px;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(ellipse 90% 80% at 50% 55%,#1B0B30 0%,#0C0518 50%,#050508 100%);">
-  <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(0,240,255,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,.022) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:1;"></div>
-  <div style="position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(0,240,255,.4),transparent);animation:scanH 6s linear infinite;pointer-events:none;z-index:3;"></div>
+  <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:1;"></div>
+  <div style="position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);animation:scanH 6s linear infinite;pointer-events:none;z-index:3;"></div>
   <sc-for list="{{ particles }}" as="p" hint-placeholder-count="0">
     <div style="position:absolute;left:{{ p.left }};top:{{ p.top }};width:{{ p.size }};height:{{ p.size }};border-radius:50%;background:{{ p.color }};box-shadow:0 0 6px {{ p.color }};animation:particleRise {{ p.duration }} ease-in-out {{ p.delay }} infinite;pointer-events:none;will-change:transform;z-index:2;"></div>
   </sc-for>
@@ -106,7 +104,7 @@
     </defs>
     <polygon points="400,20 669,131 780,400 669,669 400,780 131,669 20,400 131,131" fill="url(#octaFill)"></polygon>
     <polygon points="400,20 669,131 780,400 669,669 400,780 131,669 20,400 131,131" fill="none" stroke="#FF0033" stroke-width="2" stroke-dasharray="2400" style="animation:strokeDraw 2.8s ease-out .3s both;"></polygon>
-    <polygon points="400,100 612,188 700,400 612,612 400,700 188,612 100,400 188,188" fill="none" stroke="#00F0FF" stroke-width="1" stroke-dasharray="1900" stroke-opacity=".5" style="animation:strokeDrawInner 2.8s ease-out .9s both;"></polygon>
+    <polygon points="400,100 612,188 700,400 612,612 400,700 188,612 100,400 188,188" fill="none" stroke="#FFFFFF" stroke-width="1" stroke-dasharray="1900" stroke-opacity=".5" style="animation:strokeDrawInner 2.8s ease-out .9s both;"></polygon>
     <circle cx="400" cy="20" r="4" fill="#FF0033" style="animation:glowRed 2s ease-in-out infinite;"></circle>
     <circle cx="669" cy="131" r="3" fill="#FF0033" style="animation:glowRed 2s ease-in-out infinite .25s;"></circle>
     <circle cx="780" cy="400" r="4" fill="#FF0033" style="animation:glowRed 2s ease-in-out infinite .5s;"></circle>
@@ -115,8 +113,8 @@
     <circle cx="131" cy="669" r="3" fill="#FF0033" style="animation:glowRed 2s ease-in-out infinite 1.25s;"></circle>
     <circle cx="20" cy="400" r="4" fill="#FF0033" style="animation:glowRed 2s ease-in-out infinite 1.5s;"></circle>
     <circle cx="131" cy="131" r="3" fill="#FF0033" style="animation:glowRed 2s ease-in-out infinite 1.75s;"></circle>
-    <line x1="400" y1="20" x2="400" y2="780" stroke="rgba(0,240,255,.05)" stroke-width="1"></line>
-    <line x1="20" y1="400" x2="780" y2="400" stroke="rgba(0,240,255,.05)" stroke-width="1"></line>
+    <line x1="400" y1="20" x2="400" y2="780" stroke="rgba(255,255,255,.05)" stroke-width="1"></line>
+    <line x1="20" y1="400" x2="780" y2="400" stroke="rgba(255,255,255,.05)" stroke-width="1"></line>
     <line x1="131" y1="131" x2="669" y2="669" stroke="rgba(255,0,51,.04)" stroke-width="1"></line>
     <line x1="669" y1="131" x2="131" y2="669" stroke="rgba(255,0,51,.04)" stroke-width="1"></line>
   </svg>
@@ -137,11 +135,11 @@
   </div>
   <!-- Bloque info izquierda (fecha + lugar) -->
   <div style="position:relative;z-index:4;text-align:center;padding:0 clamp(16px,5vw,60px);animation:fadeUp 1s ease-out .2s both;width:100%;margin-top:clamp(-70px,-6.5vh,-32px);">
-    <img src="uploads/nss-hero.webp" alt="NOVA Strike Series" style="width:clamp(96px,14.6vw,188px);height:auto;display:block;margin:0 auto clamp(10px,1.6vw,16px);filter:drop-shadow(0 0 16px rgba(155,22,55,.7));"/>
+    <img src="uploads/logos/nssblanco.webp" alt="NOVA Strike Series" style="width:clamp(78px,11.4vw,150px);height:auto;display:block;margin:0 auto clamp(10px,1.6vw,16px);filter:drop-shadow(0 0 16px rgba(155,22,55,.7));"/>
     <div style="font-size:clamp(9px,1.6vw,12px);font-weight:700;letter-spacing:.4em;color:#FF0033;text-transform:uppercase;margin-bottom:clamp(8px,1.4vw,13px);animation:fadeUp 1s ease-out .35s both;">Nova Strike Series 47</div>
     <div style="font-family:'Bebas Neue',sans-serif;font-style:italic;line-height:.85;margin-bottom:clamp(14px,2.5vw,22px);animation:fadeUp 1s ease-out .5s both;">
-      <div class="heroT1" style="font-size:clamp(37px,7.5vw,81px);color:#fff;letter-spacing:.04em;text-shadow:0 4px 22px rgba(0,0,0,.5);">DONDE NACEN</div>
-      <div class="heroT2" style="font-size:clamp(59px,14.6vw,151px);color:#FF0033;letter-spacing:.02em;animation:textRed 4s ease-in-out infinite;">LOS GUERREROS</div>
+      <div class="heroT1" style="font-size:clamp(31px,6.2vw,67px);color:#fff;letter-spacing:.04em;text-shadow:0 4px 22px rgba(0,0,0,.5);">DONDE NACEN</div>
+      <div class="heroT2" style="font-size:clamp(48px,12vw,124px);color:#FF0033;letter-spacing:.02em;animation:textRed 4s ease-in-out infinite;">LOS GUERREROS</div>
     </div>
     <p style="font-size:clamp(9px,1.7vw,13px);font-weight:700;letter-spacing:clamp(.14em,.26em,.26em);color:rgba(255,255,255,.82);text-transform:uppercase;margin-bottom:clamp(20px,3.4vw,34px);"><span style="color:#FF0033;">&#183;</span> 11 Septiembre 2026 <span style="color:#FF0033;">&#183;</span> CDMX <span style="color:#FF0033;">&#183;</span> <a href="sede.html" target="_blank" rel="noopener" title="Ver direccion y mapa" style="color:inherit;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.28);padding-bottom:1px;">Golden Paradise Casino</a> <span style="color:#FF0033;">&#183;</span></p>
     <div style="display:flex;align-items:flex-start;justify-content:center;gap:{{ cdGap }};margin-bottom:clamp(30px,5vw,48px);">
@@ -156,18 +154,18 @@
       </div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:{{ cdSep }};color:#FF0033;padding-top:{{ cdSepPad }};line-height:1;">:</div>
       <div style="text-align:center;">
-        <div style="width:{{ cdBox }};height:{{ cdBox }};background:rgba(0,0,0,.7);border:1px solid rgba(0,240,255,.3);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:{{ cdFont }};color:#fff;box-shadow:0 0 20px rgba(0,240,255,.1),inset 0 0 20px rgba(0,0,0,.5);" id="cd-mins">{{ mins }}</div>
-        <div style="font-size:9px;font-weight:700;letter-spacing:.2em;color:rgba(0,240,255,.7);margin-top:5px;text-transform:uppercase;">Min</div>
+        <div style="width:{{ cdBox }};height:{{ cdBox }};background:rgba(0,0,0,.7);border:1px solid rgba(255,0,51,.35);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:{{ cdFont }};color:#fff;box-shadow:0 0 20px rgba(255,0,51,.12),inset 0 0 20px rgba(0,0,0,.5);" id="cd-mins">{{ mins }}</div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:.2em;color:rgba(255,0,51,.7);margin-top:5px;text-transform:uppercase;">Min</div>
       </div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:{{ cdSep }};color:#00F0FF;padding-top:{{ cdSepPad }};line-height:1;">:</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:{{ cdSep }};color:#FF0033;padding-top:{{ cdSepPad }};line-height:1;">:</div>
       <div style="text-align:center;">
-        <div style="width:{{ cdBox }};height:{{ cdBox }};background:rgba(0,0,0,.7);border:1px solid rgba(0,240,255,.3);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:{{ cdFont }};color:#fff;box-shadow:0 0 20px rgba(0,240,255,.1),inset 0 0 20px rgba(0,0,0,.5);animation:countPop 1s ease-in-out infinite;" id="cd-secs">{{ secs }}</div>
-        <div style="font-size:9px;font-weight:700;letter-spacing:.2em;color:rgba(0,240,255,.7);margin-top:5px;text-transform:uppercase;">Seg</div>
+        <div style="width:{{ cdBox }};height:{{ cdBox }};background:rgba(0,0,0,.7);border:1px solid rgba(255,0,51,.35);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:{{ cdFont }};color:#fff;box-shadow:0 0 20px rgba(255,0,51,.12),inset 0 0 20px rgba(0,0,0,.5);animation:countPop 1s ease-in-out infinite;" id="cd-secs">{{ secs }}</div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:.2em;color:rgba(255,0,51,.7);margin-top:5px;text-transform:uppercase;">Seg</div>
       </div>
     </div>
     <div style="display:flex;flex-direction:{{ btnDir }};flex-wrap:wrap;gap:12px;justify-content:center;align-items:center;">
       <a href="mapa-asientos.html" style="background:#FF0033;color:#fff;padding:clamp(13px,2vw,16px) clamp(16px,3.4vw,44px);font-size:clamp(10.5px,2.5vw,13px);font-weight:800;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;white-space:nowrap;animation:btnPulse 2.5s ease-in-out infinite;transition:background .2s,transform .2s;" style-hover="background:#CC0029;transform:translateY(-2px);">⚡ COMPRAR BOLETOS</a>
-      <a href="#cartelera" style="background:transparent;color:#fff;padding:clamp(13px,2vw,16px) clamp(16px,3.4vw,44px);font-size:clamp(10.5px,2.5vw,13px);font-weight:700;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;white-space:nowrap;border:1px solid rgba(255,255,255,.3);transition:all .2s;" style-hover="border-color:rgba(0,240,255,.6);color:#00F0FF;transform:translateY(-2px);">VER CARTELERA</a>
+      <a href="#cartelera" style="background:transparent;color:#fff;padding:clamp(13px,2vw,16px) clamp(16px,3.4vw,44px);font-size:clamp(10.5px,2.5vw,13px);font-weight:700;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;white-space:nowrap;border:1px solid rgba(255,255,255,.3);transition:all .2s;" style-hover="border-color:rgba(255,0,51,.6);color:#FF0033;transform:translateY(-2px);">VER CARTELERA</a>
     </div>
   </div>
 </section>
@@ -256,7 +254,7 @@
       <div style="position:absolute;top:18px;right:clamp(18px,4vw,48px);font-size:9px;font-weight:700;letter-spacing:.28em;color:#0a0a0a;background:#eef0f4;border:1px solid rgba(0,0,0,.18);padding:3px 10px;text-transform:uppercase;z-index:3;">Esquina Blanca</div>
       <div style="position:relative;z-index:3;text-align:{{ f2TextAlign }};">
         <div style="font-size:clamp(11px,1.5vw,14px);font-weight:600;letter-spacing:.1em;color:rgba(0,0,0,.5);margin-bottom:3px;">★ PELEADOR</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,7vw,88px);color:#141414;line-height:.88;letter-spacing:.04em;animation:textCyan 4s ease-in-out infinite 1.5s;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,7vw,88px);color:#141414;line-height:.88;letter-spacing:.04em;">
           <div>{{ me.a.line1 }}</div>
           <div>{{ me.a.line2 }}</div>
         </div>
@@ -818,7 +816,7 @@ class Component extends DCLogic {
       size: `${((i * 0.9 + 1) % 2.5) + 1.5}px`,
       delay: `${((i * 0.7) % 4.5).toFixed(1)}s`,
       duration: `${(((i * 1.1) % 3.5) + 3).toFixed(1)}s`,
-      color: i % 3 === 0 ? '#FF0033' : i % 3 === 1 ? '#00F0FF' : '#A855F7'
+      color: i % 2 === 0 ? '#FF0033' : '#FFFFFF'
     }));
 
     return {
@@ -831,11 +829,11 @@ class Component extends DCLogic {
       mobileMenuDisplay: mobileMenuOpen ? 'flex' : 'none',
       toggleMenu: () => this.setState(s => ({ mobileMenuOpen: !s.mobileMenuOpen })),
       closeMenu: () => this.setState({ mobileMenuOpen: false }),
-      cdBox: isMobile ? '46px' : 'clamp(68px,10vw,94px)',
-      cdFont: isMobile ? '26px' : 'clamp(40px,6.5vw,60px)',
+      cdBox: isMobile ? '42px' : 'clamp(58px,8.4vw,80px)',
+      cdFont: isMobile ? '24px' : 'clamp(34px,5.5vw,51px)',
       cdGap: isMobile ? '3px' : 'clamp(6px,1.5vw,14px)',
-      cdSep: isMobile ? '16px' : 'clamp(36px,5.5vw,54px)',
-      cdSepPad: isMobile ? '6px' : 'clamp(8px,1.5vw,16px)',
+      cdSep: isMobile ? '15px' : 'clamp(30px,4.6vw,45px)',
+      cdSepPad: isMobile ? '5px' : 'clamp(7px,1.3vw,14px)',
       fightDir: isMobile ? 'column' : 'row',
       btnDir: isMobile ? 'column' : 'row',
       fightMainMinH: isMobile ? '200px' : '370px',
