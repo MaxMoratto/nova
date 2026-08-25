@@ -183,3 +183,5 @@ module.exports = async (req, res) => {
     res.status(500).send('error: ' + (e.message || e)); // 500 => MP reintenta
   }
 };
+
+module.exports.generateTickets = generateTickets; // expuesto para pruebas locales
