@@ -31,14 +31,7 @@
     @keyframes scanH { 0%{top:0;opacity:.5} 100%{top:100%;opacity:0} }
     /* Los rotulos de esquina si se ven en movil (como la referencia): mas chicos
        y pegados a la orilla, para no chocar con los botones del centro. */
-    @media (max-width:880px){
-      .hcorner{ top:62% !important; }
-      .hc-l{ left:10px !important; }
-      .hc-r{ right:10px !important; }
-      .hcorner > div:first-child{ font-size:24px !important; }
-      .hcorner > div:nth-child(2){ font-size:10.5px !important; letter-spacing:.26em !important; }
-      .hcorner > div:last-child{ width:28px !important; margin-top:6px !important; }
-    }
+    @media (max-width:880px){ .hcorner{ display:none !important; } }
     @media (max-width:600px){ .heroT1{ font-size:min(6.6vw,30px) !important } .heroT2{ font-size:min(9.6vw,40px) !important }
       /* El hero deja de medir una fraccion de pantalla y pasa a medir lo que mide
          su contenido. Antes sobraba un hueco negro abajo y, como todo se centra en
@@ -60,7 +53,14 @@
       /* La sede se partia en dos lineas. */
       .heroMeta{ font-size:8.5px !important; letter-spacing:.1em !important; }
       /* Los rotulos de esquina, junto a los botones. */
-      .hcorner{ top:auto !important; bottom:74px !important; } }
+      /* Menos elementos en pantalla chica: el hero respira y se lee de un golpe. */
+      .heroEvent{ display:none !important; }
+      .heroMeta{ display:none !important; }
+      /* Los dos botones en una sola fila. */
+      .heroBtns{ flex-direction:row !important; flex-wrap:nowrap !important; gap:9px !important;
+        width:100%; padding:0 6px; }
+      .heroBtns > a{ flex:1 1 0; min-width:0; text-align:center; white-space:nowrap;
+        padding:13px 8px !important; font-size:9.5px !important; letter-spacing:.09em !important; } }
     @keyframes btnPulse { 0%,100%{box-shadow:0 0 15px rgba(255,0,51,.5),0 0 30px rgba(255,0,51,.2)} 50%{box-shadow:0 0 30px rgba(255,0,51,.9),0 0 60px rgba(255,0,51,.4)} }
     @keyframes logoAnim { from{opacity:0;letter-spacing:.4em;filter:blur(8px)} to{opacity:1;letter-spacing:.06em;filter:blur(0)} }
     @keyframes countPop { 0%,100%{transform:scaleY(1)} 45%{transform:scaleY(.88)} }
@@ -165,7 +165,7 @@
   <!-- Bloque info izquierda (fecha + lugar) -->
   <div style="position:relative;z-index:4;text-align:center;padding:0 clamp(16px,5vw,60px);animation:fadeUp 1s ease-out .2s both;width:100%;margin-top:clamp(-70px,-6.5vh,-32px);">
     <img src="uploads/logos/nssblanco.webp" alt="NOVA Strike Series" style="width:clamp(78px,11.4vw,150px);height:auto;display:block;margin:0 auto clamp(10px,1.6vw,16px);filter:drop-shadow(0 0 16px rgba(155,22,55,.7));"/>
-    <div style="font-size:clamp(9px,1.6vw,12px);font-weight:700;letter-spacing:.4em;color:#FF0033;text-transform:uppercase;margin-bottom:clamp(8px,1.4vw,13px);animation:fadeUp 1s ease-out .35s both;">Nova Strike Series 47</div>
+    <div class="heroEvent" style="font-size:clamp(9px,1.6vw,12px);font-weight:700;letter-spacing:.4em;color:#FF0033;text-transform:uppercase;margin-bottom:clamp(8px,1.4vw,13px);animation:fadeUp 1s ease-out .35s both;">Nova Strike Series 47</div>
     <div style="font-family:'Bebas Neue',sans-serif;font-style:italic;line-height:.85;margin-bottom:clamp(14px,2.5vw,22px);animation:fadeUp 1s ease-out .5s both;">
       <div class="heroT1" style="font-size:clamp(27px,5.2vw,55px);color:#fff;letter-spacing:.04em;text-shadow:0 4px 22px rgba(0,0,0,.5);">DONDE NACEN</div>
       <div class="heroT2" style="font-size:clamp(40px,9.6vw,100px);color:#FF0033;letter-spacing:.02em;animation:textRed 4s ease-in-out infinite;">LOS GUERREROS</div>
@@ -192,7 +192,7 @@
         <div style="font-size:9px;font-weight:700;letter-spacing:.2em;color:rgba(255,0,51,.7);margin-top:5px;text-transform:uppercase;">Seg</div>
       </div>
     </div>
-    <div style="display:flex;flex-direction:{{ btnDir }};flex-wrap:wrap;gap:12px;justify-content:center;align-items:center;">
+    <div class="heroBtns" style="display:flex;flex-direction:{{ btnDir }};flex-wrap:wrap;gap:12px;justify-content:center;align-items:center;">
       <a href="mapa-asientos.html" style="background:#FF0033;color:#fff;padding:clamp(13px,2vw,16px) clamp(16px,3.4vw,44px);font-size:clamp(10.5px,2.5vw,13px);font-weight:800;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;white-space:nowrap;animation:btnPulse 2.5s ease-in-out infinite;transition:background .2s,transform .2s;" style-hover="background:#CC0029;transform:translateY(-2px);">⚡ COMPRAR BOLETOS</a>
       <a href="#cartelera" style="background:transparent;color:#fff;padding:clamp(13px,2vw,16px) clamp(16px,3.4vw,44px);font-size:clamp(10.5px,2.5vw,13px);font-weight:700;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;white-space:nowrap;border:1px solid rgba(255,255,255,.3);transition:all .2s;" style-hover="border-color:rgba(255,0,51,.6);color:#FF0033;transform:translateY(-2px);">VER CARTELERA</a>
     </div>
