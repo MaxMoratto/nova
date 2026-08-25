@@ -57,13 +57,15 @@
       .heroEvent{ display:none !important; }
       .heroMeta{ display:none !important; }
       /* Los dos botones en una sola fila. */
-      .heroBtns{ flex-direction:row !important; flex-wrap:nowrap !important; gap:8px !important;
-        width:100% !important; max-width:100% !important; padding:0 !important; }
+      /* Cada boton mide lo que pide su texto: forzarlos a mitades iguales dejaba al
+         rojo con mas palabras en el mismo hueco, y el recorte los cortaba. */
+      .heroBtns{ flex-direction:row !important; flex-wrap:nowrap !important; gap:9px !important;
+        width:auto !important; max-width:100% !important; padding:0 !important; }
       .heroBtns, .heroBtns > a{ box-sizing:border-box !important; }
-      .heroBtns > a{ flex:1 1 0 !important; min-width:0 !important; width:auto !important;
-        display:flex !important; align-items:center !important; justify-content:center !important;
-        gap:5px !important; text-align:center; white-space:nowrap; overflow:hidden;
-        padding:14px 6px !important; font-size:9px !important; letter-spacing:.06em !important; } }
+      .heroBtns > a{ flex:0 1 auto !important; width:auto !important;
+        display:inline-flex !important; align-items:center !important; justify-content:center !important;
+        gap:6px !important; white-space:nowrap !important; overflow:visible !important;
+        padding:14px 15px !important; font-size:10px !important; letter-spacing:.07em !important; } }
     @keyframes btnPulse { 0%,100%{box-shadow:0 0 15px rgba(255,0,51,.5),0 0 30px rgba(255,0,51,.2)} 50%{box-shadow:0 0 30px rgba(255,0,51,.9),0 0 60px rgba(255,0,51,.4)} }
     @keyframes logoAnim { from{opacity:0;letter-spacing:.4em;filter:blur(8px)} to{opacity:1;letter-spacing:.06em;filter:blur(0)} }
     @keyframes countPop { 0%,100%{transform:scaleY(1)} 45%{transform:scaleY(.88)} }
