@@ -445,8 +445,8 @@
 <!-- NOVA FEED -->
 <section id="nova-feed" style="background:#060410;padding:68px 0 56px;overflow:hidden;display:none;">
   <div style="text-align:center;margin-bottom:36px;padding:0 clamp(16px,4vw,40px);">
-    <div style="font-size:10px;font-weight:700;letter-spacing:.5em;color:#A855F7;margin-bottom:8px;text-transform:uppercase;">Contenido Exclusivo</div>
-    <h2 style="font-family:'Bebas Neue',sans-serif;font-size:clamp(44px,9vw,88px);color:#fff;letter-spacing:.1em;">NOVA <span style="color:#A855F7;">FEED</span></h2>
+    <div style="font-size:10px;font-weight:700;letter-spacing:.5em;color:#FF0033;margin-bottom:8px;text-transform:uppercase;">Contenido Exclusivo</div>
+    <h2 style="font-family:'Bebas Neue',sans-serif;font-size:clamp(44px,9vw,88px);color:#fff;letter-spacing:.1em;">NOVA <span style="color:#FF0033;">FEED</span></h2>
     <p style="font-size:11px;color:rgba(255,255,255,.35);letter-spacing:.18em;margin-top:8px;text-transform:uppercase;">Careos · Knockouts · Highlights · Backstage</p>
   </div>
   <div style="overflow-x:auto;padding:0 clamp(16px,4vw,40px) 14px;-webkit-overflow-scrolling:touch;">
@@ -465,7 +465,7 @@
         </div>
       </div>
       <sc-for list="{{ feedItems }}" as="item" hint-placeholder-count="8">
-        <div style="width:192px;height:341px;flex-shrink:0;position:relative;overflow:hidden;background:{{ item.bg }};cursor:pointer;transition:transform .25s,box-shadow .25s;" style-hover="transform:scale(1.04) translateY(-4px);box-shadow:0 8px 32px rgba(168,85,247,.3),0 0 0 1px rgba(168,85,247,.35);">
+        <div style="width:192px;height:341px;flex-shrink:0;position:relative;overflow:hidden;background:{{ item.bg }};cursor:pointer;transition:transform .25s,box-shadow .25s;" style-hover="transform:scale(1.04) translateY(-4px);box-shadow:0 8px 32px rgba(255,0,51,.3),0 0 0 1px rgba(255,0,51,.35);">
           <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.92) 0%,rgba(0,0,0,.2) 50%,transparent 100%);z-index:1;"></div>
           <div style="position:absolute;top:10px;right:10px;z-index:2;background:rgba(0,0,0,.65);padding:3px 7px;font-size:10px;font-weight:700;color:#fff;">{{ item.dur }}</div>
           <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2;width:46px;height:46px;border:2px solid rgba(255,255,255,.65);border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.3);">
@@ -480,7 +480,7 @@
     </div>
   </div>
   <div style="display:flex;gap:12px;justify-content:center;margin-top:28px;flex-wrap:wrap;padding:0 clamp(16px,4vw,40px);">
-    <a href="#" style="display:flex;align-items:center;gap:8px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.3);padding:11px 22px;text-decoration:none;color:#fff;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;transition:all .2s;" style-hover="background:rgba(168,85,247,.2);transform:translateY(-1px);">♪ VER EN TIKTOK</a>
+    <a href="#" style="display:flex;align-items:center;gap:8px;background:rgba(255,0,51,.1);border:1px solid rgba(255,0,51,.3);padding:11px 22px;text-decoration:none;color:#fff;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;transition:all .2s;" style-hover="background:rgba(255,0,51,.2);transform:translateY(-1px);">♪ VER EN TIKTOK</a>
     <a href="#" style="display:flex;align-items:center;gap:8px;background:rgba(255,0,51,.1);border:1px solid rgba(255,0,51,.3);padding:11px 22px;text-decoration:none;color:#fff;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;transition:all .2s;" style-hover="background:rgba(255,0,51,.2);transform:translateY(-1px);">▶ VER EN YOUTUBE</a>
   </div>
 </section>
@@ -545,7 +545,7 @@
     <div>
       <div style="font-size:10px;font-weight:700;letter-spacing:.4em;color:rgba(255,255,255,.35);margin-bottom:16px;text-transform:uppercase;">Redes Sociales</div>
       <div style="display:flex;flex-direction:column;gap:10px;">
-        <a href="#" style="font-size:13px;color:rgba(255,255,255,.45);text-decoration:none;transition:color .2s;display:flex;align-items:center;gap:8px;" style-hover="color:#A855F7;"><span>♪</span> TikTok</a>
+        <a href="#" style="font-size:13px;color:rgba(255,255,255,.45);text-decoration:none;transition:color .2s;display:flex;align-items:center;gap:8px;" style-hover="color:#FF0033;"><span>♪</span> TikTok</a>
         <a href="#" style="font-size:13px;color:rgba(255,255,255,.45);text-decoration:none;transition:color .2s;display:flex;align-items:center;gap:8px;" style-hover="color:#FF0033;"><span>◎</span> Instagram</a>
         <a href="#" style="font-size:13px;color:rgba(255,255,255,.45);text-decoration:none;transition:color .2s;display:flex;align-items:center;gap:8px;" style-hover="color:#FF4444;"><span>▶</span> YouTube</a>
         <a href="#" style="font-size:13px;color:rgba(255,255,255,.45);text-decoration:none;transition:color .2s;display:flex;align-items:center;gap:8px;" style-hover="color:#1DA1F2;"><span>✦</span> X · Twitter</a>
@@ -788,13 +788,13 @@ class Component extends DCLogic {
 
     const feedItems = [
       { title: 'FACE-OFF: MENDEZ vs VOLKOV', views: '284K', dur: '0:45', bg: 'linear-gradient(180deg,#3a0008 0%,#1a0010 50%,#0a0008 100%)' },
-      { title: 'KO DEL AÑO — BEST MOMENTS', views: '1.2M', dur: '1:12', bg: 'linear-gradient(180deg,#001838 0%,#000f28 50%,#000810 100%)' },
-      { title: 'TRAINING: ANA CASTILLO', views: '156K', dur: '2:30', bg: 'linear-gradient(180deg,#150030 0%,#0d0020 50%,#06000f 100%)' },
-      { title: 'PESAJE NOVA STRIKE 46', views: '445K', dur: '1:58', bg: 'linear-gradient(180deg,#001830 0%,#000d20 50%,#000610 100%)' },
-      { title: 'BACKSTAGE FIGHT NIGHT', views: '678K', dur: '3:15', bg: 'linear-gradient(180deg,#200030 0%,#140020 50%,#08000e 100%)' },
-      { title: 'NOVA 46 FULL RECAP', views: '2.1M', dur: '5:42', bg: 'linear-gradient(180deg,#201400 0%,#140d00 50%,#080500 100%)' },
-      { title: 'KO COMPILATION 2026', views: '3.4M', dur: '4:20', bg: 'linear-gradient(180deg,#001f18 0%,#001210 50%,#000806 100%)' },
-      { title: 'VIP EXPERIENCE PREVIEW', views: '89K', dur: '1:05', bg: 'linear-gradient(180deg,#0f0020 0%,#0a0018 50%,#05000e 100%)' }
+      { title: 'KO DEL AÑO — BEST MOMENTS', views: '1.2M', dur: '1:12', bg: 'linear-gradient(180deg,#240005 0%,#12000a 50%,#060004 100%)' },
+      { title: 'TRAINING: ANA CASTILLO', views: '156K', dur: '2:30', bg: 'linear-gradient(180deg,#4a000c 0%,#21000f 50%,#0b0007 100%)' },
+      { title: 'PESAJE NOVA STRIKE 46', views: '445K', dur: '1:58', bg: 'linear-gradient(180deg,#2e0007 0%,#17000b 50%,#080005 100%)' },
+      { title: 'BACKSTAGE FIGHT NIGHT', views: '678K', dur: '3:15', bg: 'linear-gradient(180deg,#400009 0%,#1d000d 50%,#0a0007 100%)' },
+      { title: 'NOVA 46 FULL RECAP', views: '2.1M', dur: '5:42', bg: 'linear-gradient(180deg,#1c0004 0%,#0e0007 50%,#050003 100%)' },
+      { title: 'KO COMPILATION 2026', views: '3.4M', dur: '4:20', bg: 'linear-gradient(180deg,#350008 0%,#19000c 50%,#090006 100%)' },
+      { title: 'VIP EXPERIENCE PREVIEW', views: '89K', dur: '1:05', bg: 'linear-gradient(180deg,#290006 0%,#150009 50%,#070004 100%)' }
     ];
 
     const vipPackages = [
