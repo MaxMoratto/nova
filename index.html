@@ -58,6 +58,13 @@
     .fightbar span { font-size:clamp(9px,1.4vw,11px); font-weight:700; letter-spacing:.42em; color:rgba(255,255,255,.62); text-transform:uppercase; }
     .cwrap { margin-bottom:10px; }
     .cwrap .ccard { margin-bottom:0; }
+    /* Humo de fondo en los paneles de pelea (textura del diseno de referencia). */
+    .humo::after { content:""; position:absolute; left:0; right:0; bottom:0; height:64%;
+      background:url("uploads/humo.webp") no-repeat center bottom; background-size:cover;
+      z-index:0; pointer-events:none; }
+    .humo-dark::after { mix-blend-mode:screen; opacity:.5; }
+    .humo-light::after { opacity:.55; }
+    .humo-flip::after { transform:scaleX(-1); }
   </style>
 </helmet>
 
@@ -237,7 +244,7 @@
     <div style="width:80px;height:2px;background:linear-gradient(90deg,#FF0033,#ffffff);margin:12px auto 44px;"></div>
   </div>
   <div style="position:relative;display:flex;flex-direction:{{ fightDir }};min-height:{{ fightMainMinH }};">
-    <div style="flex:1;background:linear-gradient(135deg,#161619 0%,#0f0f12 60%,#0a0a0c 100%);padding:clamp(28px,5vw,56px) clamp(20px,4vw,48px);display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;min-height:clamp(380px,45vw,500px);">
+    <div class="humo humo-dark" style="flex:1;background:linear-gradient(135deg,#161619 0%,#0f0f12 60%,#0a0a0c 100%);padding:clamp(28px,5vw,56px) clamp(20px,4vw,48px);display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;min-height:clamp(380px,45vw,500px);">
       <img src="{{ me.r.img }}" alt="Peleador rojo" style="position:absolute;bottom:0;right:clamp(0px,2vw,20px);height:96%;max-width:60%;object-fit:contain;object-position:bottom right;z-index:1;pointer-events:none;">
       <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(10,3,8,.95) 0%,rgba(10,3,8,.35) 38%,transparent 65%);z-index:2;pointer-events:none;"></div>
       <div style="position:absolute;top:18px;left:clamp(18px,4vw,48px);font-size:9px;font-weight:700;letter-spacing:.28em;color:#fff;background:#0b0b0d;border:1px solid rgba(255,255,255,.4);padding:3px 10px;text-transform:uppercase;z-index:3;">Esquina Negra</div>
@@ -258,7 +265,7 @@
         <span style="transform:rotate(-45deg);display:block;font-family:'Bebas Neue',sans-serif;font-size:clamp(14px,2.5vw,20px);color:#FF0033;letter-spacing:.06em;">VS</span>
       </div>
     </div>
-    <div style="flex:1;background:linear-gradient(160deg,#fcfcfd 0%,#edeff2 48%,#d7dae0 100%);padding:clamp(28px,5vw,56px) clamp(20px,4vw,48px);display:flex;flex-direction:column;justify-content:flex-end;align-items:{{ f2Align }};position:relative;overflow:hidden;min-height:clamp(380px,45vw,500px);">
+    <div class="humo humo-light humo-flip" style="flex:1;background:linear-gradient(160deg,#fcfcfd 0%,#edeff2 48%,#d7dae0 100%);padding:clamp(28px,5vw,56px) clamp(20px,4vw,48px);display:flex;flex-direction:column;justify-content:flex-end;align-items:{{ f2Align }};position:relative;overflow:hidden;min-height:clamp(380px,45vw,500px);">
       <img src="{{ me.a.img }}" alt="Peleador azul" style="position:absolute;bottom:0;left:clamp(0px,2vw,20px);height:96%;max-width:60%;object-fit:contain;object-position:bottom left;z-index:1;pointer-events:none;">
       <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(240,241,244,.92) 0%,rgba(240,241,244,.35) 38%,transparent 65%);z-index:2;pointer-events:none;"></div>
       <div style="position:absolute;top:18px;right:clamp(18px,4vw,48px);font-size:9px;font-weight:700;letter-spacing:.28em;color:#0a0a0a;background:#eef0f4;border:1px solid rgba(0,0,0,.18);padding:3px 10px;text-transform:uppercase;z-index:3;">Esquina Blanca</div>
@@ -277,7 +284,7 @@
   </div>
   <div class="fightbar"><span>{{ me.banner }}</span></div>
   <div style="position:relative;display:flex;flex-direction:{{ fightDir }};min-height:{{ fightCoMinH }};background:#070510;">
-    <div style="flex:1;background:linear-gradient(135deg,#161619 0%,#0f0f12 60%,#0a0a0c 100%);padding:clamp(22px,4vw,44px) clamp(18px,3.5vw,44px);display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;min-height:clamp(340px,40vw,400px);">
+    <div class="humo humo-dark" style="flex:1;background:linear-gradient(135deg,#161619 0%,#0f0f12 60%,#0a0a0c 100%);padding:clamp(22px,4vw,44px) clamp(18px,3.5vw,44px);display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;min-height:clamp(340px,40vw,400px);">
       <img src="{{ co.r.img }}" alt="Peleador rojo" style="position:absolute;bottom:0;right:clamp(0px,2vw,16px);height:95%;max-width:56%;object-fit:contain;object-position:bottom right;z-index:1;pointer-events:none;">
       <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(8,4,16,.92) 0%,rgba(8,4,16,.32) 34%,transparent 62%);z-index:2;pointer-events:none;"></div>
       <div style="position:absolute;font-family:'Bebas Neue',sans-serif;font-size:clamp(80px,18vw,230px);color:rgba(255,0,51,.04);right:-5px;bottom:-30px;line-height:1;pointer-events:none;user-select:none;">A</div>
@@ -296,7 +303,7 @@
         <span style="transform:rotate(-45deg);display:block;font-family:'Bebas Neue',sans-serif;font-size:clamp(11px,1.8vw,16px);color:#FF0033;">VS</span>
       </div>
     </div>
-    <div style="flex:1;background:linear-gradient(160deg,#fcfcfd 0%,#edeff2 48%,#d7dae0 100%);padding:clamp(22px,4vw,44px) clamp(18px,3.5vw,44px);display:flex;flex-direction:column;justify-content:flex-end;align-items:{{ f2Align }};position:relative;overflow:hidden;min-height:clamp(340px,40vw,400px);">
+    <div class="humo humo-light humo-flip" style="flex:1;background:linear-gradient(160deg,#fcfcfd 0%,#edeff2 48%,#d7dae0 100%);padding:clamp(22px,4vw,44px) clamp(18px,3.5vw,44px);display:flex;flex-direction:column;justify-content:flex-end;align-items:{{ f2Align }};position:relative;overflow:hidden;min-height:clamp(340px,40vw,400px);">
       <img src="{{ co.a.img }}" alt="Peleador azul" style="position:absolute;bottom:0;left:clamp(0px,2vw,16px);height:95%;max-width:56%;object-fit:contain;object-position:bottom left;z-index:1;pointer-events:none;">
       <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(240,241,244,.9) 0%,rgba(240,241,244,.32) 34%,transparent 62%);z-index:2;pointer-events:none;"></div>
       <div style="position:absolute;font-family:'Bebas Neue',sans-serif;font-size:clamp(80px,18vw,230px);color:rgba(0,0,0,.05);left:-5px;bottom:-30px;line-height:1;pointer-events:none;user-select:none;">Y</div>
@@ -319,7 +326,7 @@
     <sc-for list="{{ carteleraFoto }}" as="fight" hint-placeholder-count="1">
       <div class="cwrap">
       <div class="ccard">
-        <div class="cp" style="background:linear-gradient(135deg,#161619 0%,#0f0f12 60%,#0a0a0c 100%);padding:clamp(22px,4vw,44px) clamp(18px,3.5vw,44px);display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;">
+        <div class="cp humo humo-dark" style="background:linear-gradient(135deg,#161619 0%,#0f0f12 60%,#0a0a0c 100%);padding:clamp(22px,4vw,44px) clamp(18px,3.5vw,44px);display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;">
           <img src="{{ fight.r1img }}" alt="" style="display:{{ fight.r1disp }};position:absolute;bottom:0;right:clamp(0px,2vw,16px);height:95%;max-width:56%;object-fit:contain;object-position:bottom right;z-index:1;pointer-events:none;">
           <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(8,4,16,.92) 0%,rgba(8,4,16,.32) 34%,transparent 62%);z-index:2;pointer-events:none;"></div>
           <div style="position:absolute;font-family:'Bebas Neue',sans-serif;font-size:clamp(80px,18vw,230px);color:rgba(255,0,51,.04);right:-5px;bottom:-30px;line-height:1;pointer-events:none;user-select:none;">A</div>
@@ -338,7 +345,7 @@
             <span style="transform:rotate(-45deg);display:block;font-family:'Bebas Neue',sans-serif;font-size:clamp(11px,1.8vw,16px);color:#FF0033;">VS</span>
           </div>
         </div>
-        <div class="cp cpblue" style="background:linear-gradient(160deg,#fcfcfd 0%,#edeff2 48%,#d7dae0 100%);padding:clamp(22px,4vw,44px) clamp(18px,3.5vw,44px);display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-end;position:relative;overflow:hidden;">
+        <div class="cp cpblue humo humo-light humo-flip" style="background:linear-gradient(160deg,#fcfcfd 0%,#edeff2 48%,#d7dae0 100%);padding:clamp(22px,4vw,44px) clamp(18px,3.5vw,44px);display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-end;position:relative;overflow:hidden;">
           <img class="cbimg" src="{{ fight.r2img }}" alt="" style="display:{{ fight.r2disp }};position:absolute;bottom:0;left:clamp(0px,2vw,16px);height:95%;max-width:56%;object-fit:contain;object-position:bottom left;z-index:1;pointer-events:none;">
           <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(240,241,244,.9) 0%,rgba(240,241,244,.32) 34%,transparent 62%);z-index:2;pointer-events:none;"></div>
           <div style="position:absolute;font-family:'Bebas Neue',sans-serif;font-size:clamp(80px,18vw,230px);color:rgba(0,0,0,.05);left:-5px;bottom:-30px;line-height:1;pointer-events:none;user-select:none;">Y</div>
