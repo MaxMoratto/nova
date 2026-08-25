@@ -40,24 +40,27 @@
       .hcorner > div:last-child{ width:28px !important; margin-top:6px !important; }
     }
     @media (max-width:600px){ .heroT1{ font-size:min(6.6vw,30px) !important } .heroT2{ font-size:min(9.6vw,40px) !important }
-      /* Movil: el hero es muy alto, y forzar la imagen a llenarlo (height:100%) la
-         agranda tanto que solo cabe una rebanada de un peleador. Limitando el alto
-         a poco mas de la mitad se ve la composicion completa del equipo, con los
-         peleadores secundarios y el humo, como en la referencia. */
-      .heroFa,.heroFr{ top:0 !important; bottom:auto !important;
-        height:52% !important; width:62% !important; max-width:62% !important;
+      /* El hero deja de medir una fraccion de pantalla y pasa a medir lo que mide
+         su contenido. Antes sobraba un hueco negro abajo y, como todo se centra en
+         ese espacio, el texto quedaba flotando lejos de las fotos. */
+      #inicio{ height:auto !important; min-height:0 !important;
+        padding:96px 0 54px !important; justify-content:flex-start !important; }
+      /* Las figuras cubren TODO el alto del hero (top y bottom a la vez), no una
+         fraccion: asi no hay corte y, al ser el hero mas bajo, el recorte es suave
+         y se ve la composicion completa del equipo. */
+      .heroFa,.heroFr{ top:0 !important; bottom:0 !important; height:auto !important;
+        width:64% !important; max-width:64% !important;
         object-fit:cover !important; object-position:center top !important; }
-      .heroFa{ opacity:.85 !important; }
-      .heroFr{ opacity:.7 !important; }
-      /* El hero medía 100vh y sobraba pantalla vacia abajo. */
-      #inicio{ height:80vh !important; min-height:540px !important; }
-      /* Las fotos terminaban en una linea recta muy visible. Este degradado las
-         funde con el fondo, por encima de ellas pero por debajo del texto. */
-      #inicio::after{ content:""; position:absolute; left:0; right:0; top:26%; bottom:0;
-        background:linear-gradient(to bottom,transparent 0%,rgba(5,5,8,.55) 45%,#050508 78%);
+      .heroFa{ opacity:.8 !important; }
+      .heroFr{ opacity:.6 !important; }
+      /* Oscurece de la mitad hacia abajo para que el texto se despegue de las fotos. */
+      #inicio::after{ content:""; position:absolute; left:0; right:0; top:30%; bottom:0;
+        background:linear-gradient(to bottom,transparent 0%,rgba(5,5,8,.55) 48%,rgba(5,5,8,.94) 100%);
         z-index:3; pointer-events:none; }
       /* La sede se partia en dos lineas. */
-      .heroMeta{ font-size:8.5px !important; letter-spacing:.1em !important; } }
+      .heroMeta{ font-size:8.5px !important; letter-spacing:.1em !important; }
+      /* Los rotulos de esquina, junto a los botones. */
+      .hcorner{ top:auto !important; bottom:74px !important; } }
     @keyframes btnPulse { 0%,100%{box-shadow:0 0 15px rgba(255,0,51,.5),0 0 30px rgba(255,0,51,.2)} 50%{box-shadow:0 0 30px rgba(255,0,51,.9),0 0 60px rgba(255,0,51,.4)} }
     @keyframes logoAnim { from{opacity:0;letter-spacing:.4em;filter:blur(8px)} to{opacity:1;letter-spacing:.06em;filter:blur(0)} }
     @keyframes countPop { 0%,100%{transform:scaleY(1)} 45%{transform:scaleY(.88)} }
