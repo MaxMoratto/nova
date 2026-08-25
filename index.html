@@ -386,7 +386,7 @@
     </sc-for>
     <div class="prelim2" style="margin-top:10px;">
       <sc-for list="{{ carteleraSinFoto }}" as="fight" hint-placeholder-count="2">
-        <div style="overflow:hidden;background:url(uploads/fondo-negro.webp) left center / 50% auto no-repeat,url(uploads/fondo-blanco.webp) right center / 50% auto no-repeat,linear-gradient(90deg,#141419 0%,#1b1b22 44%,#c7cad0 56%,#e8eaee 100%);border:1px solid rgba(255,255,255,.06);min-height:64px;display:flex;align-items:center;gap:8px;padding:12px clamp(14px,2vw,22px);cursor:pointer;transition:border-color .2s;" style-hover="border-color:rgba(255,0,51,.22);">
+        <div style="overflow:hidden;background:url(uploads/fondo-negro.webp) left center / 50% 100% no-repeat,url(uploads/fondo-blanco.webp) right center / 50% 100% no-repeat,linear-gradient(90deg,#141419 0%,#1b1b22 44%,#c7cad0 56%,#e8eaee 100%);border:1px solid rgba(255,255,255,.06);min-height:64px;display:flex;align-items:center;gap:8px;padding:12px clamp(14px,2vw,22px);cursor:pointer;transition:border-color .2s;" style-hover="border-color:rgba(255,0,51,.22);">
           <div style="flex:1;min-width:0;">
             <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(14px,1.5vw,19px);color:#fff;letter-spacing:.04em;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ fight.r1 }}</div>
             <div style="font-size:10px;color:#FF0033;letter-spacing:.1em;margin-top:3px;font-weight:700;">{{ fight.r1rec }}</div>
@@ -408,7 +408,7 @@
   <div style="padding:0 clamp(16px,4vw,40px) 68px;max-width:1200px;margin:0 auto;">
     <div style="display:flex;flex-direction:column;gap:10px;">
       <sc-for list="{{ prelimsFoto }}" as="fight" hint-placeholder-count="2">
-        <div style="position:relative;overflow:hidden;background:url(uploads/fondo-negro.webp) left center / 50% auto no-repeat,url(uploads/fondo-blanco.webp) right center / 50% auto no-repeat,linear-gradient(90deg,#141419 0%,#1b1b22 44%,#c7cad0 56%,#e8eaee 100%);border:1px solid rgba(255,255,255,.06);min-height:clamp(92px,13.5vw,138px);display:flex;align-items:center;gap:clamp(4px,1.2vw,12px);padding:clamp(8px,1.4vw,12px) clamp(14px,3vw,40px);cursor:pointer;transition:border-color .2s;" style-hover="border-color:rgba(255,0,51,.22);">
+        <div style="position:relative;overflow:hidden;background:url(uploads/fondo-negro.webp) left center / 50% 100% no-repeat,url(uploads/fondo-blanco.webp) right center / 50% 100% no-repeat,linear-gradient(90deg,#141419 0%,#1b1b22 44%,#c7cad0 56%,#e8eaee 100%);border:1px solid rgba(255,255,255,.06);min-height:clamp(92px,13.5vw,138px);display:flex;align-items:center;gap:clamp(4px,1.2vw,12px);padding:clamp(8px,1.4vw,12px) clamp(14px,3vw,40px);cursor:pointer;transition:border-color .2s;" style-hover="border-color:rgba(255,0,51,.22);">
           <img src="{{ fight.r1img }}" alt="" style="display:{{ fight.r1disp }};align-self:flex-end;height:clamp(86px,12.5vw,138px);width:auto;max-width:16%;object-fit:contain;object-position:bottom center;flex-shrink:0;margin-bottom:calc(-1 * clamp(8px,1.4vw,12px));">
           <div style="flex:1;min-width:0;padding-left:clamp(6px,1.5vw,18px);z-index:2;">
             <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(15px,2.5vw,25px);color:#fff;letter-spacing:.04em;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ fight.r1 }}</div>
@@ -427,7 +427,7 @@
     </div>
     <div class="prelim2" style="margin-top:10px;">
       <sc-for list="{{ prelimsSinFoto }}" as="fight" hint-placeholder-count="4">
-        <div style="overflow:hidden;background:url(uploads/fondo-negro.webp) left center / 50% auto no-repeat,url(uploads/fondo-blanco.webp) right center / 50% auto no-repeat,linear-gradient(90deg,#141419 0%,#1b1b22 44%,#c7cad0 56%,#e8eaee 100%);border:1px solid rgba(255,255,255,.06);min-height:64px;display:flex;align-items:center;gap:8px;padding:12px clamp(14px,2vw,22px);cursor:pointer;transition:border-color .2s;" style-hover="border-color:rgba(255,0,51,.22);">
+        <div style="overflow:hidden;background:url(uploads/fondo-negro.webp) left center / 50% 100% no-repeat,url(uploads/fondo-blanco.webp) right center / 50% 100% no-repeat,linear-gradient(90deg,#141419 0%,#1b1b22 44%,#c7cad0 56%,#e8eaee 100%);border:1px solid rgba(255,255,255,.06);min-height:64px;display:flex;align-items:center;gap:8px;padding:12px clamp(14px,2vw,22px);cursor:pointer;transition:border-color .2s;" style-hover="border-color:rgba(255,0,51,.22);">
           <div style="flex:1;min-width:0;">
             <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(14px,1.5vw,19px);color:#fff;letter-spacing:.04em;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ fight.r1 }}</div>
             <div style="font-size:10px;color:#FF0033;letter-spacing:.1em;margin-top:3px;font-weight:700;">{{ fight.r1rec }}</div>
