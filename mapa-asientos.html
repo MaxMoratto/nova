@@ -289,13 +289,20 @@ document.getElementById('buy').addEventListener('click',()=>{const sel=selectedS
   if(state.generalQty>0){sub+=state.generalQty*ZONES.GENERAL.price;const r=document.createElement('div');r.className='mrow';r.innerHTML='<span>General &#215; '+state.generalQty+'</span><b>'+money(state.generalQty*ZONES.GENERAL.price)+'</b>';ml.appendChild(r);}
   const fee=feeOf(sub);
   if(fee>0){const r=document.createElement('div');r.className='mrow';r.innerHTML='<span>Comisión de compra en línea (4.2%)</span><b>'+money(fee)+'</b>';ml.appendChild(r);}
-  _modalTotal=sub+fee; applyCoupon();
+  _modalSub=sub; _modalTotal=sub+fee; applyCoupon();
   modalbg.classList.add('on');});
 // Cupón de prueba: al escribirlo, muestra el total en $1 (validado también en el servidor).
-const COUPON='NOVAPRUEBA1'; let _modalTotal=0;
+const COUPON='NOVAPRUEBA1'; let _modalTotal=0, _modalSub=0;
+// Cupon de descuento: 8% sobre los boletos. NO aplica a la comision de compra en linea.
+const CUPON_DESC='NSS1', DESCUENTO=0.08;
+function descuentoOk(){ return (document.getElementById('bcoupon').value||'').trim().toUpperCase()===CUPON_DESC; }
+function montoDescuento(){ return descuentoOk() ? Math.round(_modalSub*DESCUENTO) : 0; }
 function couponOk(){ return (document.getElementById('bcoupon').value||'').trim().toUpperCase()===COUPON; }
 function applyCoupon(){ const mt=document.getElementById('mtot'); if(!mt)return;
   if(couponOk()) mt.innerHTML='<span style="text-decoration:line-through;color:var(--muted2);font-weight:400;font-size:.6em;margin-right:7px">'+money(_modalTotal)+'</span>$1 MXN';
+  else if(descuentoOk()){ const d=montoDescuento();
+    mt.innerHTML='<span style="text-decoration:line-through;color:var(--muted2);font-weight:400;font-size:.6em;margin-right:7px">'+money(_modalTotal)+'</span>'+money(_modalTotal-d)+' MXN'
+      +'<div style="font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--ok);margin-top:3px">CUPON '+CUPON_DESC+': -8% EN BOLETOS</div>'; }
   else mt.textContent=money(_modalTotal)+' MXN'; }
 document.getElementById('bcoupon').addEventListener('input',applyCoupon);
 document.getElementById('mclose').addEventListener('click',()=>modalbg.classList.remove('on'));

@@ -67,6 +67,18 @@ module.exports = async (req, res) => {
       currency_id: 'MXN'
     }));
 
+    // Cupon de descuento: 8% sobre los boletos. NO se aplica a la comision de compra
+    // en linea, que cubre el costo real del cobro. Se resuelve aqui, en el servidor,
+    // porque los precios llegan del navegador y no se pueden dar por buenos.
+    const cuponDesc = (process.env.CUPON_DESCUENTO || 'NSS1').trim();
+    const pctDesc = Math.min(0.9, Math.max(0, Number(process.env.CUPON_DESCUENTO_PCT || 8) / 100));
+    const conDescuento = !!cuponDesc && String(coupon).trim().toUpperCase() === cuponDesc.toUpperCase();
+    if (conDescuento) {
+      mpItems = mpItems.map(i => /comisi/i.test(i.title) ? i
+        : Object.assign({}, i, { unit_price: Math.round(i.unit_price * (1 - pctDesc) * 100) / 100 }));
+      try { await orderRef.update({ cupon: cuponDesc, descuento: pctDesc }); } catch (_) {}
+    }
+
     // Cupón de PRUEBA: si coincide con TEST_COUPON (env de Vercel), el cobro es de $1.
     // Se valida en el servidor; los boletos se generan normal. Quitar TEST_COUPON al terminar la prueba.
     const testCoupon = (process.env.TEST_COUPON || 'NOVAPRUEBA1').trim();
