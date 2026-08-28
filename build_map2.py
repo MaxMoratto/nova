@@ -319,7 +319,13 @@ document.getElementById('buy').addEventListener('click',()=>{const sel=selectedS
 const COUPON=''; let _modalTotal=0, _modalSub=0;
 // Cupon de descuento: 8% sobre los boletos. NO aplica a la comision de compra en linea.
 const CUPON_DESC='NSS1', DESCUENTO=0.08;
-function descuentoOk(){ return (document.getElementById('bcoupon').value||'').trim().toUpperCase()===CUPON_DESC; }
+// Vigencia: 7 dias, hasta el 1 de septiembre de 2026 a las 23:59 hora de CDMX.
+// Si se cambia aqui hay que cambiarlo tambien en api/mercadopago.js, o el sitio
+// mostraria un precio y Mercado Pago cobraria otro.
+const CUPON_HASTA=Date.parse('2026-09-01T23:59:59-06:00');
+function cuponVigente(){ return Date.now()<=CUPON_HASTA; }
+function esCodigoDesc(){ return (document.getElementById('bcoupon').value||'').trim().toUpperCase()===CUPON_DESC; }
+function descuentoOk(){ return esCodigoDesc() && cuponVigente(); }
 function montoDescuento(){ return descuentoOk() ? Math.round(_modalSub*DESCUENTO) : 0; }
 function couponOk(){ return !!COUPON && (document.getElementById('bcoupon').value||'').trim().toUpperCase()===COUPON; }
 function applyCoupon(){ const mt=document.getElementById('mtot'); if(!mt)return;
@@ -327,6 +333,8 @@ function applyCoupon(){ const mt=document.getElementById('mtot'); if(!mt)return;
   else if(descuentoOk()){ const d=montoDescuento();
     mt.innerHTML='<span style="text-decoration:line-through;color:var(--muted2);font-weight:400;font-size:.6em;margin-right:7px">'+money(_modalTotal)+'</span>'+money(_modalTotal-d)+' MXN'
       +'<div style="font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--ok);margin-top:3px">CUPON '+CUPON_DESC+': -8% EN BOLETOS</div>'; }
+  else if(esCodigoDesc()){ mt.innerHTML=money(_modalTotal)+' MXN'
+      +'<div style="font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--red2);margin-top:3px">CUPON '+CUPON_DESC+' VENCIDO</div>'; }
   else mt.textContent=money(_modalTotal)+' MXN'; }
 document.getElementById('bcoupon').addEventListener('input',applyCoupon);
 document.getElementById('mclose').addEventListener('click',()=>modalbg.classList.remove('on'));

@@ -72,7 +72,10 @@ module.exports = async (req, res) => {
     // porque los precios llegan del navegador y no se pueden dar por buenos.
     const cuponDesc = (process.env.CUPON_DESCUENTO || 'NSS1').trim();
     const pctDesc = Math.min(0.9, Math.max(0, Number(process.env.CUPON_DESCUENTO_PCT || 8) / 100));
-    const conDescuento = !!cuponDesc && String(coupon).trim().toUpperCase() === cuponDesc.toUpperCase();
+    // Vigencia de 7 dias. Debe coincidir con CUPON_HASTA del mapa de asientos.
+    const hastaMs = Date.parse(process.env.CUPON_DESCUENTO_HASTA || '2026-09-01T23:59:59-06:00');
+    const cuponVigente = isNaN(hastaMs) ? true : Date.now() <= hastaMs;
+    const conDescuento = !!cuponDesc && cuponVigente && String(coupon).trim().toUpperCase() === cuponDesc.toUpperCase();
     if (conDescuento) {
       mpItems = mpItems.map(i => /comisi/i.test(i.title) ? i
         : Object.assign({}, i, { unit_price: Math.round(i.unit_price * (1 - pctDesc) * 100) / 100 }));
