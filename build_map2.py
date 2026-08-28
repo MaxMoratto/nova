@@ -313,13 +313,15 @@ document.getElementById('buy').addEventListener('click',()=>{const sel=selectedS
   if(fee>0){const r=document.createElement('div');r.className='mrow';r.innerHTML='<span>Comisión de compra en línea (4.2%)</span><b>'+money(fee)+'</b>';ml.appendChild(r);}
   _modalSub=sub; _modalTotal=sub+fee; applyCoupon();
   modalbg.classList.add('on');});
-// Cupón de prueba: al escribirlo, muestra el total en $1 (validado también en el servidor).
-const COUPON='NOVAPRUEBA1'; let _modalTotal=0, _modalSub=0;
+// Cupon de prueba DESACTIVADO. Para reactivarlo hay que poner el codigo aqui Y la
+// variable TEST_COUPON en Vercel: si solo se pone aqui, el sitio mostraria $1 y
+// Mercado Pago cobraria el precio completo.
+const COUPON=''; let _modalTotal=0, _modalSub=0;
 // Cupon de descuento: 8% sobre los boletos. NO aplica a la comision de compra en linea.
 const CUPON_DESC='NSS1', DESCUENTO=0.08;
 function descuentoOk(){ return (document.getElementById('bcoupon').value||'').trim().toUpperCase()===CUPON_DESC; }
 function montoDescuento(){ return descuentoOk() ? Math.round(_modalSub*DESCUENTO) : 0; }
-function couponOk(){ return (document.getElementById('bcoupon').value||'').trim().toUpperCase()===COUPON; }
+function couponOk(){ return !!COUPON && (document.getElementById('bcoupon').value||'').trim().toUpperCase()===COUPON; }
 function applyCoupon(){ const mt=document.getElementById('mtot'); if(!mt)return;
   if(couponOk()) mt.innerHTML='<span style="text-decoration:line-through;color:var(--muted2);font-weight:400;font-size:.6em;margin-right:7px">'+money(_modalTotal)+'</span>$1 MXN';
   else if(descuentoOk()){ const d=montoDescuento();

@@ -81,7 +81,9 @@ module.exports = async (req, res) => {
 
     // Cupón de PRUEBA: si coincide con TEST_COUPON (env de Vercel), el cobro es de $1.
     // Se valida en el servidor; los boletos se generan normal. Quitar TEST_COUPON al terminar la prueba.
-    const testCoupon = (process.env.TEST_COUPON || 'NOVAPRUEBA1').trim();
+    // Sin valor por defecto: el cupon de prueba solo existe si se define TEST_COUPON
+    // en Vercel. Asi no queda un codigo de $1 escrito en un repositorio publico.
+    const testCoupon = (process.env.TEST_COUPON || '').trim();
     const isTest = !!testCoupon && String(coupon).trim().toUpperCase() === testCoupon.toUpperCase();
     if (isTest) {
       mpItems = [{ title: 'NOVA · cobro de prueba (cupón)', quantity: 1, unit_price: 1, currency_id: 'MXN' }];
