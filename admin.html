@@ -405,7 +405,7 @@ function showSaleEmitted(list, buyer){ const m=$('bMsg'); m.className='msg ok';
   const links=list.map(x=>'<a class="link" href="boleto.html?t='+x.token+'" target="_blank" style="padding:2px 7px;display:inline-block;margin:2px">'+x.folio+' ↗</a>').join('');
   let html='✓ Venta emitida — '+list.length+' boleto(s): '+links;
   if(buyer&&buyer.tel){ const base=location.origin; const tel=(buyer.tel||'').replace(/[^0-9]/g,''); const waTel=tel.length===10?'52'+tel:tel;
-    const msg='Hola '+(buyer.nombre||'')+'! Aquí están tus boletos para NOVA Strike Series (11 SEP 2026, Golden Paradise Casino, CDMX):%0A'+list.map(x=>base+'/boleto.html?t='+x.token).join('%0A')+'%0APresenta el QR de cada uno en la entrada.';
+    const msg='Hola '+(buyer.nombre||'')+'! Aquí están tus boletos para NOVA Strike Series (11 SEP 2026, Frontera - Frontera 88, Roma Norte, CDMX):%0A'+list.map(x=>base+'/boleto.html?t='+x.token).join('%0A')+'%0APresenta el QR de cada uno en la entrada.';
     html+='<div style="margin-top:8px"><a class="btn red" href="https://wa.me/'+waTel+'?text='+msg+'" target="_blank" style="text-decoration:none;display:inline-block">Enviar todos por WhatsApp</a></div>'; }
   m.innerHTML=html;
   $('b_nombre').value=''; $('b_tel').value=''; $('b_mail').value=''; $('b_cant').value='1'; $('b_cortesia').checked=false; $('b_precio').disabled=false; syncEmitFields();
@@ -544,7 +544,7 @@ function renderBoletos(){ const q=($('bSearch').value||'').trim().toUpperCase();
   box.querySelectorAll('[data-wa]').forEach(b=>b.addEventListener('click',()=>{ const r=BOLETOS.find(x=>x.token===b.dataset.wa); if(!r)return;
     const tel=waPhone((r.d.comprador&&r.d.comprador.tel)||''); const link=location.origin+'/boleto.html?t='+b.dataset.wa;
     const nom=(r.d.comprador&&r.d.comprador.nombre)?' '+r.d.comprador.nombre.split(' ')[0]:'';
-    const msg='Hola'+nom+'! Aquí está tu boleto para NOVA Strike Series (11 SEP 2026, Golden Paradise Casino, CDMX): '+link+' — Presenta el QR en la entrada.';
+    const msg='Hola'+nom+'! Aquí está tu boleto para NOVA Strike Series (11 SEP 2026, Frontera - Frontera 88, Roma Norte, CDMX): '+link+' — Presenta el QR en la entrada.';
     window.open('https://wa.me/'+tel+'?text='+encodeURIComponent(msg),'_blank'); }));
   box.querySelectorAll('[data-cancel]').forEach(b=>b.addEventListener('click',()=>cancelBoleto(b.dataset.cancel)));
   box.querySelectorAll('[data-move]').forEach(b=>b.addEventListener('click',()=>moveSeat(b.dataset.move)));
