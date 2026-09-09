@@ -38,14 +38,18 @@ const EVENTO = { hora:"" };   // <-- cuando haya horario, pon aquí "20:00" y ap
 // Caja QR identica en los 4 disenos. Campos variables por tipo.
 const QR = { x:.1578, y:.5717, w:.6852, h:.2869 };
 const HORA = { x:.84, y:.278, f:.020 }, FOLIO = { x:.35, y:.897, f:.017 };
+// Plantillas 2026: la hora y la sede ya vienen impresas en el arte, asi que solo
+// se dibujan el QR y el folio. La zona central esta despejada de 0.58 a 0.85, y el
+// QR va con panel blanco propio porque el diseno no trae recuadro reservado.
+const QR2 = { x:.33, y:.605, w:.34, h:.191, panel:true };
+const FOLIO2 = { x:.515, y:.877, f:.016 };
 const FR = {
   VIP:     { img:'uploads/tk_vip.webp',     qr:QR, hora:HORA, folio:FOLIO,
              fields:[ {t:'mesa',x:.53,y:.525,f:.030,a:'center'}, {t:'asiento',x:.71,y:.525,f:.030,a:'center'} ] },   // bvip1 (VIP mesa)
-  VIPA:    { img:'uploads/tk_vipa.webp',    qr:QR, hora:HORA, folio:FOLIO,
-             fields:[ {t:'asiento',x:.66,y:.5295,f:.030,a:'center'} ] },                                             // bvip2 (VIP asiento)
+  VIPA:    { img:'uploads/tk_vip_new.webp', qr:QR2, folio:FOLIO2, color:'#dec085', fields:[] },   // plantilla 2026: VIP primer piso, lugar por llegada
   PREF:    { img:'uploads/tk_pref.webp',    qr:QR, hora:HORA, folio:FOLIO,
              fields:[ {t:'pref',x:.655,y:.528,f:.028,a:'center'} ] },                                                // preferente (dorado)
-  GENERAL: { img:'uploads/tk_general.webp', qr:QR, hora:HORA, folio:FOLIO, fields:[] }
+  GENERAL: { img:'uploads/tk_general_new.webp', qr:QR2, folio:FOLIO2, color:'#bcbcbe', fields:[] }
 };
 const params=new URLSearchParams(location.search);
 const token=params.get('t')||'DEMO-TOKEN';
@@ -71,12 +75,17 @@ async function render(d){
   const url=location.origin+'/boleto.html?t='+encodeURIComponent(token);
   const qc=makeQRCanvas(url);
   if(qc){ const bx=cfg.qr.x*W, by=cfg.qr.y*H, bw=cfg.qr.w*W, bh=cfg.qr.h*H;
+    // Los disenos 2026 no traen recuadro para el QR: se dibuja uno blanco debajo,
+    // porque un QR sobre fondo oscuro no lo lee ningun lector.
+    if(cfg.qr.panel){ const r=bw*0.06; ctx.fillStyle='#fff'; ctx.beginPath();
+      if(ctx.roundRect) ctx.roundRect(bx,by,bw,bh,r); else ctx.rect(bx,by,bw,bh);
+      ctx.fill(); }
     const side=Math.min(bw,bh)*0.86, qx=bx+bw/2-side/2, qy=by+bh/2-side/2;
     ctx.drawImage(qc, qx, qy, side, side); }
   // Textos
-  ctx.fillStyle='#FEFEFE'; ctx.textBaseline='alphabetic';
+  ctx.fillStyle=cfg.color||'#FEFEFE'; ctx.textBaseline='alphabetic';
   const put=(c,val,align)=>{ ctx.textAlign=align; ctx.font='bold '+(c.f*H)+'px Arial, sans-serif'; ctx.fillText(String(val), c.x*W, c.y*H); };
-  put(cfg.hora, EVENTO.hora||'—','center');
+  if(cfg.hora) put(cfg.hora, EVENTO.hora||'—','center');
   put(cfg.folio, d.folio||'','left');
   for(const f of (cfg.fields||[])){
     const v = f.t==='mesa'    ? (d.mesa!=null?d.mesa:'—')
