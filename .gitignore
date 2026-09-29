@@ -67,3 +67,7 @@ portadav.jpeg
 /frontera.svg
 /PLANTILLA BOLETO GENERAL.pdf
 /PLANTILLA BOLETO VIP.pdf
+
+# Respaldos con datos personales de compradores: NUNCA subir a un repo publico
+NOVA-boletos-*.csv
+cartelera-*.json
