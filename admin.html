@@ -112,6 +112,12 @@
         <textarea id="ids" placeholder="VIP-M07-S3   VIPA-12   PREF-A-05"></textarea>
         <div class="row"><button class="btn red" id="markBtn">Marcar VENDIDO</button><button class="btn green" id="freeBtn">Liberar (disponible)</button></div>
         <div class="msg" id="opMsg"></div>
+        <div style="border-top:1px solid var(--border,#212836);margin:18px 0 12px"></div>
+        <div class="row" style="align-items:center;gap:10px">
+          <button class="btn ghost" id="prepararBtn">&#128260; Preparar evento nuevo</button>
+          <span class="hint" style="margin:0">Deja el mapa completo y los cupos en cero para empezar de nuevo. No toca boletos, ventas ni el historial.</span>
+        </div>
+        <div class="msg" id="prepMsg" style="display:none"></div>
       </div>
       <div class="card"><h2>Vendidos / apartados actuales</h2><div class="sold-list" id="soldList"><div class="empty">Cargando…</div></div></div>
     </div>
@@ -258,6 +264,41 @@ $('loginBtn').addEventListener('click', async ()=>{ const m=$('loginMsg'); m.tex
 $('pass').addEventListener('keydown',e=>{ if(e.key==='Enter') $('loginBtn').click(); });
 $('logoutBtn').addEventListener('click',()=>auth.signOut());
 $('swapCorners').addEventListener('click', swapCorners);
+
+/* Deja el mapa y los cupos listos para un evento nuevo.
+   El estado de los asientos pertenece a un recinto concreto, y las claves se
+   repiten entre recintos: si se arrastran, el mapa muestra ocupados lugares que
+   en realidad estan libres.
+   Solo toca asientos y cupos. Boletos, ordenes, folios e historial no se tocan. */
+$('prepararBtn').addEventListener('click', async () => {
+  const m = $('prepMsg'); m.style.display = 'block'; m.className = 'msg';
+  m.textContent = 'Revisando el mapa...';
+  let snap;
+  try { snap = await db.collection(SEATS_COL).get(); }
+  catch (e) { m.className = 'msg err'; m.textContent = 'No se pudo leer el mapa: ' + (e.message || e); return; }
+  if (!snap.size) { m.className = 'msg ok'; m.textContent = 'El mapa ya esta limpio: no hay ningun asiento marcado.'; return; }
+  const salto = String.fromCharCode(10);
+  const ok = confirm('Se van a liberar ' + snap.size + ' asiento(s) y poner en cero los cupos de General y VIP Asiento.' + salto + salto +
+    'NO se borran boletos, ventas, folios ni el historial de eventos.' + salto + salto +
+    'Esto no se puede deshacer. Continuar?');
+  if (!ok) { m.textContent = 'Cancelado. No se toco nada.'; return; }
+  const b = $('prepararBtn'), t = b.textContent; b.disabled = true; b.textContent = 'Preparando...';
+  try {
+    const docs = snap.docs;
+    for (let i = 0; i < docs.length; i += 400) {
+      const lote = db.batch();
+      docs.slice(i, i + 400).forEach(d => lote.delete(d.ref));
+      await lote.commit();
+    }
+    const cupos = db.batch();
+    cupos.set(db.collection('config').doc('general'), { vendidos: 0 }, { merge: true });
+    cupos.set(db.collection('config').doc('vipa'), { vendidos: 0 }, { merge: true });
+    await cupos.commit();
+    m.className = 'msg ok';
+    m.textContent = 'Listo: ' + docs.length + ' asiento(s) liberados y cupos en cero. Recarga el mapa para verlo completo.';
+  } catch (e) { m.className = 'msg err'; m.textContent = 'No se pudo completar: ' + (e.message || e); }
+  b.disabled = false; b.textContent = t;
+});
 
 /* ---- Historial de eventos ----
    Al terminar un evento se archivan sus numeros, porque al preparar el
