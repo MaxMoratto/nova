@@ -343,20 +343,40 @@ async function cargarArchivo(){
   refrescarLista();
 }
 /* Rellena solo lo que este vacio: nunca pisa lo que el usuario ya escribio. */
+/* Recuerda que dato puso el archivo y cual escribio la persona. Al cambiar de
+   peleador, reemplaza lo que puso el archivo y respeta lo escrito a mano; si el
+   peleador nuevo no tiene ese dato, lo limpia en vez de dejar el del anterior. */
+const CAMPOS_PEL = ['apodo','edad','altura','peso','record','ciudad'];
+const AUTO = { r:{ slug:null, vals:{} }, a:{ slug:null, vals:{} } };
 function autocompletar(pref){
   const inp = $(pref + '_nombre'); if(!inp) return;
-  const p = ARCHIVO[slugPel(inp.value)]; if(!p) return;
-  const campos = ['apodo','edad','altura','peso','record','ciudad'];
-  let puestos = 0;
-  for(const c of campos){ const el = $(pref + '_' + c);
-    if(el && !el.value.trim() && p[c]){ el.value = p[c]; puestos++; } }
-  for(const c of ['modalidad','categoria']){ const el = $(pref + '_' + c);
-    if(el && p[c] && el.value === 'Ninguna'){ el.value = p[c]; puestos++; } }
-  const f = p.fotos || [];
-  for(let i=0;i<4;i++){ const el = $(pref + '_foto' + i);
-    if(el && !el.value.trim() && f[i]){ el.value = f[i]; refThumb(pref, i); puestos++; } }
-  if(puestos){ const m = $('fightMsg'); if(m){ m.className='msg ok';
-    m.textContent = p.nombre + ' esta en el archivo: se llenaron ' + puestos + ' dato(s). Revisalos y corrige lo que haga falta.'; } }
+  const slug = slugPel(inp.value);
+  const est = AUTO[pref]; if(!est || est.slug === slug) return;   // mismo nombre: nada que hacer
+  const p = ARCHIVO[slug];
+  const mio = (clave, el) => !el.value.trim() || el.value === est.vals[clave];
+  const vals = {}; let puestos = 0, limpiados = 0;
+  for(const c of CAMPOS_PEL){ const el = $(pref + '_' + c); if(!el) continue;
+    if(!mio(c, el)) continue;                                      // lo escribio la persona: se respeta
+    const v = (p && p[c]) || '';
+    if(el.value !== v){ if(v) puestos++; else if(el.value) limpiados++; }
+    el.value = v; if(v) vals[c] = v; }
+  for(const c of ['modalidad','categoria']){ const el = $(pref + '_' + c); if(!el) continue;
+    if(el.value !== 'Ninguna' && el.value !== est.vals[c]) continue;
+    const v = (p && p[c]) || 'Ninguna';
+    if(el.value !== v && v !== 'Ninguna') puestos++;
+    el.value = v; if(v !== 'Ninguna') vals[c] = v; }
+  const f = (p && p.fotos) || [];
+  for(let i=0;i<4;i++){ const cl = 'foto'+i, el = $(pref + '_' + cl); if(!el) continue;
+    if(!mio(cl, el)) continue;
+    const v = f[i] || '';
+    if(el.value !== v){ if(v) puestos++; else if(el.value) limpiados++; }
+    el.value = v; if(v) vals[cl] = v; refThumb(pref, i); }
+  AUTO[pref] = { slug, vals };
+  const m = $('fightMsg'); if(!m) return;
+  if(p && puestos){ m.className = 'msg ok';
+    m.textContent = p.nombre + ' esta en el archivo: se llenaron ' + puestos + ' dato(s). Revisalos y corrige lo que haga falta.'; }
+  else if(limpiados){ m.className = 'msg';
+    m.textContent = 'Cambiaste de peleador: se limpiaron ' + limpiados + ' dato(s) del anterior.'; }
 }
 /* Guarda a los dos peleadores al guardar la pelea. No bloquea: si falla, la
    pelea ya quedo guardada, que es lo que importa. */
@@ -488,7 +508,7 @@ function readForm(){ return { tipo:$('p_tipo').value, orden:Number($('p_orden').
 ['r','a'].forEach(pref => { const inp = $(pref + '_nombre');
   if(inp){ inp.addEventListener('change', () => autocompletar(pref));
            inp.addEventListener('blur', () => autocompletar(pref)); } });
-function fillCorner(p,c){ c=c||{}; $(p+'_nombre').value=c.nombre||''; $(p+'_apodo').value=c.apodo||''; $(p+'_edad').value=c.edad||''; $(p+'_altura').value=c.altura||''; $(p+'_peso').value=c.peso||''; $(p+'_record').value=c.record||''; $(p+'_ciudad').value=c.ciudad||''; $(p+'_modalidad').value=c.modalidad||'Ninguna'; $(p+'_categoria').value=c.categoria||'Ninguna'; const f=c.fotos||[]; for(let i=0;i<4;i++){ $(p+'_foto'+i).value=f[i]||''; refThumb(p,i); } }
+function fillCorner(p,c){ c=c||{}; if(AUTO[p]) AUTO[p]={ slug:slugPel(c.nombre), vals:{} }; $(p+'_nombre').value=c.nombre||''; $(p+'_apodo').value=c.apodo||''; $(p+'_edad').value=c.edad||''; $(p+'_altura').value=c.altura||''; $(p+'_peso').value=c.peso||''; $(p+'_record').value=c.record||''; $(p+'_ciudad').value=c.ciudad||''; $(p+'_modalidad').value=c.modalidad||'Ninguna'; $(p+'_categoria').value=c.categoria||'Ninguna'; const f=c.fotos||[]; for(let i=0;i<4;i++){ $(p+'_foto'+i).value=f[i]||''; refThumb(p,i); } }
 function fillForm(d){ $('p_tipo').value=d.tipo||'preliminar'; $('p_orden').value=d.orden||1; $('p_banner').value=d.banner||''; fillCorner('r',d.rojo); fillCorner('a',d.azul); }
 function clearForm(){ $('p_tipo').selectedIndex=0; $('p_orden').value=Math.min(MAX_FIGHTS,(FIGHTS_COUNT||0)+1); $('p_banner').value=''; fillCorner('r',{}); fillCorner('a',{}); F.editId=null; $('formTitle').textContent='Nueva pelea'; $('cancelEditBtn').style.display='none'; }
 $('cancelEditBtn').addEventListener('click',clearForm);
