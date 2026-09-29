@@ -6,6 +6,9 @@
 const crypto = require('crypto');
 const { db } = require('../lib/firebase');
 
+// Evento activo: marca cada boleto emitido. Debe coincidir con admin.html y
+// acceso.html, que filtran por este mismo codigo.
+const EVENTO_ACTIVO = 'NOVA-20NOV2026';
 const randToken = () => crypto.randomBytes(16).toString('hex');
 const fmtFolio = (n) => 'NSS-' + String(n).padStart(5, '0');
 const safeJson = (s) => { try { return JSON.parse(s); } catch (_) { return {}; } };
@@ -71,7 +74,7 @@ async function generateTickets(firestore, orderId, pay) {
     if (vend + genQty > 250) throw new Error('General agotado');
     if (vaVend + vipaQty > 120) throw new Error('VIP Asiento agotado');
     const comprador = o.comprador || {};
-    const meta = { comprador, estado: 'valido', canal: 'mp', cortesia: false, emitidoAt: Date.now(), evento: 'NOVA-11SEP2026', orden: orderId, pagoId: String(pay.id) };
+    const meta = { comprador, estado: 'valido', canal: 'mp', cortesia: false, emitidoAt: Date.now(), evento: EVENTO_ACTIVO, orden: orderId, pagoId: String(pay.id) };
     const tokens = []; const emailItems = [];
     for (const seatId of okSeats) {
       const inf = seatInfo(seatId);

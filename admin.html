@@ -91,7 +91,7 @@
 
   <div id="panel" style="display:none">
     <div class="topbar">
-      <div><div class="logo" style="font-family:'Bebas Neue',sans-serif;font-style:normal;font-weight:400;letter-spacing:.08em;display:flex;gap:5px;align-items:baseline"><span style="color:#FF0033">NOVA</span><span style="color:#fff">STRIKE</span><span style="color:#FF0033">SERIES</span><span style="font-size:13px;color:#8a92a6;margin-left:4px">ADMIN</span></div><div class="sub">NOVA · 11 SEP 2026</div></div>
+      <div><div class="logo" style="font-family:'Bebas Neue',sans-serif;font-style:normal;font-weight:400;letter-spacing:.08em;display:flex;gap:5px;align-items:baseline"><span style="color:#FF0033">NOVA</span><span style="color:#fff">STRIKE</span><span style="color:#FF0033">SERIES</span><span style="font-size:13px;color:#8a92a6;margin-left:4px">ADMIN</span></div><div class="sub">NOVA &#183; 20 NOV 2026</div></div>
       <div class="row" style="align-items:center">
         <a class="link" href="mapa-asientos.html" target="_blank">Ver mapa ↗</a>
         <a class="link" href="index.html" target="_blank">Ver sitio ↗</a>
@@ -230,6 +230,12 @@ const firebaseConfig = {
 };
 const SEATS_COL="asientos_nova", FIGHTS_COL="peleas", BOLETOS_COL="boletos", MAX_FIGHTS=20;
 // Zonas: capacidad real y precio por tipo
+/* Evento activo. Todo lo que se emita queda marcado con este codigo, y el
+   resumen, la lista de boletos y el punto de venta solo cuentan los de este
+   evento: asi las ventas nuevas no se revuelven con las del anterior.
+   Los boletos viejos NO se borran: quedan guardados con su propio codigo. */
+const EVENTO_ACTIVO='NOVA-20NOV2026';
+const EVENTO_TEXTO='20 NOV 2026, Foro San Rafael, CDMX';
 const CAP={VIP:30,VIPA:120,GENERAL:250};                  // VIP mesa 6x5, VIP asiento 120 (lugar por llegada)
 const PRECIO={VIP:1500,VIPA:950,GENERAL:450};
 const TOTAL_CAP=CAP.VIP+CAP.VIPA+CAP.GENERAL;
@@ -575,7 +581,7 @@ function showSaleEmitted(list, buyer){ const m=$('bMsg'); m.className='msg ok';
   const links=list.map(x=>'<a class="link" href="boleto.html?t='+x.token+'" target="_blank" style="padding:2px 7px;display:inline-block;margin:2px">'+x.folio+' ↗</a>').join('');
   let html='✓ Venta emitida — '+list.length+' boleto(s): '+links;
   if(buyer&&buyer.tel){ const base=location.origin; const tel=(buyer.tel||'').replace(/[^0-9]/g,''); const waTel=tel.length===10?'52'+tel:tel;
-    const msg='Hola '+(buyer.nombre||'')+'! Aquí están tus boletos para NOVA Strike Series (11 SEP 2026, Frontera - Frontera 88, Roma Norte, CDMX):%0A'+list.map(x=>base+'/boleto.html?t='+x.token).join('%0A')+'%0APresenta el QR de cada uno en la entrada.';
+    const msg='Hola '+(buyer.nombre||'')+'! Aquí están tus boletos para NOVA Strike Series ('+EVENTO_TEXTO+'):%0A'+list.map(x=>base+'/boleto.html?t='+x.token).join('%0A')+'%0APresenta el QR de cada uno en la entrada.';
     html+='<div style="margin-top:8px"><a class="btn red" href="https://wa.me/'+waTel+'?text='+msg+'" target="_blank" style="text-decoration:none;display:inline-block">Enviar todos por WhatsApp</a></div>'; }
   m.innerHTML=html;
   $('b_nombre').value=''; $('b_tel').value=''; $('b_mail').value=''; $('b_cant').value='1'; $('b_cortesia').checked=false; $('b_precio').disabled=false; syncEmitFields();
@@ -608,7 +614,7 @@ async function emitSale(){
   const nombre=$('b_nombre').value.trim(); if(!nombre){ m.className='msg err'; m.textContent='Pon el nombre del comprador'; return; }
   const tel=$('b_tel').value.trim(), mail=$('b_mail').value.trim();
   const cortesia=$('b_cortesia').checked; const pago=cortesia?'cortesia':$('b_pago').value; const grupo=genToken();
-  const baseMeta={ comprador:{nombre,tel,mail}, estado:'valido', canal:cortesia?'cortesia':'manual', cortesia, pago, grupo, emitidoAt:Date.now(), emitidoBy:auth.currentUser.email, evento:'NOVA-11SEP2026' };
+  const baseMeta={ comprador:{nombre,tel,mail}, estado:'valido', canal:cortesia?'cortesia':'manual', cortesia, pago, grupo, emitidoAt:Date.now(), emitidoBy:auth.currentUser.email, evento:EVENTO_ACTIVO };
   const numbered=CART.filter(i=>i.seatId); const genLines=CART.filter(i=>i.tipo==='GENERAL'); const genQty=genLines.reduce((a,i)=>a+(i.qty||1),0);
   const foliosRef=db.collection('config').doc('folios'); const gRef=db.collection('config').doc('general');
   const btn=$('emitSaleBtn'); btn.disabled=true; const emitted=[];
@@ -638,7 +644,9 @@ let BOLETOS=[];
 function watchBoletos(){ db.collection(BOLETOS_COL).onSnapshot(snap=>{ BOLETOS=[];
     let ingresados=0,pendientes=0,cancelados=0,cortesias=0,ventas=0;
     const occ={VIP:0,VIPA:0,GENERAL:0}, sold={VIP:0,VIPA:0,GENERAL:0};
-    snap.forEach(doc=>{ const d=doc.data(); if(d.test) return; BOLETOS.push({token:doc.id,d});
+    snap.forEach(doc=>{ const d=doc.data(); if(d.test) return;
+      if((d.evento||'')!==EVENTO_ACTIVO) return;   // de otro evento: ni se cuenta ni se lista
+      BOLETOS.push({token:doc.id,d});
       if(d.estado==='cancelado'){ cancelados++; return; }
       const t=(d.tipo in occ)?d.tipo:'GENERAL'; occ[t]++;
       if(d.estado==='usado') ingresados++; else pendientes++;
@@ -719,7 +727,7 @@ function renderBoletos(){ const q=($('bSearch').value||'').trim().toUpperCase();
   box.querySelectorAll('[data-wa]').forEach(b=>b.addEventListener('click',()=>{ const r=BOLETOS.find(x=>x.token===b.dataset.wa); if(!r)return;
     const tel=waPhone((r.d.comprador&&r.d.comprador.tel)||''); const link=location.origin+'/boleto.html?t='+b.dataset.wa;
     const nom=(r.d.comprador&&r.d.comprador.nombre)?' '+r.d.comprador.nombre.split(' ')[0]:'';
-    const msg='Hola'+nom+'! Aquí está tu boleto para NOVA Strike Series (11 SEP 2026, Frontera - Frontera 88, Roma Norte, CDMX): '+link+' — Presenta el QR en la entrada.';
+    const msg='Hola'+nom+'! Aquí está tu boleto para NOVA Strike Series ('+EVENTO_TEXTO+'): '+link+' — Presenta el QR en la entrada.';
     window.open('https://wa.me/'+tel+'?text='+encodeURIComponent(msg),'_blank'); }));
   box.querySelectorAll('[data-cancel]').forEach(b=>b.addEventListener('click',()=>cancelBoleto(b.dataset.cancel)));
   box.querySelectorAll('[data-move]').forEach(b=>b.addEventListener('click',()=>moveSeat(b.dataset.move)));

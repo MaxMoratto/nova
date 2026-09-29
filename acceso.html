@@ -98,6 +98,7 @@
 <script>
 const firebaseConfig = { apiKey:"AIzaSyAXxTUFo0CHFZnAs0wGrYHLTwwVzZ_ArZA", authDomain:"nova-dd664.firebaseapp.com", projectId:"nova-dd664", storageBucket:"nova-dd664.firebasestorage.app", messagingSenderId:"967862553249", appId:"1:967862553249:web:3524af97999ce667bafee0" };
 firebase.initializeApp(firebaseConfig);
+const EVENTO_ACTIVO='NOVA-20NOV2026';   // debe coincidir con admin.html y api/mp-webhook.js
 const auth=firebase.auth(), db=firebase.firestore();
 const $=id=>document.getElementById(id);
 let scanner=null, scanning=false, busy=false, lastTok='', lastAt=0;
@@ -145,6 +146,8 @@ async function validate(token){
     const s=await ref.get();
     if(!s.exists){ return show('bad','Inválido','Este código no corresponde a ningún boleto.',''); }
     const d=s.data();
+    // Un boleto de un evento anterior no abre la puerta de este.
+    if((d.evento||'')!==EVENTO_ACTIVO){ return show('bad','Otro evento', ticketLine(d), 'Este boleto es de '+(d.evento||'un evento anterior')+'.'); }
     if(d.estado==='cancelado'){ return show('bad','Cancelado', ticketLine(d), 'Boleto cancelado.'); }
     if(d.estado==='usado'){ return show('warn','Ya ingresó', ticketLine(d), 'Entrada registrada '+fmtTime(d.checkinAt)); }
     // reclamar entrada (transacción anti doble-scan)
