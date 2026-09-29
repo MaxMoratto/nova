@@ -172,7 +172,7 @@
     <!-- PELEAS -->
     <div id="tab-peleas" style="display:none">
       <div class="card">
-        <div class="topbar" style="margin-bottom:14px"><h2 style="margin:0" id="formTitle">Nueva pelea</h2><button class="mini" id="seedBtn">Sembrar cartelera actual</button></div>
+        <div class="topbar" style="margin-bottom:14px"><h2 style="margin:0" id="formTitle">Nueva pelea</h2><button class="mini" id="backupFightsBtn" title="Descarga la cartelera completa, con fotos, antes de borrarla">&#8681; Respaldar cartelera</button><button class="mini" id="seedBtn">Sembrar cartelera actual</button></div>
         <div class="grid2">
           <div>
             <label>Tipo de pelea</label>
@@ -248,6 +248,31 @@ $('loginBtn').addEventListener('click', async ()=>{ const m=$('loginMsg'); m.tex
 $('pass').addEventListener('keydown',e=>{ if(e.key==='Enter') $('loginBtn').click(); });
 $('logoutBtn').addEventListener('click',()=>auth.signOut());
 $('swapCorners').addEventListener('click', swapCorners);
+
+/* Descarga la cartelera completa a un archivo. Firestore no guarda versiones:
+   si se borran las peleas sin respaldarlas antes, no hay de donde recuperarlas.
+   Incluye las fotos, que viven dentro del propio documento. */
+$('backupFightsBtn').addEventListener('click', async () => {
+  const b = $('backupFightsBtn'), t = b.textContent;
+  b.disabled = true; b.textContent = 'Preparando...';
+  try {
+    const snap = await db.collection('peleas').get();
+    const peleas = snap.docs.map(d => Object.assign({ id: d.id }, d.data()));
+    const salida = { evento: 'respaldo de cartelera', fecha: new Date().toISOString(), total: peleas.length, peleas };
+    const url = URL.createObjectURL(new Blob([JSON.stringify(salida, null, 1)], { type: 'application/json' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'cartelera-' + new Date().toISOString().slice(0, 10) + '.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    const m = $('fightMsg');
+    if (m) { m.className = 'msg ok'; m.textContent = 'Respaldo descargado: ' + peleas.length + ' pelea(s). Guardalo antes de borrar nada.'; }
+  } catch (e) {
+    const m = $('fightMsg');
+    if (m) { m.className = 'msg err'; m.textContent = 'No se pudo respaldar: ' + (e.message || e); }
+  }
+  b.disabled = false; b.textContent = t;
+});
 const TABS=['lugares','boletos','peleas'];
 document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{ document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on')); t.classList.add('on');
   TABS.forEach(name=>{ const el=$('tab-'+name); if(el) el.style.display=(t.dataset.tab===name)?'block':'none'; }); }));
