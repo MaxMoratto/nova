@@ -130,7 +130,7 @@
           <div class="stat warn"><div class="k">Pendientes por ingresar</div><div class="v" id="sPend">0</div></div>
           <div class="stat"><div class="k">Boletos cancelados</div><div class="v" id="sCanc">0</div></div>
           <div class="stat"><div class="k">Cortesías</div><div class="v" id="sCort">0</div></div>
-          <div class="stat"><div class="k">Capacidad disponible</div><div class="v" id="sCap">436</div><div class="sub">de 436</div></div>
+          <div class="stat"><div class="k">Capacidad disponible</div><div class="v" id="sCap">0</div><div class="sub">de <span id="sCapTot">0</span></div></div>
           <div class="stat money"><div class="k">Ventas totales</div><div class="v" id="sMoney">$0</div></div>
         </div>
       </div>
@@ -164,12 +164,16 @@
         <div class="hint">Agrega los boletos al <b>carrito</b> (numerados y/o general), pon <b>un comprador</b> y el método de pago, y emítelos <b>todos juntos</b> — cada uno con su folio + QR. Los asientos numerados se validan y se bloquean.</div>
       </div>
       <div class="card">
-        <div class="topbar" style="margin-bottom:10px"><h2 style="margin:0">Boletos emitidos</h2><div class="row" style="align-items:center"><button class="mini" id="corteBtn" title="Resumen de ventas por método de pago">&#128176; Corte de caja</button><button class="mini" id="cleanBtn" title="Borra definitivamente los boletos cancelados">&#128465; Limpiar cancelados</button><button class="mini" id="exportBtn" title="Descarga todos los boletos y ventas (respaldo)">&#8681; Respaldo CSV</button><input id="bSearch" placeholder="Buscar folio o nombre" style="max-width:220px;margin:0"/></div></div>
+        <div class="topbar" style="margin-bottom:10px"><h2 style="margin:0">Boletos emitidos</h2><div class="row" style="align-items:center"><button class="mini" id="corteBtn" title="Resumen de ventas por método de pago">&#128176; Corte de caja</button><button class="mini" id="cleanBtn" title="Borra definitivamente los boletos cancelados">&#128465; Limpiar cancelados</button><button class="mini" id="archivarEventoBtn" title="Guarda estos numeros como cierre del evento">&#128230; Archivar evento</button><button class="mini" id="exportBtn" title="Descarga todos los boletos y ventas (respaldo)">&#8681; Respaldo CSV</button><input id="bSearch" placeholder="Buscar folio o nombre" style="max-width:220px;margin:0"/></div></div>
         <div class="sold-list" id="boletoList"><div class="empty">Cargando…</div></div>
       </div>
     </div>
 
     <!-- PELEAS -->
+      <div class="card" id="cardHistorial" style="margin-top:14px">
+        <div class="topbar" style="margin-bottom:10px"><h2 style="margin:0">Eventos anteriores</h2></div>
+        <div id="histList"><div class="empty">Sin eventos archivados todavia.</div></div>
+      </div>
     <div id="tab-peleas" style="display:none">
       <div class="card">
         <div class="topbar" style="margin-bottom:14px"><h2 style="margin:0" id="formTitle">Nueva pelea</h2><button class="mini" id="backupFightsBtn" title="Descarga la cartelera completa, con fotos, antes de borrarla">&#8681; Respaldar cartelera</button><button class="mini" id="seedBtn">Sembrar cartelera actual</button></div>
@@ -228,7 +232,7 @@ const SEATS_COL="asientos_nova", FIGHTS_COL="peleas", BOLETOS_COL="boletos", MAX
 // Zonas: capacidad real y precio por tipo
 const CAP={VIP:30,VIPA:120,GENERAL:250};                  // VIP mesa 6x5, VIP asiento 120 (lugar por llegada)
 const PRECIO={VIP:1500,VIPA:950,GENERAL:450};
-const TOTAL_CAP=CAP.VIP+CAP.VIPA+CAP.GENERAL;             // 362
+const TOTAL_CAP=CAP.VIP+CAP.VIPA+CAP.GENERAL;
 const TIPO_LBL_B={VIP:'VIP mesa',VIPA:'VIP asiento',PREF:'Preferente',GENERAL:'General'};
 const PREF_MAX={A:25,B:25,C:24};
 const pad2=n=>String(n).padStart(2,'0');
@@ -239,7 +243,7 @@ const auth=firebase.auth(), db=firebase.firestore();
 const $=id=>document.getElementById(id);
 
 auth.onAuthStateChanged(u=>{
-  if(u){ $('login').style.display='none'; $('panel').style.display='block'; watchSold(); watchFights(); watchBoletos(); cargarArchivo(); }
+  if(u){ $('login').style.display='none'; $('panel').style.display='block'; watchSold(); watchFights(); watchBoletos(); cargarArchivo(); cargarHistorial(); }
   else { $('panel').style.display='none'; $('login').style.display='block'; }
 });
 $('loginBtn').addEventListener('click', async ()=>{ const m=$('loginMsg'); m.textContent=''; const b=$('loginBtn'); b.disabled=true;
@@ -248,6 +252,51 @@ $('loginBtn').addEventListener('click', async ()=>{ const m=$('loginMsg'); m.tex
 $('pass').addEventListener('keydown',e=>{ if(e.key==='Enter') $('loginBtn').click(); });
 $('logoutBtn').addEventListener('click',()=>auth.signOut());
 $('swapCorners').addEventListener('click', swapCorners);
+
+/* ---- Historial de eventos ----
+   Al terminar un evento se archivan sus numeros, porque al preparar el
+   siguiente se liberan asientos y se ponen los contadores en cero: si no se
+   guardan antes, se pierden. Viven en config/eventos, que ya tiene permisos. */
+let RESUMEN=null, HIST=[];
+const pesos=v=>'$'+Number(v||0).toLocaleString('es-MX');
+function renderHistorial(){
+  const c=$('histList'); if(!c) return;
+  if(!HIST.length){ c.innerHTML='<div class="empty">Sin eventos archivados todavia.</div>'; return; }
+  const total=HIST.reduce((a,e)=>a+Number(e.ventas||0),0);
+  c.innerHTML='<table style="width:100%;border-collapse:collapse;font-size:13px">'
+   +'<tr style="color:#8a92a6;text-align:left"><th>Evento</th><th>Fecha</th><th>Boletos</th>'
+   +'<th>VIP / Asiento / General</th><th>Cortesias</th><th>Ingresaron</th><th style="text-align:right">Ventas</th></tr>'
+   + HIST.slice().sort((a,b)=>(b.cerrado||0)-(a.cerrado||0)).map(e=>
+      '<tr style="border-top:1px solid #212836"><td style="padding:7px 0"><b>'+(e.nombre||'-')+'</b></td>'
+      +'<td>'+(e.fecha||'-')+'</td><td>'+(e.boletos||0)+'</td>'
+      +'<td>'+(e.vip||0)+' / '+(e.vipa||0)+' / '+(e.general||0)+'</td>'
+      +'<td>'+(e.cortesias||0)+'</td><td>'+(e.ingresados||0)+'</td>'
+      +'<td style="text-align:right;color:#2bd576"><b>'+pesos(e.ventas)+'</b></td></tr>').join('')
+   +'<tr style="border-top:2px solid #2d3547"><td colspan="6" style="padding-top:8px"><b>Acumulado de '+HIST.length+' evento(s)</b></td>'
+   +'<td style="text-align:right;padding-top:8px;color:#2bd576"><b>'+pesos(total)+'</b></td></tr></table>';
+}
+async function cargarHistorial(){
+  try{ const d=await db.collection('config').doc('eventos').get();
+    HIST=(d.exists && d.data().lista) || [];
+  }catch(e){ HIST=[]; console.warn('historial no disponible:', e.message); }
+  renderHistorial();
+}
+$('archivarEventoBtn').addEventListener('click', async ()=>{
+  if(!RESUMEN){ alert('Espera a que cargue el resumen.'); return; }
+  const nombre=prompt('Nombre del evento que estas cerrando:', 'NOVA Strike Series');
+  if(!nombre) return;
+  const fecha=prompt('Fecha del evento (como quieras verla en la lista):', '');
+  if(fecha===null) return;
+  const reg=Object.assign({ nombre:nombre.trim(), fecha:(fecha||'').trim(), cerrado:Date.now() }, RESUMEN);
+  const b=$('archivarEventoBtn'), t=b.textContent; b.disabled=true; b.textContent='Guardando...';
+  try{
+    await db.collection('config').doc('eventos').set({ lista: HIST.concat([reg]) }, { merge:true });
+    HIST=HIST.concat([reg]); renderHistorial();
+    alert('Evento archivado: '+reg.boletos+' boletos, '+pesos(reg.ventas)+'.'+String.fromCharCode(10)
+      +'Ya puedes preparar el siguiente evento sin perder estos numeros.');
+  }catch(e){ alert('No se pudo archivar: '+(e.message||e)); }
+  b.disabled=false; b.textContent=t;
+});
 
 /* ---- Archivo de peleadores ----
    Cada vez que se guarda una pelea, los dos peleadores quedan guardados en la
@@ -581,8 +630,13 @@ function watchBoletos(){ db.collection(BOLETOS_COL).onSnapshot(snap=>{ BOLETOS=[
     $('sVip').textContent=sold.VIP; $('sVipa').textContent=sold.VIPA; $('sGen').textContent=sold.GENERAL;
     $('sIn').textContent=ingresados; $('sPend').textContent=pendientes; $('sCanc').textContent=cancelados;
     $('sCort').textContent=cortesias;
-    $('sCap').textContent=(CAP.VIP-occ.VIP)+(CAP.VIPA-occ.VIPA)+(CAP.GENERAL-occ.GENERAL);
+    const disponible=(CAP.VIP-occ.VIP)+(CAP.VIPA-occ.VIPA)+(CAP.GENERAL-occ.GENERAL);
+    $('sCap').textContent=disponible; const ct=$('sCapTot'); if(ct) ct.textContent=TOTAL_CAP;
     $('sMoney').textContent=money(ventas);
+    // Se guarda para poder archivarlo cuando termine el evento.
+    RESUMEN={ boletos:sold.VIP+sold.VIPA+sold.GENERAL, vip:sold.VIP, vipa:sold.VIPA,
+      general:sold.GENERAL, ingresados, pendientes, cancelados, cortesias, ventas,
+      disponible, aforo:TOTAL_CAP };
     BOLETOS.sort((a,b)=>(b.d.emitidoAt||0)-(a.d.emitidoAt||0)); renderBoletos();
   }, err=>{ $('boletoList').innerHTML='<div class="empty">Error: '+err.message+'</div>'; }); }
 $('bSearch').addEventListener('input', renderBoletos);
