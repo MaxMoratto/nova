@@ -31,6 +31,14 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Archivo de peleadores: se llena solo al guardar cada pelea, y sirve para
+    // no recapturar los datos de alguien que ya peleo antes.
+    // Lectura pública (son los mismos datos que ya salen en el sitio), escritura solo admin.
+    match /peleadores/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     // Peleas: lectura pública, escritura solo admin
     match /peleas/{id} {
       allow read: if true;
