@@ -309,9 +309,10 @@ document.getElementById('buy').addEventListener('click',()=>{const sel=selectedS
   if(fee>0){const r=document.createElement('div');r.className='mrow';r.innerHTML='<span>Comisión de compra en línea (4.2%)</span><b>'+money(fee)+'</b>';ml.appendChild(r);}
   _modalSub=sub; _modalTotal=sub+fee; applyCoupon();
   if(!VENTA_ABIERTA){ const pb=document.getElementById('pausaBox'); if(pb)pb.style.display='block';
-    for(const id of ['mcard','bcoupon']){ const el=document.getElementById(id); if(el)el.style.display='none'; }
-    const bt=document.getElementById('mpay');
-    if(bt){ bt.textContent='Apartar y pagar por transferencia'; bt.style.borderColor='var(--gold)'; bt.style.color='var(--gold)'; } }
+    // En pausa se cierran TODAS las vias: tarjeta, transferencia y cupones.
+    // Al abrir la venta, el boton de transferencia vuelve solo.
+    for(const id of ['mcard','mpay','bcoupon']){ const el=document.getElementById(id); if(el)el.style.display='none'; }
+    const cj=document.getElementById('speibox'); if(cj)cj.style.display='none'; }
   modalbg.classList.add('on');});
 // Cupon de prueba DESACTIVADO. Para reactivarlo hay que poner el codigo aqui Y la
 // variable TEST_COUPON en Vercel: si solo se pone aqui, el sitio mostraria $1 y
