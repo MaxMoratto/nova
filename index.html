@@ -790,9 +790,10 @@ class Component extends DCLogic {
     const isMobile = windowWidth < 700;
 
     // ===== Cartelera dinámica (se llena desde el admin / Firestore) =====
-    // Cuando un peleador aun no tiene foto se usa una silueta, para que el hueco
-    // no quede vacio mientras la cartelera se completa.
-    const SILUETA = 'uploads/silueta-negra.webp';
+    // Cuando un peleador aun no tiene foto se usa una silueta de medio cuerpo, para
+    // que el hueco no quede vacio mientras la cartelera se completa.
+    const SIL_R = 'uploads/silueta-n1.webp';
+    const SIL_A = 'uploads/silueta-b1.webp';
     const nm = (f) => { const raw = ((f && f.nombre) || '').trim(); const ph = !raw || /^pendiente$/i.test(raw) || /^por revelar$/i.test(raw); return ph ? 'POR REVELAR' : raw.toUpperCase(); };
     const rec = (f) => (((f && f.record) || '').trim()) || '0-0-0';
     const noneVal = (v) => { const s = (v || '').trim(); return (!s || /^ningun/i.test(s)) ? '' : s.toUpperCase(); };
@@ -802,24 +803,24 @@ class Component extends DCLogic {
     const coest = plist.find(p => p.tipo === 'coestelar');
     const me = {
       banner: 'PELEA PRINCIPAL · ' + ((principal && principal.banner) || 'PESO LIGERO · 155 LB'),
-      r: corner(principal && principal.rojo, SILUETA),
-      a: corner(principal && principal.azul, SILUETA)
+      r: corner(principal && principal.rojo, SIL_R),
+      a: corner(principal && principal.azul, SIL_A)
     };
     const co = {
       banner: 'CO-ESTELAR · ' + ((coest && coest.banner) || 'PESO LIGERO · 155 LB'),
-      r: corner(coest && coest.rojo, SILUETA),
-      a: corner(coest && coest.azul, SILUETA)
+      r: corner(coest && coest.rojo, SIL_R),
+      a: corner(coest && coest.azul, SIL_A)
     };
     const prelimList = plist.filter(p => p.tipo === 'preliminar').sort((a, b) => (a.orden || 99) - (b.orden || 99));
     const av = (f) => (f && f.fotos && f.fotos[0]) || '';
     const dsp = (img) => img ? 'block' : 'none';
-    const ph = { r1: 'POR REVELAR', r1rec: '0-0-0', r1img: '', r1disp: 'none', r2: 'POR REVELAR', r2rec: '0-0-0', r2img: '', r2disp: 'none' };
-    const prelims = prelimList.length ? prelimList.map(p => { const a = av(p.rojo), b = av(p.azul); return { r1: nm(p.rojo), r1rec: rec(p.rojo), r1img: a || (a||b ? SILUETA : ''), r1disp: (a||b) ? 'block' : 'none', r2: nm(p.azul), r2rec: rec(p.azul), r2img: b || (a||b ? SILUETA : ''), r2disp: (a||b) ? 'block' : 'none' }; }) : [ph, ph, ph, ph, ph, ph];
+    const ph = { r1: 'POR REVELAR', r1rec: '0-0-0', r1img: SIL_R, r1disp: 'block', r2: 'POR REVELAR', r2rec: '0-0-0', r2img: SIL_A, r2disp: 'block' };
+    const prelims = prelimList.length ? prelimList.map(p => { const a = av(p.rojo), b = av(p.azul); return { r1: nm(p.rojo), r1rec: rec(p.rojo), r1img: a || SIL_R, r1disp: 'block', r2: nm(p.azul), r2rec: rec(p.azul), r2img: b || SIL_A, r2disp: 'block' }; }) : [ph, ph, ph, ph, ph, ph];
     const prelimsFoto = prelims.filter(p => p.r1disp === 'block' || p.r2disp === 'block');
     const prelimsSinFoto = prelims.filter(p => p.r1disp !== 'block' && p.r2disp !== 'block');
     const metaOf = (f) => [noneVal(f && f.modalidad), noneVal(f && f.categoria)].filter(Boolean).join(' · ');
     const dosLineas = (s) => { const t = String(s).split(/\s+/); return { l1: t[0] || '', l2: t.slice(1).join(' ') }; };
-    const buildRow = (p) => { const a = av(p.rojo), b = av(p.azul); const n1 = dosLineas(nm(p.rojo)), n2 = dosLineas(nm(p.azul)); const bn = ((p && p.banner) || '').trim(); return { r1: nm(p.rojo), r1l1: n1.l1, r1l2: n1.l2, r1rec: rec(p.rojo), r1img: a || (a||b ? SILUETA : ''), r1disp: (a||b) ? 'block' : 'none', r1meta: metaOf(p.rojo), r2: nm(p.azul), r2l1: n2.l1, r2l2: n2.l2, r2rec: rec(p.azul), r2img: b || (a||b ? SILUETA : ''), r2disp: (a||b) ? 'block' : 'none', r2meta: metaOf(p.azul), banner: 'CARTELERA PRINCIPAL' + (bn ? ' · ' + bn.toUpperCase() : '') }; };
+    const buildRow = (p) => { const a = av(p.rojo), b = av(p.azul); const n1 = dosLineas(nm(p.rojo)), n2 = dosLineas(nm(p.azul)); const bn = ((p && p.banner) || '').trim(); return { r1: nm(p.rojo), r1l1: n1.l1, r1l2: n1.l2, r1rec: rec(p.rojo), r1img: a || SIL_R, r1disp: 'block', r1meta: metaOf(p.rojo), r2: nm(p.azul), r2l1: n2.l1, r2l2: n2.l2, r2rec: rec(p.azul), r2img: b || SIL_A, r2disp: 'block', r2meta: metaOf(p.azul), banner: 'CARTELERA PRINCIPAL' + (bn ? ' · ' + bn.toUpperCase() : '') }; };
     const carteleraList = plist.filter(p => p.tipo === 'cartelera').sort((a, b) => (a.orden || 99) - (b.orden || 99));
     const carteleraRows = carteleraList.map(buildRow);
     const carteleraFoto = carteleraRows.filter(p => p.r1disp === 'block' || p.r2disp === 'block');
