@@ -5,6 +5,9 @@
 const { db } = require('../lib/firebase');
 
 const RESERVA_MIN = 10;
+// Evento al que pertenecen las ordenes. Debe coincidir con api/mp-webhook.js,
+// admin.html y acceso.html, o las ventas nuevas se contarian en el evento viejo.
+const EVENTO_ACTIVO = 'NOVA-20NOV2026';
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -65,7 +68,7 @@ module.exports = async (req, res) => {
         tx.set(orderRef, {
           estado: 'pendiente', seats: seatIds, general: genQty, vipa: vipaQty,
           comprador: { nombre: buyer.name || '', tel: buyer.phone || '', mail: buyer.mail || '' },
-          items, creado: now, expira, evento: 'NOVA-11SEP2026'
+          items, creado: now, expira, evento: EVENTO_ACTIVO
         });
       });
     } catch (e) {
