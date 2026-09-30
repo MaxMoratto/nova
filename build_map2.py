@@ -10,7 +10,8 @@ for s in d["PB"]["vip"]:
     SEATS.append({"id": s["id"], "zone": "VIP", "floor": "PB", "mesa": s["mesa"], "silla": s["silla"], "x": s["x"], "y": s["y"]})
 for s in d["1PISO"]["vipa"]:
     SEATS.append({"id": s["id"], "zone": "VIPA", "floor": "1P", "n": s["n"], "x": s["x"], "y": s["y"]})
-# Preferente eliminado (ya no se vende)
+for s in d["1PISO"]["pref"]:
+    SEATS.append({"id": s["id"], "zone": "PREF", "floor": "1P", "sec": s["sec"], "n": s["n"], "x": s["x"], "y": s["y"]})
 
 SEATS_JSON = json.dumps(SEATS, ensure_ascii=False)
 PB_VB = d["PB"]["vb"]; P1_VB = d["1PISO"]["vb"]
@@ -178,7 +179,10 @@ const SEATS = __SEATS__;
 const FLOORS = __FLOORS__;
 const ZONES = {
   VIP:  { label:'VIP (mesa)', color:'#e11d2a', bright:'#ff6b76', price:1500 },
-  VIPA: { label:'VIP (asiento)', color:'#e11d2a', bright:'#ff8f98', price:950, general:true, total:120 },
+  VIPA: { label:'VIP (asiento)', color:'#e11d2a', bright:'#ff8f98', price:950 },
+  // PRECIO PROVISIONAL: 650 es lo que costaba Preferente en este mismo recinto.
+  // Confirmar con Max antes de promocionar la zona.
+  PREF: { label:'Preferente', color:'#D2AE6D', bright:'#e6c789', price:650 },
   GENERAL: { label:'General', color:'#c8ccd4', bright:'#e8eaee', price:450, general:true, total:250 }
 };
 const COMISION=0.042;                       // 4.2% comision de compra en linea (cubre el costo real de Mercado Pago)
