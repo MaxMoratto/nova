@@ -147,6 +147,10 @@
   <div class="mlist" id="mlist"></div>
   <div class="form-wrap"><input id="bname" class="finp" placeholder="Nombre completo" autocomplete="name"/><input id="bphone" class="finp" placeholder="WhatsApp / telefono" autocomplete="tel" inputmode="tel"/><input id="bmail" class="finp" placeholder="Email (te enviamos aquí los boletos)" autocomplete="email"/><input id="bcoupon" class="finp" placeholder="Cupón (opcional)" autocomplete="off" style="text-transform:uppercase"/></div>
   <div class="mfoot"><div class="sumline total" style="margin-top:0;border:none;padding-top:0"><span>Total</span><b id="mtot"></b></div>
+  <div id="pausaBox" style="display:none;text-align:center;background:var(--panel2);border:1px solid var(--border);border-radius:11px;padding:16px 14px">
+    <div style="font-family:'Oswald',sans-serif;font-size:15px;letter-spacing:.14em;color:var(--gold);text-transform:uppercase">Proximamente</div>
+    <div style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.55">La venta en linea abre pronto. Aqui puedes ver los lugares y los precios.</div>
+  </div>
   <button class="cta" id="mcard" style="background:linear-gradient(180deg,#00b1ea,#009ee3);box-shadow:0 8px 24px rgba(0,158,227,.4)">Pagar con Mercado Pago</button>
   <div style="font-size:10.5px;color:var(--muted2);text-align:center;margin-top:9px;line-height:1.5">Al continuar aceptas los <a href="terminos.html" target="_blank" style="color:var(--muted)">Términos</a>, el <a href="privacidad.html" target="_blank" style="color:var(--muted)">Aviso de Privacidad</a> y la <a href="reembolsos.html" target="_blank" style="color:var(--muted)">Política de Reembolsos</a>.</div>
   <div style="text-align:center;font-size:10.5px;color:var(--muted2);margin-top:8px">Tarjeta &#183; OXXO &#183; SPEI</div>
@@ -164,6 +168,9 @@ const ZONES = {
   PREF: { label:'Preferente', color:'#D2AE6D', bright:'#e6c789', price:650, bloqueada:true },
   GENERAL: { label:'General', color:'#c8ccd4', bright:'#e8eaee', price:450, general:true, total:250 }
 };
+// Venta en pausa: se ven el mapa y los precios, pero no se puede comprar.
+// Para abrirla, poner VENTA_ABIERTA en true y quitar la validacion del servidor.
+const VENTA_ABIERTA=false;
 const COMISION=0.042;                       // 4.2% comision de compra en linea (cubre el costo real de Mercado Pago)
 const feeOf=sub=>Math.round(sub*COMISION);  // sobre el subtotal, redondeada al peso
 const CONFIG = {
@@ -301,6 +308,8 @@ document.getElementById('buy').addEventListener('click',()=>{const sel=selectedS
   const fee=feeOf(sub);
   if(fee>0){const r=document.createElement('div');r.className='mrow';r.innerHTML='<span>Comisión de compra en línea (4.2%)</span><b>'+money(fee)+'</b>';ml.appendChild(r);}
   _modalSub=sub; _modalTotal=sub+fee; applyCoupon();
+  if(!VENTA_ABIERTA){ const pb=document.getElementById('pausaBox'); if(pb)pb.style.display='block';
+    for(const id of ['mcard','mpay','bcoupon']){ const el=document.getElementById(id); if(el)el.style.display='none'; } }
   modalbg.classList.add('on');});
 // Cupon de prueba DESACTIVADO. Para reactivarlo hay que poner el codigo aqui Y la
 // variable TEST_COUPON en Vercel: si solo se pone aqui, el sitio mostraria $1 y

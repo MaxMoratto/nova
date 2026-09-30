@@ -36,6 +36,12 @@ module.exports = async (req, res) => {
     // Preferente esta bloqueada hasta tener su precio definitivo. Se valida aqui,
     // en el servidor, porque el navegador se puede manipular: sin esto alguien
     // podria comprar esa zona al precio provisional.
+    // Venta en pausa. Es la barrera que cuenta: aunque alguien llegue con un enlace
+    // viejo o manipule la pagina, el cobro no se crea.
+    if (process.env.VENTA_ABIERTA !== '1') {
+      return res.status(400).json({ error: 'La venta de boletos aun no esta abierta.' });
+    }
+
     const ZONAS_BLOQUEADAS = ['PREF'];
     const bloqueado = seatIds.find(id => ZONAS_BLOQUEADAS.some(z => id.indexOf(z + "-") === 0));
     if (bloqueado) return res.status(400).json({ error: "La zona Preferente aun no esta a la venta." });
