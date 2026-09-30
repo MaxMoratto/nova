@@ -278,6 +278,19 @@ $('prepararBtn').addEventListener('click', async () => {
   catch (e) { m.className = 'msg err'; m.textContent = 'No se pudo leer el mapa: ' + (e.message || e); return; }
   if (!snap.size) { m.className = 'msg ok'; m.textContent = 'El mapa ya esta limpio: no hay ningun asiento marcado.'; return; }
   const salto = String.fromCharCode(10);
+  /* Seguro: este boton es para arrancar un evento, no para usarse con la venta
+     abierta. Si el evento activo ya tiene boletos, vaciar el mapa dejaria libres
+     lugares ya vendidos y podrian revenderse. En ese caso hay que escribirlo. */
+  const vivos = (typeof BOLETOS !== 'undefined' ? BOLETOS : []).filter(r => r.d && r.d.estado !== 'cancelado').length;
+  if (vivos > 0) {
+    const clave = prompt('CUIDADO: este evento ya tiene ' + vivos + ' boleto(s) vendidos.' + salto + salto +
+      'Si liberas el mapa ahora, esos lugares apareceran disponibles y se pueden revender a otra persona.' + salto + salto +
+      'Este boton es para empezar un evento nuevo, no para usarlo con la venta abierta.' + salto + salto +
+      'Si de verdad quieres continuar, escribe BORRAR:');
+    if ((clave || '').trim().toUpperCase() !== 'BORRAR') {
+      m.className = 'msg'; m.textContent = 'Cancelado. No se toco nada.'; return;
+    }
+  }
   const ok = confirm('Se van a liberar ' + snap.size + ' asiento(s) y poner en cero los cupos de General y VIP Asiento.' + salto + salto +
     'NO se borran boletos, ventas, folios ni el historial de eventos.' + salto + salto +
     'Esto no se puede deshacer. Continuar?');
