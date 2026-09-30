@@ -170,7 +170,7 @@ const ZONES = {
 //   1) este de aqui, que muestra los botones de compra en la pagina;
 //   2) la variable VENTA_ABIERTA=1 en Vercel, que es la que deja cobrar.
 // Para volver a pausar hay que apagar los dos.
-const VENTA_ABIERTA=true;
+const VENTA_ABIERTA=false;
 const COMISION=0.042;                       // 4.2% comision de compra en linea (cubre el costo real de Mercado Pago)
 const feeOf=sub=>Math.round(sub*COMISION);  // sobre el subtotal, redondeada al peso
 const CONFIG = {
@@ -343,7 +343,12 @@ modalbg.addEventListener('click',e=>{if(e.target===modalbg)modalbg.classList.rem
 
 function buildItems(sel){ const items=[]; const byZone={};
   for(const s of sel){ byZone[s.zone]=(byZone[s.zone]||0)+1; }
+  // Un renglon por zona. Si falta alguna, Mercado Pago cobra de menos:
+  // en este recinto VIP Asiento y Preferente son asientos numerados y
+  // viajan en sel, no como cantidad.
   if(byZone.VIP) items.push({name:'VIP Mesa', price:ZONES.VIP.price, qty:byZone.VIP});
+  if(byZone.VIPA) items.push({name:'VIP Asiento', price:ZONES.VIPA.price, qty:byZone.VIPA});
+  if(byZone.PREF) items.push({name:'Preferente', price:ZONES.PREF.price, qty:byZone.PREF});
   if(state.vipaQty>0) items.push({name:'VIP Asiento (lugar por llegada)', price:ZONES.VIPA.price, qty:state.vipaQty});
   if(state.generalQty>0) items.push({name:'General (lugar por llegada)', price:ZONES.GENERAL.price, qty:state.generalQty});
   const sub=sel.reduce((t,s)=>t+ZONES[s.zone].price,0)+state.generalQty*ZONES.GENERAL.price+state.vipaQty*ZONES.VIPA.price;

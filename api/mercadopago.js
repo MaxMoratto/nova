@@ -9,6 +9,39 @@ const RESERVA_MIN = 10;
 // admin.html y acceso.html, o las ventas nuevas se contarian en el evento viejo.
 const EVENTO_ACTIVO = 'NOVA-20NOV2026';
 
+// El precio lo pone el servidor, NUNCA el navegador. Los items que llegan del
+// mapa solo dicen QUE se compra; cuanto cuesta se calcula aqui. Sin esto, un
+// error del mapa (o alguien manipulando la pagina) cobra lo que se le antoje.
+const PRECIOS = { VIP: 1500, VIPA: 950, PREF: 750, GENERAL: 450 };
+const COMISION = 0.042;
+const ETIQUETA = { VIP: 'VIP Mesa', VIPA: 'VIP Asiento', PREF: 'Preferente', GENERAL: 'General (lugar por llegada)' };
+function zonaDe(id) {
+  if (/^VIP-/.test(id)) return 'VIP';
+  if (/^VIPA-/.test(id)) return 'VIPA';
+  if (/^PREF-/.test(id)) return 'PREF';
+  return null;
+}
+
+// Arma el cobro a partir de lo reservado. Se exporta para poder probarla.
+function cotizar(seatIds, genQty) {
+  const cuenta = { VIP: 0, VIPA: 0, PREF: 0 };
+  for (const id of seatIds || []) { const z = zonaDe(id); if (z) cuenta[z]++; }
+  const mpItems = [];
+  let subtotal = 0;
+  for (const z of ['VIP', 'VIPA', 'PREF']) {
+    if (!cuenta[z]) continue;
+    mpItems.push({ title: ETIQUETA[z], quantity: cuenta[z], unit_price: PRECIOS[z], currency_id: 'MXN' });
+    subtotal += cuenta[z] * PRECIOS[z];
+  }
+  if (genQty > 0) {
+    mpItems.push({ title: ETIQUETA.GENERAL, quantity: genQty, unit_price: PRECIOS.GENERAL, currency_id: 'MXN' });
+    subtotal += genQty * PRECIOS.GENERAL;
+  }
+  const comision = Math.round(subtotal * COMISION);
+  if (comision > 0) mpItems.push({ title: 'Comisión de compra en línea (4.2%)', quantity: 1, unit_price: comision, currency_id: 'MXN' });
+  return { mpItems, subtotal, comision, total: subtotal + comision };
+}
+
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -77,12 +110,18 @@ module.exports = async (req, res) => {
     }
 
     const origin = req.headers.origin || (req.headers.host ? `https://${req.headers.host}` : 'https://novastrikeseries.com');
-    let mpItems = items.map(i => ({
-      title: String(i.name || 'Boleto').slice(0, 250),
-      quantity: Math.max(1, parseInt(i.qty || 1, 10)),
-      unit_price: Math.round(Number(i.price) * 100) / 100,
-      currency_id: 'MXN'
-    }));
+
+    const cotizacion = cotizar(seatIds, genQty);
+    let mpItems = cotizacion.mpItems;
+    if (!mpItems.length) return res.status(400).json({ error: 'No hay nada que cobrar.' });
+
+    // Si el mapa cotizo distinto, se cobra el del servidor y queda anotado.
+    const totalCliente = (items || []).reduce((t, i) => t + (Number(i.price) || 0) * Math.max(1, parseInt(i.qty || 1, 10)), 0);
+    const totalServidor = cotizacion.total;
+    if (Math.abs(totalCliente - totalServidor) > 1) {
+      console.error('PRECIO_DISTINTO', orderId, 'navegador', totalCliente, 'servidor', totalServidor);
+      try { await orderRef.update({ precioNavegador: totalCliente, precioCobrado: totalServidor }); } catch (_) {}
+    }
 
     // Cupon de descuento: 8% sobre los boletos. NO se aplica a la comision de compra
     // en linea, que cubre el costo real del cobro. Se resuelve aqui, en el servidor,
@@ -151,3 +190,5 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: e.message || 'Error creando el pago' });
   }
 };
+
+module.exports.cotizar = cotizar;
