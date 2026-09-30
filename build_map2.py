@@ -185,13 +185,15 @@ const FLOORS = __FLOORS__;
 const ZONES = {
   VIP:  { label:'VIP (mesa)', color:'#e11d2a', bright:'#ff6b76', price:1500 },
   VIPA: { label:'VIP (asiento)', color:'#e11d2a', bright:'#ff8f98', price:950 },
-  // Precio confirmado el 29-sep-2026. La venta general sigue en pausa (VENTA_ABIERTA).
+  // Precio confirmado el 29-sep-2026.
   PREF: { label:'Preferente', color:'#D2AE6D', bright:'#e6c789', price:750 },
   GENERAL: { label:'General', color:'#c8ccd4', bright:'#e8eaee', price:450, general:true, total:250 }
 };
-// Venta en pausa: se ven el mapa y los precios, pero no se puede comprar.
-// Para abrirla, poner VENTA_ABIERTA en true y quitar la validacion del servidor.
-const VENTA_ABIERTA=false;
+// Venta ABIERTA. Son dos interruptores y los dos tienen que estar puestos:
+//   1) este de aqui, que muestra los botones de compra en la pagina;
+//   2) la variable VENTA_ABIERTA=1 en Vercel, que es la que deja cobrar.
+// Para volver a pausar hay que apagar los dos.
+const VENTA_ABIERTA=true;
 const COMISION=0.042;                       // 4.2% comision de compra en linea (cubre el costo real de Mercado Pago)
 const feeOf=sub=>Math.round(sub*COMISION);  // sobre el subtotal, redondeada al peso
 const CONFIG = {
