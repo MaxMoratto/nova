@@ -18,7 +18,7 @@ function fs0(seed){ const st=new Map(Object.entries(seed));
   for (const b of r.boletos) console.log('  ' + b.folio + '  ' + b.label);
   console.log('');
   let ok = 0;
-  for (const [id, tipo, precio] of [['PREF-B-18','PREF',650], ['VIPA-07','VIPA',950], ['VIP-M13-S4','VIP',1500]]) {
+  for (const [id, tipo, precio] of [['PREF-B-18','PREF',750], ['VIPA-07','VIPA',950], ['VIP-M13-S4','VIP',1500]]) {
     const t = [...f._store.entries()].find(([k,v]) => k.startsWith('boletos/') && v.asientoId === id);
     const d = t && t[1];
     const bien = d && d.tipo === tipo && d.precio === precio;

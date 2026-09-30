@@ -42,7 +42,7 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: 'La venta de boletos aun no esta abierta.' });
     }
 
-    const ZONAS_BLOQUEADAS = ['PREF'];
+    const ZONAS_BLOQUEADAS = [];
     const bloqueado = seatIds.find(id => ZONAS_BLOQUEADAS.some(z => id.indexOf(z + "-") === 0));
     if (bloqueado) return res.status(400).json({ error: "La zona Preferente aun no esta a la venta." });
 

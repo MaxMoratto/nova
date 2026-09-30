@@ -22,7 +22,7 @@ function seatInfo(seatId) {
     return { tipo: 'VIPA', asiento: +m[1], precio: 950, label: 'VIP Asiento ' + (+m[1]) };
   // Preferente: secciones A, B y C. El precio lo fija el servidor, no el navegador.
   if ((m = seatId.match(/^PREF-([ABC])-(\d+)$/)))
-    return { tipo: 'PREF', sec: m[1], num: +m[2], precio: 650,
+    return { tipo: 'PREF', sec: m[1], num: +m[2], precio: 750,
              label: 'Preferente ' + m[1] + '-' + String(+m[2]).padStart(2, '0') };
   return { tipo: 'OTRO', precio: 0, label: seatId };
 }

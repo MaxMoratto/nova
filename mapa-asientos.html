@@ -162,10 +162,8 @@ const FLOORS = {"PB": {"bg": "uploads/pb.webp?v=7", "vb": "0 0 114919.23 84250.2
 const ZONES = {
   VIP:  { label:'VIP (mesa)', color:'#e11d2a', bright:'#ff6b76', price:1500 },
   VIPA: { label:'VIP (asiento)', color:'#e11d2a', bright:'#ff8f98', price:950 },
-  // PRECIO PROVISIONAL: 650 es lo que costaba Preferente en este mismo recinto.
-  // Confirmar con Max antes de promocionar la zona.
-  // Bloqueada hasta tener el precio definitivo. Al quitar bloqueada:true se abre la venta.
-  PREF: { label:'Preferente', color:'#D2AE6D', bright:'#e6c789', price:650, bloqueada:true },
+  // Precio confirmado el 29-sep-2026. La venta general sigue en pausa (VENTA_ABIERTA).
+  PREF: { label:'Preferente', color:'#D2AE6D', bright:'#e6c789', price:750 },
   GENERAL: { label:'General', color:'#c8ccd4', bright:'#e8eaee', price:450, general:true, total:250 }
 };
 // Venta en pausa: se ven el mapa y los precios, pero no se puede comprar.
@@ -365,9 +363,9 @@ document.getElementById('mpay').addEventListener('click',()=>{
   const name=document.getElementById('bname').value.trim(),phone=document.getElementById('bphone').value.trim(),mail=document.getElementById('bmail').value.trim();
   if(!name||!phone){flash('Pon tu nombre y WhatsApp/telefono');return;}
   const sel=selectedSeats(); if(!sel.length&&!state.generalQty)return;
-  // Por transferencia NO se cobra la comision del 4.2%: esa comision cubre el costo
-  // de la pasarela, y aqui no hay pasarela de por medio.
+  // La comision del 4.2% tambien aplica por transferencia.
   const sub=sel.reduce((t,s)=>t+ZONES[s.zone].price,0)+state.generalQty*ZONES.GENERAL.price;
+  const fee=feeOf(sub), total=sub+fee;
   const S=CONFIG.spei;
   // Los datos quedan a la vista en la pagina, ademas de viajar en el mensaje.
   const caja=document.getElementById('speibox');
@@ -377,12 +375,15 @@ document.getElementById('mpay').addEventListener('click',()=>{
       +'Institucion: <b>'+S.banco+'</b><br>'
       +'CLABE: <b>'+S.clabe+'</b><br>'
       +'Dimo (celular): <b>'+S.dimo+'</b><br>'
-      +'Monto exacto: <b style="color:var(--ok)">'+money(sub)+' MXN</b><br><br>'
+      +'Boletos: <b>'+money(sub)+'</b><br>'
+      +'Comision de compra en linea (4.2%): <b>'+money(fee)+'</b><br>'
+      +'Monto exacto a transferir: <b style="color:var(--ok)">'+money(total)+' MXN</b><br><br>'
       +'Manda tu comprobante por WhatsApp y te enviamos tus boletos. Tu lugar se aparta al recibir el comprobante.'; }
   let msg='Hola! Quiero apartar por TRANSFERENCIA para '+CONFIG.evento+':'+'\n';
   for(const s of sel){msg+='- '+ZONES[s.zone].label+' '+seatShort(s)+' - '+money(ZONES[s.zone].price)+'\n';}
   if(state.generalQty>0){msg+='- General x '+state.generalQty+' - '+money(state.generalQty*ZONES.GENERAL.price)+'\n';}
-  msg+='\n'+'Total a transferir: '+money(sub)+' MXN (sin comision)'+'\n'
+  msg+='- Comision de compra en linea (4.2%) - '+money(fee)+'\n';
+  msg+='\n'+'Total a transferir: '+money(total)+' MXN'+'\n'
     +'\n'+'Datos: '+S.beneficiario+' | '+S.banco+' | CLABE '+S.clabe+' | Dimo '+S.dimo
     +'\n'+'\n'+'Nombre: '+name+'\n'+'Tel: '+phone+(mail?'\n'+'Email: '+mail:'')
     +'\n'+'\n'+'Enseguida mando mi comprobante.';
