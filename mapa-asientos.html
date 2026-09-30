@@ -355,10 +355,34 @@ function buildItems(sel){ const items=[]; const byZone={};
   const fee=feeOf(sub); if(fee>0) items.push({name:'Comisión de compra en línea (4.2%)', price:fee, qty:1});
   return items;
 }
+// Dedazos en el correo. El boleto se entrega ahi: si el dominio no existe,
+// el cliente paga y no recibe nada. Paso el 30-sep-2026 con un '.con'.
+const DOMINIOS=['gmail.com','hotmail.com','outlook.com','outlook.es','yahoo.com','yahoo.com.mx',
+  'icloud.com','live.com','live.com.mx','me.com','msn.com','protonmail.com','proton.me'];
+function distancia(a,b){ const m=a.length,n=b.length; const fila=[];
+  for(let j=0;j<=n;j++) fila[j]=j;
+  for(let i=1;i<=m;i++){ let ant=fila[0]; fila[0]=i;
+    for(let j=1;j<=n;j++){ const tmp=fila[j];
+      fila[j]=Math.min(fila[j]+1, fila[j-1]+1, ant+(a[i-1]===b[j-1]?0:1)); ant=tmp; } }
+  return fila[n]; }
+function sugerirCorreo(mail){ const at=mail.lastIndexOf('@'); if(at<1) return '';
+  const dom=mail.slice(at+1).toLowerCase(); if(!dom||DOMINIOS.indexOf(dom)>=0) return '';
+  let mejor='', md=99;
+  for(const d of DOMINIOS){ const n=distancia(dom,d); if(n<md){ md=n; mejor=d; } }
+  return md<=2 ? mail.slice(0,at+1)+mejor : ''; }
+// Se avisa una sola vez: si el correo de verdad es asi, el segundo clic pasa.
+let _correoAvisado='';
+function correoSospechoso(mail){ const sug=sugerirCorreo(mail);
+  if(!sug){ _correoAvisado=''; return false; }
+  if(_correoAvisado===mail) return false;
+  _correoAvisado=mail;
+  flash('Revisa tu correo: &#191;quisiste decir ' + sug + '? Si esta bien, vuelve a dar clic.');
+  return true; }
 document.getElementById('mcard').addEventListener('click',async()=>{
   const name=document.getElementById('bname').value.trim(),phone=document.getElementById('bphone').value.trim(),mail=document.getElementById('bmail').value.trim();
   const coupon=(document.getElementById('bcoupon').value||'').trim();
   if(!name||!phone||!/^\S+@\S+\.\S+$/.test(mail)){flash('Pon nombre, WhatsApp y un correo válido (ahí te enviamos los boletos)');return;}
+  if(correoSospechoso(mail)) return;
   const sel=selectedSeats(); if(!sel.length&&!state.generalQty&&!state.vipaQty)return;
   const items=buildItems(sel);
   const b=document.getElementById('mcard'); b.disabled=true; const old=b.textContent; b.textContent='Redirigiendo a Mercado Pago...';
@@ -369,6 +393,7 @@ document.getElementById('mcard').addEventListener('click',async()=>{
 document.getElementById('mpay').addEventListener('click',()=>{
   const name=document.getElementById('bname').value.trim(),phone=document.getElementById('bphone').value.trim(),mail=document.getElementById('bmail').value.trim();
   if(!name||!phone){flash('Pon tu nombre y WhatsApp/telefono');return;}
+  if(mail && correoSospechoso(mail)) return;
   const sel=selectedSeats(); if(!sel.length&&!state.generalQty)return;
   // La comision del 4.2% tambien aplica por transferencia.
   const sub=sel.reduce((t,s)=>t+ZONES[s.zone].price,0)+state.generalQty*ZONES.GENERAL.price;
