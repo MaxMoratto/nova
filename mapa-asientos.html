@@ -174,7 +174,7 @@ const VENTA_ABIERTA=false;
 const COMISION=0.042;                       // 4.2% comision de compra en linea (cubre el costo real de Mercado Pago)
 const feeOf=sub=>Math.round(sub*COMISION);  // sobre el subtotal, redondeada al peso
 const CONFIG = {
-  whatsapp:"5215633353642", evento:"NOVA - 20 NOV 2026 - Foro San Rafael", spei:{beneficiario:"",banco:"",clabe:""},
+  whatsapp:"5215633353642", evento:"NOVA - 20 NOV 2026 - Foro San Rafael", spei:{beneficiario:"Angel Gabriel Alvarez Delgadillo",banco:"Mercado Pago W",clabe:"722969028905193235",dimo:"525633353642"},
   firebaseConfig:{ apiKey:"AIzaSyAXxTUFo0CHFZnAs0wGrYHLTwwVzZ_ArZA", authDomain:"nova-dd664.firebaseapp.com", projectId:"nova-dd664", storageBucket:"nova-dd664.firebasestorage.app", messagingSenderId:"967862553249", appId:"1:967862553249:web:3524af97999ce667bafee0" },
   reservaAutomatica:false
 };
@@ -309,7 +309,9 @@ document.getElementById('buy').addEventListener('click',()=>{const sel=selectedS
   if(fee>0){const r=document.createElement('div');r.className='mrow';r.innerHTML='<span>Comisión de compra en línea (4.2%)</span><b>'+money(fee)+'</b>';ml.appendChild(r);}
   _modalSub=sub; _modalTotal=sub+fee; applyCoupon();
   if(!VENTA_ABIERTA){ const pb=document.getElementById('pausaBox'); if(pb)pb.style.display='block';
-    for(const id of ['mcard','mpay','bcoupon']){ const el=document.getElementById(id); if(el)el.style.display='none'; } }
+    for(const id of ['mcard','bcoupon']){ const el=document.getElementById(id); if(el)el.style.display='none'; }
+    const bt=document.getElementById('mpay');
+    if(bt){ bt.textContent='Apartar y pagar por transferencia'; bt.style.borderColor='var(--gold)'; bt.style.color='var(--gold)'; } }
   modalbg.classList.add('on');});
 // Cupon de prueba DESACTIVADO. Para reactivarlo hay que poner el codigo aqui Y la
 // variable TEST_COUPON en Vercel: si solo se pone aqui, el sitio mostraria $1 y
@@ -361,15 +363,32 @@ document.getElementById('mcard').addEventListener('click',async()=>{
 document.getElementById('mpay').addEventListener('click',()=>{
   const name=document.getElementById('bname').value.trim(),phone=document.getElementById('bphone').value.trim(),mail=document.getElementById('bmail').value.trim();
   if(!name||!phone){flash('Pon tu nombre y WhatsApp/telefono');return;}
-  const sel=selectedSeats(); if(!sel.length&&!state.generalQty&&!state.vipaQty)return;
-  const sub=sel.reduce((t,s)=>t+ZONES[s.zone].price,0)+state.generalQty*ZONES.GENERAL.price, fee=feeOf(sub);
-  let msg='Hola! Quiero apartar para '+CONFIG.evento+':\n';
-  for(const s of sel){msg+='&#8226; '+ZONES[s.zone].label+' '+seatShort(s)+' - '+money(ZONES[s.zone].price)+'\n';}
-  if(state.generalQty>0){msg+='&#8226; General &#215; '+state.generalQty+' - '+money(state.generalQty*ZONES.GENERAL.price)+'\n';}
-  msg+='\nComisión de compra en línea (4.2%): '+money(fee)+'\nTotal: '+money(sub+fee)+' MXN\n\nNombre: '+name+'\nTel: '+phone+(mail?'\nEmail: '+mail:'');
-  window.open('https://wa.me/'+CONFIG.whatsapp+'?text='+encodeURIComponent(msg.replace(/&#8226;/g,'\u2022').replace(/&#215;/g,'x')),'_blank');
-  modalbg.classList.remove('on');flash('Te mandamos a WhatsApp para confirmar');
+  const sel=selectedSeats(); if(!sel.length&&!state.generalQty)return;
+  // Por transferencia NO se cobra la comision del 4.2%: esa comision cubre el costo
+  // de la pasarela, y aqui no hay pasarela de por medio.
+  const sub=sel.reduce((t,s)=>t+ZONES[s.zone].price,0)+state.generalQty*ZONES.GENERAL.price;
+  const S=CONFIG.spei;
+  // Los datos quedan a la vista en la pagina, ademas de viajar en el mensaje.
+  const caja=document.getElementById('speibox');
+  if(caja){ caja.style.display='block';
+    caja.innerHTML='<b style="color:var(--gold)">Datos para transferencia</b><br>'
+      +'Beneficiario: <b>'+S.beneficiario+'</b><br>'
+      +'Institucion: <b>'+S.banco+'</b><br>'
+      +'CLABE: <b>'+S.clabe+'</b><br>'
+      +'Dimo (celular): <b>'+S.dimo+'</b><br>'
+      +'Monto exacto: <b style="color:var(--ok)">'+money(sub)+' MXN</b><br><br>'
+      +'Manda tu comprobante por WhatsApp y te enviamos tus boletos. Tu lugar se aparta al recibir el comprobante.'; }
+  let msg='Hola! Quiero apartar por TRANSFERENCIA para '+CONFIG.evento+':'+'\n';
+  for(const s of sel){msg+='- '+ZONES[s.zone].label+' '+seatShort(s)+' - '+money(ZONES[s.zone].price)+'\n';}
+  if(state.generalQty>0){msg+='- General x '+state.generalQty+' - '+money(state.generalQty*ZONES.GENERAL.price)+'\n';}
+  msg+='\n'+'Total a transferir: '+money(sub)+' MXN (sin comision)'+'\n'
+    +'\n'+'Datos: '+S.beneficiario+' | '+S.banco+' | CLABE '+S.clabe+' | Dimo '+S.dimo
+    +'\n'+'\n'+'Nombre: '+name+'\n'+'Tel: '+phone+(mail?'\n'+'Email: '+mail:'')
+    +'\n'+'\n'+'Enseguida mando mi comprobante.';
+  window.open('https://wa.me/'+CONFIG.whatsapp+'?text='+encodeURIComponent(msg),'_blank');
+  flash('Te mandamos a WhatsApp. Envia tu comprobante para apartar.');
 });
+
 
 // pan / zoom  -> al abrir se ve completo (fit) y NO se desplaza; solo zoom.
 //               web: scroll o botones +/- ; movil: pellizco. Arrastre solo con zoom activo.
