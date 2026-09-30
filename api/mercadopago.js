@@ -33,6 +33,13 @@ module.exports = async (req, res) => {
     // seats, no como cantidad. Solo General se vende por cantidad.
     const vipaQty = 0;
 
+    // Preferente esta bloqueada hasta tener su precio definitivo. Se valida aqui,
+    // en el servidor, porque el navegador se puede manipular: sin esto alguien
+    // podria comprar esa zona al precio provisional.
+    const ZONAS_BLOQUEADAS = ['PREF'];
+    const bloqueado = seatIds.find(id => ZONAS_BLOQUEADAS.some(z => id.indexOf(z + "-") === 0));
+    if (bloqueado) return res.status(400).json({ error: "La zona Preferente aun no esta a la venta." });
+
     const orderRef = firestore.collection('ordenes').doc();
     const orderId = orderRef.id;
     const now = Date.now();

@@ -28,6 +28,7 @@
   .seat:hover{fill:rgba(242,210,30,0.30);stroke:rgba(242,210,30,0.95)}
   .seat.sel{fill:rgba(37,211,102,0.5);stroke:#25d366;stroke-width:34}
   .seat.vendido{fill:rgba(12,13,18,0.62);stroke:#e11d2a;stroke-width:16;cursor:not-allowed}
+.seat.bloq{fill:rgba(12,13,18,0.5);stroke:rgba(210,174,109,0.5);stroke-width:14;cursor:not-allowed}
   .seats.dimmed .seat:not(.hl){opacity:.18}
   .seat.hl:not(.sel):not(.vendido){fill:rgba(255,255,255,.14);stroke:#fff;stroke-width:40;stroke-opacity:.95;animation:hlpulse 1s ease-in-out infinite}
   @keyframes hlpulse{0%,100%{stroke-opacity:.35}50%{stroke-opacity:1}}
@@ -159,7 +160,8 @@ const ZONES = {
   VIPA: { label:'VIP (asiento)', color:'#e11d2a', bright:'#ff8f98', price:950 },
   // PRECIO PROVISIONAL: 650 es lo que costaba Preferente en este mismo recinto.
   // Confirmar con Max antes de promocionar la zona.
-  PREF: { label:'Preferente', color:'#D2AE6D', bright:'#e6c789', price:650 },
+  // Bloqueada hasta tener el precio definitivo. Al quitar bloqueada:true se abre la venta.
+  PREF: { label:'Preferente', color:'#D2AE6D', bright:'#e6c789', price:650, bloqueada:true },
   GENERAL: { label:'General', color:'#c8ccd4', bright:'#e8eaee', price:450, general:true, total:250 }
 };
 const COMISION=0.042;                       // 4.2% comision de compra en linea (cubre el costo real de Mercado Pago)
@@ -187,7 +189,7 @@ function renderFloor(){
   base.setAttribute('href',f.bg); base.setAttributeNS('http://www.w3.org/1999/xlink','href',f.bg); const wh=f.vb.split(' '); base.setAttribute('width',wh[2]); base.setAttribute('height',wh[3]);
   seatsG.innerHTML='';
   for(const s of SEATS){ if(s.floor!==curFloor) continue;
-    const c=el('circle',{cx:s.x,cy:s.y,r:f.r,class:'seat','data-id':s.id}); if(taken.has(s.id))c.classList.add('vendido'); if(state.selected.has(s.id))c.classList.add('sel'); seatsG.appendChild(c); }
+    const c=el('circle',{cx:s.x,cy:s.y,r:f.r,class:'seat','data-id':s.id}); if((ZONES[s.zone]||{}).bloqueada)c.classList.add('bloq'); if(taken.has(s.id))c.classList.add('vendido'); if(state.selected.has(s.id))c.classList.add('sel'); seatsG.appendChild(c); }
   state.scale=1;state.tx=0;state.ty=0;apply();
 }
 function nodeOf(id){return seatsG.querySelector('[data-id="'+CSS.escape(id)+'"]');}
@@ -210,7 +212,10 @@ initFirebase();
 function toggle(id){const s=SEAT_MAP.get(id); if(!s||taken.has(id))return; const n=nodeOf(id);
   if(state.selected.has(id)){state.selected.delete(id);n.classList.remove('sel');}
   else{ if(state.selected.size>=MAX){flash('Maximo '+MAX+' lugares');return;} state.selected.add(id);n.classList.add('sel');seatsG.appendChild(n);} renderCart();}
-seatsG.addEventListener('click',e=>{const r=e.target.closest('.seat');if(r)toggle(r.getAttribute('data-id'));});
+seatsG.addEventListener('click',e=>{const r=e.target.closest('.seat');if(!r)return;
+  const s=SEAT_MAP.get(r.getAttribute('data-id'));
+  if(s&&(ZONES[s.zone]||{}).bloqueada){ flash(ZONES[s.zone].label+': aun no esta a la venta.'); return; }
+  toggle(r.getAttribute('data-id'));});
 seatsG.addEventListener('mousemove',e=>{const r=e.target.closest('.seat');if(!r){tip.classList.remove('on');return;}
   const s=SEAT_MAP.get(r.getAttribute('data-id')),z=ZONES[s.zone];
   tip.innerHTML='<div class="t-z"><i style="background:'+z.color+'"></i>'+z.label+'</div><div class="t-row">'+seatLabel(s)+'</div><div class="t-price" style="color:'+z.bright+'">'+money(z.price)+'</div><div style="font-size:11px;margin-top:4px;color:'+(taken.has(s.id)?'#ff6b76':'#25d366')+'">'+(taken.has(s.id)?'Vendido':(state.selected.has(s.id)?'Seleccionado':'Disponible'))+'</div>';
@@ -238,12 +243,15 @@ function focusZone(z){                                   // llevar el mapa a la 
 function qtyRow(z,sub,pfx){ const Z=ZONES[z]; const row=document.createElement('div');row.className='zrow';row.dataset.zone=z;
   row.innerHTML='<span class="sw" style="background:'+Z.bright+'"></span><div class="zn"><b>'+Z.label+'</b><small>'+sub+'</small></div><div class="gqty"><button class="qb" id="'+pfx+'minus">&#8722;</button><b id="'+pfx+'qty">0</b><button class="qb" id="'+pfx+'plus">+</button></div><div class="zp"><b style="color:'+Z.bright+'">'+money(Z.price)+'</b><small>c/u</small></div>';
   row.addEventListener('click',e=>{if(e.target.closest('.qb'))return; focusZone(z);}); zonesBox.appendChild(row); }
+function seatRow(zona,sub){ const Z=ZONES[zona];
+  const row=document.createElement('div');row.className='zrow';row.dataset.zone=zona;
+  const precio = Z.bloqueada ? '<b style="color:var(--gold)">Proximamente</b>' : '<b style="color:'+Z.bright+'">'+money(Z.price)+'</b><small>c/u</small>';
+  const disp = Z.bloqueada ? 'aun no esta a la venta' : '<span class="av">'+zoneTotal(zona)+'</span> disp. (elige en el mapa)';
+  row.innerHTML='<span class="sw" style="background:'+Z.bright+'"></span><div class="zn"><b>'+Z.label+'</b><small>'+sub+' &#183; '+disp+'</small></div><div class="zp">'+precio+'</div>';
+  row.addEventListener('mouseenter',()=>hl(zona));row.addEventListener('mouseleave',()=>hl(null));
+  row.addEventListener('click',()=>focusZone(zona)); zonesBox.appendChild(row); }
 function buildZones(){ zonesBox.innerHTML='';
-  const Z=ZONES.VIP; const row=document.createElement('div');row.className='zrow';row.dataset.zone='VIP';
-  row.innerHTML='<span class="sw" style="background:'+Z.bright+'"></span><div class="zn"><b>'+Z.label+'</b><small>planta baja &#183; <span class="av">'+zoneTotal('VIP')+'</span> disp. (elige en el mapa)</small></div><div class="zp"><b style="color:'+Z.bright+'">'+money(Z.price)+'</b><small>c/u</small></div>';
-  row.addEventListener('mouseenter',()=>hl('VIP'));row.addEventListener('mouseleave',()=>hl(null));
-  row.addEventListener('click',()=>focusZone('VIP')); zonesBox.appendChild(row);
-  qtyRow('VIPA','1er piso &#183; lugar por llegada','v');
+  seatRow('VIP','planta baja'); seatRow('VIPA','1er piso'); seatRow('PREF','1er piso');
   qtyRow('GENERAL','planta baja &#183; lugar por llegada','g');
 }
 function qtyGet(z){ return z==='VIPA'?state.vipaQty:state.generalQty; }
