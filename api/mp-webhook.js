@@ -18,8 +18,10 @@ function seatInfo(seatId) {
   let m;
   if ((m = seatId.match(/^VIP-M(\d+)-S(\d+)$/)))
     return { tipo: 'VIP', mesa: +m[1], asiento: +m[2], precio: 1500, label: 'VIP Mesa ' + (+m[1]) + ' · Silla ' + (+m[2]) };
-  if ((m = seatId.match(/^VIPA-(\d+)$/)))
-    return { tipo: 'VIPA', asiento: +m[1], precio: 950, label: 'VIP Asiento ' + (+m[1]) };
+  // VIP Asiento va por seccion A/B/C, igual que Preferente.
+  if ((m = seatId.match(/^VIPA-([ABC])-(\d+)$/)))
+    return { tipo: 'VIPA', sec: m[1], num: +m[2], precio: 950,
+             label: 'VIP Asiento ' + m[1] + '-' + String(+m[2]).padStart(2, '0') };
   // Preferente: secciones A, B y C. El precio lo fija el servidor, no el navegador.
   if ((m = seatId.match(/^PREF-([ABC])-(\d+)$/)))
     return { tipo: 'PREF', sec: m[1], num: +m[2], precio: 750,

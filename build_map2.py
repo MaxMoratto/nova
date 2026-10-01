@@ -8,8 +8,26 @@ d = json.load(open(os.path.join(HERE, "seatmap.json"), encoding="utf-8"))
 SEATS = []
 for s in d["PB"]["vip"]:
     SEATS.append({"id": s["id"], "zone": "VIP", "floor": "PB", "mesa": s["mesa"], "silla": s["silla"], "x": s["x"], "y": s["y"]})
-for s in d["1PISO"]["vipa"]:
-    SEATS.append({"id": s["id"], "zone": "VIPA", "floor": "1P", "n": s["n"], "x": s["x"], "y": s["y"]})
+# VIP Asiento se maneja por secciones, igual que Preferente, porque fisicamente
+# tiene la misma forma: una columna a cada lado y una fila al fondo. Las secciones
+# se deducen de la posicion y la numeracion reinicia en cada una.
+_vipa = d["1PISO"]["vipa"]
+_ys = [v["y"] for v in _vipa]
+_corte_y = min(_ys) + (max(_ys) - min(_ys)) * 0.8   # la fila del fondo queda aparte
+_xs = [v["x"] for v in _vipa]
+_corte_x = (min(_xs) + max(_xs)) / 2
+def _seccion(v):
+    if v["y"] > _corte_y: return "C"              # fila del fondo
+    return "A" if v["x"] < _corte_x else "B"      # columna izquierda / derecha
+_grupos = {"A": [], "B": [], "C": []}
+for v in _vipa:
+    _grupos[_seccion(v)].append(v)
+for _sec, _lista in _grupos.items():
+    # A y B bajan por la columna; C avanza de izquierda a derecha
+    _lista.sort(key=lambda v: v["x"] if _sec == "C" else v["y"])
+    for _i, v in enumerate(_lista, 1):
+        SEATS.append({"id": "VIPA-%s-%02d" % (_sec, _i), "zone": "VIPA", "floor": "1P",
+                      "sec": _sec, "n": _i, "x": v["x"], "y": v["y"]})
 for s in d["1PISO"]["pref"]:
     SEATS.append({"id": s["id"], "zone": "PREF", "floor": "1P", "sec": s["sec"], "n": s["n"], "x": s["x"], "y": s["y"]})
 
@@ -213,8 +231,8 @@ const svg=document.getElementById('map'),viewport=document.getElementById('viewp
 let curFloor='PB';
 const state={selected:new Set(),generalQty:0,vipaQty:0,scale:1,tx:0,ty:0}; const MAX=12;
 
-function seatLabel(s){ if(s.zone==='VIP') return 'Mesa '+s.mesa+' &#183; Silla '+s.silla; if(s.zone==='VIPA') return 'VIP Asiento '+s.n; if(s.zone==='PREF') return 'Preferente '+s.sec+'-'+String(s.n).padStart(2,'0'); return s.id; }
-function seatShort(s){ if(s.zone==='VIP') return 'M'+s.mesa+' S'+s.silla; if(s.zone==='VIPA') return 'Asiento '+s.n; if(s.zone==='PREF') return s.sec+String(s.n).padStart(2,'0'); return s.id; }
+function seatLabel(s){ if(s.zone==='VIP') return 'Mesa '+s.mesa+' &#183; Silla '+s.silla; if(s.zone==='VIPA') return 'VIP Asiento '+s.sec+'-'+String(s.n).padStart(2,'0'); if(s.zone==='PREF') return 'Preferente '+s.sec+'-'+String(s.n).padStart(2,'0'); return s.id; }
+function seatShort(s){ if(s.zone==='VIP') return 'M'+s.mesa+' S'+s.silla; if(s.zone==='VIPA') return s.sec+String(s.n).padStart(2,'0'); if(s.zone==='PREF') return s.sec+String(s.n).padStart(2,'0'); return s.id; }
 
 function renderFloor(){
   const f=FLOORS[curFloor];
