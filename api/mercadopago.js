@@ -143,10 +143,12 @@ module.exports = async (req, res) => {
     // Sin valor por defecto: el cupon de prueba solo existe si se define TEST_COUPON
     // en Vercel. Asi no queda un codigo de $1 escrito en un repositorio publico.
     const testCoupon = (process.env.TEST_COUPON || '').trim();
+    // Monto del cobro de prueba. TEST_COUPON_MONTO en Vercel; por omision 1 peso.
+    const montoPrueba = Math.max(1, Math.round(Number(process.env.TEST_COUPON_MONTO || 1)) || 1);
     const isTest = !!testCoupon && String(coupon).trim().toUpperCase() === testCoupon.toUpperCase();
     if (isTest) {
-      mpItems = [{ title: 'NOVA · cobro de prueba (cupón)', quantity: 1, unit_price: 1, currency_id: 'MXN' }];
-      try { await orderRef.update({ cupon: String(coupon).trim().toUpperCase(), prueba: true, montoPrueba: 1 }); } catch (_) {}
+      mpItems = [{ title: 'NOVA · cobro de prueba (cupón)', quantity: 1, unit_price: montoPrueba, currency_id: 'MXN' }];
+      try { await orderRef.update({ cupon: String(coupon).trim().toUpperCase(), prueba: true, montoPrueba: montoPrueba }); } catch (_) {}
     }
 
     const preference = {
