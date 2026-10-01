@@ -16,7 +16,10 @@ for s in d["1PISO"]["pref"]:
 SEATS_JSON = json.dumps(SEATS, ensure_ascii=False)
 PB_VB = d["PB"]["vb"]; P1_VB = d["1PISO"]["vb"]
 FLOORS = {
-    "PB": {"bg": "uploads/pb.webp?v=7", "vb": f"0 0 {PB_VB[0]} {PB_VB[1]}", "label": "Planta Baja", "r": 80},
+    # Cada planta tiene su propia escala de coordenadas, asi que el radio no es
+    # comparable entre las dos. Con r=80 las sillas VIP salian de 0.7 px: no se
+    # veian ni se podian seleccionar. 880 es el 40% de la separacion entre sillas.
+    "PB": {"bg": "uploads/pb.webp?v=7", "vb": f"0 0 {PB_VB[0]} {PB_VB[1]}", "label": "Planta Baja", "r": 880},
     "1P": {"bg": "uploads/1piso.webp?v=5", "vb": f"0 0 {P1_VB[0]} {P1_VB[1]}", "label": "1er Piso", "r": 760},
 }
 FLOORS_JSON = json.dumps(FLOORS, ensure_ascii=False)
