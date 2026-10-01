@@ -43,13 +43,27 @@ const HORA = { x:.84, y:.278, f:.020 }, FOLIO = { x:.35, y:.897, f:.017 };
 // QR va con panel blanco propio porque el diseno no trae recuadro reservado.
 const QR2 = { x:.33, y:.605, w:.34, h:.191, panel:true };
 const FOLIO2 = { x:.515, y:.877, f:.016 };
+// Plantillas de noviembre 2026 (20 nov, Foro San Rafael, puertas 6:00 PM).
+// La hora, la sede, la fecha y el piso vienen impresos en el arte: aqui solo se
+// dibujan el QR, el folio y el lugar. El arte no reserva espacio para el QR, asi
+// que va sobre un recuadro blanco en la franja despejada entre los dos peleadores.
+const QR3 = { x:.33, y:.600, w:.34, h:.191, panel:true };
+const FOLIO3 = { x:.50, y:.845, f:.019, a:'center' };
+// La franja de datos es igual en los cuatro disenos: tres columnas y una sola
+// fila de valores. Medidas sobre el PDF, en fraccion del boleto.
+const COL_MEDIO = .4975, COL_DER = .7111, FILA_DATOS = .5507, TAM_DATO = .034;
 const FR = {
-  VIP:     { img:'uploads/tk_vip.webp',     qr:QR, hora:HORA, folio:FOLIO,
-             fields:[ {t:'mesa',x:.53,y:.525,f:.030,a:'center'}, {t:'asiento',x:.71,y:.525,f:.030,a:'center'} ] },   // bvip1 (VIP mesa)
-  VIPA:    { img:'uploads/tk_vip_new.webp', qr:QR2, folio:FOLIO2, color:'#dec085', fields:[] },   // plantilla 2026: VIP primer piso, lugar por llegada
-  PREF:    { img:'uploads/tk_pref.webp',    qr:QR, hora:HORA, folio:FOLIO,
-             fields:[ {t:'pref',x:.655,y:.528,f:.028,a:'center'} ] },                                                // preferente (dorado)
-  GENERAL: { img:'uploads/tk_general_new.webp', qr:QR2, folio:FOLIO2, color:'#bcbcbe', fields:[] }
+  VIP:     { img:'uploads/tk_vipmesa_nov.webp', qr:QR3, folio:FOLIO3, color:'#FEFEFE',
+             fields:[ {t:'mesa', x:COL_MEDIO, y:FILA_DATOS, f:TAM_DATO},
+                      {t:'asiento', x:COL_DER, y:FILA_DATOS, f:TAM_DATO} ] },
+  // VIP asiento no tiene secciones en este recinto: solo numero de lugar.
+  VIPA:    { img:'uploads/tk_vipa_nov.webp', qr:QR3, folio:FOLIO3, color:'#dec085',
+             fields:[ {t:'asiento', x:COL_DER, y:FILA_DATOS, f:TAM_DATO} ] },
+  PREF:    { img:'uploads/tk_pref_nov.webp', qr:QR3, folio:FOLIO3, color:'#e6c789',
+             fields:[ {t:'sec', x:COL_MEDIO, y:FILA_DATOS, f:TAM_DATO},
+                      {t:'num', x:COL_DER, y:FILA_DATOS, f:TAM_DATO} ] },
+  // General es lugar por orden de llegada: no lleva asiento.
+  GENERAL: { img:'uploads/tk_general_nov.webp', qr:QR3, folio:FOLIO3, color:'#bcbcbe', fields:[] }
 };
 const params=new URLSearchParams(location.search);
 const token=params.get('t')||'DEMO-TOKEN';
@@ -86,11 +100,13 @@ async function render(d){
   ctx.fillStyle=cfg.color||'#FEFEFE'; ctx.textBaseline='alphabetic';
   const put=(c,val,align)=>{ ctx.textAlign=align; ctx.font='bold '+(c.f*H)+'px Arial, sans-serif'; ctx.fillText(String(val), c.x*W, c.y*H); };
   if(cfg.hora) put(cfg.hora, EVENTO.hora||'—','center');
-  put(cfg.folio, d.folio||'','left');
+  put(cfg.folio, d.folio||'', cfg.folio.a||'left');
   for(const f of (cfg.fields||[])){
     const v = f.t==='mesa'    ? (d.mesa!=null?d.mesa:'—')
             : f.t==='asiento' ? (d.asiento!=null?d.asiento:'—')
             : f.t==='pref'    ? (d.sec?d.sec+'-'+String(d.num!=null?d.num:0).padStart(2,'0'):'—')
+            : f.t==='sec'     ? (d.sec||'—')
+            : f.t==='num'     ? (d.num!=null?d.num:'—')
             : '';
     put(f, v, f.a||'center');
   }
