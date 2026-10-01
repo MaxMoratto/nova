@@ -170,7 +170,7 @@ const ZONES = {
 //   1) este de aqui, que muestra los botones de compra en la pagina;
 //   2) la variable VENTA_ABIERTA=1 en Vercel, que es la que deja cobrar.
 // Para volver a pausar hay que apagar los dos.
-const VENTA_ABIERTA=false;
+const VENTA_ABIERTA=true;
 const COMISION=0.042;                       // 4.2% comision de compra en linea (cubre el costo real de Mercado Pago)
 const feeOf=sub=>Math.round(sub*COMISION);  // sobre el subtotal, redondeada al peso
 const CONFIG = {
