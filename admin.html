@@ -751,11 +751,12 @@ $('corteBtn').addEventListener('click',()=>{
   alert(t);
 });
 $('exportBtn').addEventListener('click',()=>{
-  const cols=['Folio','Tipo','Asiento','Comprador','Tel','Email','Precio','Estado','Canal','Pago','Cortesia','Fecha','Token'];
+  const cols=['Folio','Tipo','Asiento','Comprador','Tel','Email','Precio','Estado','Canal','Pago','Cortesia','Fecha','Hora de entrada','Escaneado por','Token'];
   const esc=v=>{ v=(v==null?'':String(v)); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
   const rows=[...BOLETOS].sort((a,b)=>(a.d.folio||'').localeCompare(b.d.folio||'')).map(r=>{ const d=r.d,c=d.comprador||{};
     const fecha=d.emitidoAt?new Date(d.emitidoAt).toLocaleString('es-MX'):'';
-    return [d.folio||'',(TIPO_LBL_B[d.tipo]||d.tipo||''),seatText(d),c.nombre||'',c.tel||'',c.mail||'',(d.precio!=null?d.precio:''),d.estado||'',d.canal||'',d.pago||'',d.cortesia?'si':'',fecha,r.token].map(esc).join(','); });
+    const entrada=d.checkinAt?new Date(d.checkinAt).toLocaleString('es-MX'):'';
+    return [d.folio||'',(TIPO_LBL_B[d.tipo]||d.tipo||''),seatText(d),c.nombre||'',c.tel||'',c.mail||'',(d.precio!=null?d.precio:''),d.estado||'',d.canal||'',d.pago||'',d.cortesia?'si':'',fecha,entrada,d.checkinBy||'',r.token].map(esc).join(','); });
   const csv='﻿'+cols.join(',')+'\n'+rows.join('\n');
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}); const url=URL.createObjectURL(blob);
   const a=document.createElement('a'); a.href=url; a.download='NOVA-boletos-'+new Date().toISOString().slice(0,10)+'.csv';
@@ -767,7 +768,10 @@ function renderBoletos(){ const q=($('bSearch').value||'').trim().toUpperCase();
   if(!rows.length){ box.innerHTML='<div class="empty">Sin boletos aún. Emite uno arriba.</div>'; return; } box.innerHTML='';
   for(const r of rows){ const d=r.d;
     const seat=seatText(d);
-    const st=d.estado==='usado'?'<span style="color:#f4b942">ingresó</span>':(d.estado==='cancelado'?'<span style="color:#ff6b76">cancelado</span>':'<span style="color:#25d366">válido</span>');
+    // Al escanear se guarda la hora y quien lo hizo; aqui se muestra, para
+    // poder resolver en la puerta un boleto que llega ya usado.
+    const hEnt = d.checkinAt ? new Date(d.checkinAt).toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'}) : '';
+    const st=d.estado==='usado'?('<span style="color:#f4b942">ingresó'+(hEnt?' '+hEnt:'')+'</span>'):(d.estado==='cancelado'?'<span style="color:#ff6b76">cancelado</span>':'<span style="color:#25d366">válido</span>');
     const who=(d.comprador&&d.comprador.nombre)||''; const cort=d.cortesia?' · <span style="color:#f4b942">cortesía</span>':''; const el=document.createElement('div'); el.className='sold-item';
     el.innerHTML='<span class="sid">'+(d.folio||'')+'</span><span class="sinfo">'+(TIPO_LBL_B[d.tipo]||d.tipo)+' · '+seat+(who?' · '+who:'')+cort+' · '+st+'</span>'+
       '<button class="mini" data-see="'+r.token+'">Ver</button>'+

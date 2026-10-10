@@ -139,7 +139,8 @@ async function sendTicketEmail(data) {
       <h1 style="font-family:Arial,sans-serif;color:#ffffff;font-size:22px;margin:12px 0 4px">¡Tus boletos están listos!</h1>
       <p style="font-family:Arial,sans-serif;color:#8a92a6;font-size:13px;line-height:1.6;margin:0 0 16px">20 de noviembre 2026 &#183; Foro San Rafael, CDMX.<br>Presenta el QR de cada boleto en la entrada (puedes mostrarlo desde el celular o descargarlo).</p>
       <table width="100%" cellpadding="0" cellspacing="0" role="presentation">${rows}</table>
-      <p style="font-family:Arial,sans-serif;color:#5f6779;font-size:12px;line-height:1.6;margin-top:20px">Guarda este correo. Cada boleto es válido una sola vez. ¿Dudas? Responde a este mensaje.</p>
+      <p style="font-family:Arial,sans-serif;color:#ffb3ba;font-size:13px;line-height:1.6;margin-top:20px;background:#2a1116;border:1px solid #7a2733;border-radius:8px;padding:12px 14px"><b>No compartas tu código QR con nadie.</b> Cada boleto abre la puerta una sola vez: si alguien más lo escanea antes que tú, a ti ya no te van a dejar entrar.</p>
+      <p style="font-family:Arial,sans-serif;color:#5f6779;font-size:12px;line-height:1.6;margin-top:14px">Guarda este correo. ¿Dudas? Responde a este mensaje.</p>
     </div>
   </div>`;
   const payload = { from, to, subject: 'Tus boletos · NOVA Strike Series', html };
