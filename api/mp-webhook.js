@@ -101,7 +101,7 @@ async function generateTickets(firestore, orderId, pay) {
     }
     for (let i = 0; i < genQty; i++) {
       n++; const folio = fmtFolio(n); const tok = randToken();
-      tx.set(firestore.collection('boletos').doc(tok), Object.assign({ tipo: 'GENERAL', folio, precio: 450 }, meta));
+      tx.set(firestore.collection('boletos').doc(tok), Object.assign({ tipo: 'GENERAL', folio, precio: 550 }, meta));
       tokens.push(tok); emailItems.push({ token: tok, folio, label: 'General · lugar por llegada' });
     }
     tx.set(foliosRef, { n }, { merge: true });

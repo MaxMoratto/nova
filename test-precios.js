@@ -13,8 +13,8 @@ const casos = [
   { que: '1 Preferente',              seats: ['PREF-B-18'],                  gen: 0, total: 782  },
   { que: '1 VIP asiento',             seats: ['VIPA-07'],                    gen: 0, total: 990  },
   { que: '1 VIP mesa',                seats: ['VIP-M13-S4'],                 gen: 0, total: 1563 },
-  { que: '2 General',                 seats: [],                             gen: 2, total: 938  },
-  { que: '1 Preferente + 1 General',  seats: ['PREF-A-01'],                  gen: 1, total: 1250 },
+  { que: '2 General',                 seats: [],                             gen: 2, total: 1146  },
+  { que: '1 Preferente + 1 General',  seats: ['PREF-A-01'],                  gen: 1, total: 1355 },
   { que: '3 Preferente',              seats: ['PREF-A-01','PREF-A-02','PREF-C-09'], gen: 0, total: 2345 },
 ];
 

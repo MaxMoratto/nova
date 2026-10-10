@@ -12,7 +12,7 @@ const EVENTO_ACTIVO = 'NOVA-20NOV2026';
 // El precio lo pone el servidor, NUNCA el navegador. Los items que llegan del
 // mapa solo dicen QUE se compra; cuanto cuesta se calcula aqui. Sin esto, un
 // error del mapa (o alguien manipulando la pagina) cobra lo que se le antoje.
-const PRECIOS = { VIP: 1500, VIPA: 950, PREF: 750, GENERAL: 450 };
+const PRECIOS = { VIP: 1500, VIPA: 950, PREF: 750, GENERAL: 550 };
 const COMISION = 0.042;
 const ETIQUETA = { VIP: 'VIP Mesa', VIPA: 'VIP Asiento', PREF: 'Preferente', GENERAL: 'General (lugar por llegada)' };
 function zonaDe(id) {
