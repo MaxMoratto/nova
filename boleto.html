@@ -17,6 +17,12 @@
   .btn.ghost{background:transparent;border:1px solid #2d3547;color:#8a92a6}
   .btn:hover{filter:brightness(1.08)}
   .tip{font-size:11px;color:#5f6779;margin-top:12px;text-align:center;max-width:320px;line-height:1.5}
+  .titular{margin-top:14px;max-width:340px;width:100%;background:#12151d;border:1px solid #2a3140;border-radius:12px;padding:14px}
+  .titular h4{margin:0 0 4px;font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:.6px;text-transform:uppercase;color:#fff}
+  .titular p{margin:0 0 10px;font-size:11.5px;color:#8a92a6;line-height:1.5}
+  .titular input{width:100%;box-sizing:border-box;background:#0b0e14;border:1px solid #2a3140;border-radius:9px;color:#fff;padding:10px 12px;font-size:14px;margin-bottom:9px}
+  .titular .ok{color:#25d366;font-size:12px;margin:0}
+  .titular .err{color:#ff8f98;font-size:12px;margin:8px 0 0}
 </style>
 </head>
 <body>
@@ -25,6 +31,13 @@
   <div class="actions" id="actions" style="display:none">
     <button class="btn" id="dlBtn">Guardar boleto</button>
     <a class="btn ghost" href="index.html">Sitio</a>
+  </div>
+  <div class="titular" id="titularBox" style="display:none">
+    <h4>Nombre de quien va a usar el boleto</h4>
+    <p>Se escribe <b>una sola vez</b> y despu&eacute;s ya no se puede cambiar. En la entrada pueden pedir identificaci&oacute;n que coincida.</p>
+    <input id="titularInput" type="text" maxlength="40" placeholder="Nombre y apellido" autocomplete="name">
+    <button class="btn" id="titularBtn" style="width:100%;justify-content:center">Guardar nombre</button>
+    <p class="err" id="titularMsg" style="display:none"></p>
   </div>
   <div class="tip" id="tip" style="display:none"><b style="color:#ff8f98">No compartas este c&oacute;digo.</b> Tu boleto abre la puerta <b>una sola vez</b>: si alguien m&aacute;s lo escanea antes que t&uacute;, a ti ya no te van a dejar entrar.<br><br>En celular toca <b>Descargar</b> y elige <b>Guardar en Fotos</b>.</div>
 
@@ -101,6 +114,12 @@ async function render(d){
   const put=(c,val,align)=>{ ctx.textAlign=align; ctx.font='bold '+(c.f*H)+'px Arial, sans-serif'; ctx.fillText(String(val), c.x*W, c.y*H); };
   if(cfg.hora) put(cfg.hora, EVENTO.hora||'—','center');
   put(cfg.folio, d.folio||'', cfg.folio.a||'left');
+  // Nombre de quien va a usar el boleto, cuando ya se puso.
+  if(d.titular){ ctx.textAlign='center';
+    ctx.font='bold '+(H*0.013)+'px Arial, sans-serif'; ctx.fillStyle='rgba(255,255,255,.45)';
+    ctx.fillText('A NOMBRE DE', W/2, H*0.879);
+    ctx.font='bold '+(H*0.021)+'px Arial, sans-serif'; ctx.fillStyle=cfg.color||'#FEFEFE';
+    ctx.fillText(String(d.titular).toUpperCase(), W/2, H*0.903); }
   for(const f of (cfg.fields||[])){
     const v = f.t==='mesa'    ? (d.mesa!=null?d.mesa:'—')
             : f.t==='asiento' ? (d.asiento!=null?d.asiento:'—')
@@ -115,6 +134,35 @@ async function render(d){
     ctx.fillStyle='rgba(8,10,14,.55)'; ctx.fillRect(-W*0.5,-H*0.05,W,H*0.10);
     ctx.fillStyle='#ff8f98'; ctx.textAlign='center'; ctx.font='bold '+(H*0.05)+'px Oswald, Arial, sans-serif'; ctx.fillText('YA INGRESÓ', 0, H*0.018); ctx.restore(); }
   cv.style.display='block'; $('state').style.display='none'; $('actions').style.display='flex'; $('tip').style.display='block';
+  pintarTitular(d);
+}
+
+// El nombre solo se puede poner una vez, y solo mientras el boleto siga valido.
+function pintarTitular(d){
+  const caja=$('titularBox'); if(!caja) return;
+  if(d.titular){
+    caja.innerHTML='<h4>A nombre de</h4><p class="ok" style="font-size:15px;color:#fff;margin:0">'+String(d.titular).toUpperCase()+'</p>'
+      +'<p style="margin:8px 0 0">Ya no se puede cambiar. Si hay un error, escr&iacute;benos.</p>';
+    caja.style.display='block'; return; }
+  if(d.estado==='usado'||d.estado==='cancelado'){ caja.style.display='none'; return; }
+  caja.style.display='block';
+  const inp=$('titularInput'), btn=$('titularBtn'), msg=$('titularMsg');
+  if(!inp.value && d.comprador && d.comprador.nombre) inp.value=d.comprador.nombre;
+  btn.onclick=async()=>{
+    const nombre=(inp.value||'').trim();
+    if(nombre.length<3){ msg.textContent='Escribe el nombre completo.'; msg.style.display='block'; return; }
+    const salto=String.fromCharCode(10);
+    if(!confirm('El boleto va a quedar a nombre de:'+salto+salto+nombre.toUpperCase()+salto+salto+'Despues ya no se puede cambiar. Esta bien?')) return;
+    btn.disabled=true; const antes=btn.textContent; btn.textContent='Guardando...'; msg.style.display='none';
+    try{
+      const r=await fetch('/api/titular',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,nombre})});
+      const j=await r.json();
+      if(j.ok){ CUR.titular=j.titular; render(CUR); return; }
+      msg.textContent=j.error||'No se pudo guardar.'; msg.style.display='block';
+      if(j.titular){ CUR.titular=j.titular; render(CUR); }
+    }catch(e){ msg.textContent='Sin conexion. Intenta de nuevo.'; msg.style.display='block'; }
+    btn.disabled=false; btn.textContent=antes;
+  };
 }
 
 async function load(){

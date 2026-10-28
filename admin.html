@@ -772,15 +772,32 @@ function renderBoletos(){ const q=($('bSearch').value||'').trim().toUpperCase();
     // poder resolver en la puerta un boleto que llega ya usado.
     const hEnt = d.checkinAt ? new Date(d.checkinAt).toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'}) : '';
     const st=d.estado==='usado'?('<span style="color:#f4b942">ingresó'+(hEnt?' '+hEnt:'')+'</span>'):(d.estado==='cancelado'?'<span style="color:#ff6b76">cancelado</span>':'<span style="color:#25d366">válido</span>');
-    const who=(d.comprador&&d.comprador.nombre)||''; const cort=d.cortesia?' · <span style="color:#f4b942">cortesía</span>':''; const el=document.createElement('div'); el.className='sold-item';
-    el.innerHTML='<span class="sid">'+(d.folio||'')+'</span><span class="sinfo">'+(TIPO_LBL_B[d.tipo]||d.tipo)+' · '+seat+(who?' · '+who:'')+cort+' · '+st+'</span>'+
+    const esc=v=>String(v==null?'':v).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    const who=esc((d.comprador&&d.comprador.nombre)||'');
+    const tit=d.titular?' &#183; <span style="color:#9fd0ff">a nombre de '+esc(d.titular)+'</span>':''; const cort=d.cortesia?' · <span style="color:#f4b942">cortesía</span>':''; const el=document.createElement('div'); el.className='sold-item';
+    el.innerHTML='<span class="sid">'+(d.folio||'')+'</span><span class="sinfo">'+(TIPO_LBL_B[d.tipo]||d.tipo)+' · '+seat+(who?' · '+who:'')+cort+tit+' · '+st+'</span>'+
       '<button class="mini" data-see="'+r.token+'">Ver</button>'+
       '<button class="mini" data-info="'+r.token+'">Datos</button>'+
+      (d.estado!=='cancelado'?'<button class="mini" data-tit="'+r.token+'">Nombre</button>':'')+
       ((d.comprador&&d.comprador.tel&&d.estado!=='cancelado')?'<button class="mini" data-wa="'+r.token+'">WhatsApp</button>':'')+
       ((d.tipo==='VIP'&&d.estado!=='cancelado')?'<button class="mini" data-move="'+r.token+'">Cambiar asiento</button>':'')+
       (d.estado!=='cancelado'?'<button class="mini" data-cancel="'+r.token+'">Cancelar</button>':'');
     box.appendChild(el); }
   box.querySelectorAll('[data-see]').forEach(b=>b.addEventListener('click',()=>window.open('boleto.html?t='+b.dataset.see,'_blank')));
+  // El comprador solo puede poner el nombre una vez. Aqui se corrige una errata
+  // o se borra para que lo vuelva a escribir.
+  box.querySelectorAll('[data-tit]').forEach(b=>b.addEventListener('click',async()=>{
+    const r=BOLETOS.find(x=>x.token===b.dataset.tit); if(!r)return;
+    const actual=r.d.titular||'';
+    const v=prompt('Nombre de quien va a usar el boleto '+(r.d.folio||'')+'.'+String.fromCharCode(10)+'Dejalo vacio para borrarlo y que el comprador lo escriba de nuevo.', actual);
+    if(v===null) return;
+    const nombre=v.replace(/[<>]/g,' ').replace(/s+/g,' ').trim().slice(0,40);
+    if(nombre && nombre.length<3){ alert('Escribe el nombre completo.'); return; }
+    try{ await db.collection(BOLETOS_COL).doc(b.dataset.tit).update(
+           nombre ? {titular:nombre, titularAt:Date.now(), titularBy:auth.currentUser.email}
+                  : {titular:firebase.firestore.FieldValue.delete()});
+    }catch(e){ alert('Error: '+e.message); }
+  }));
   box.querySelectorAll('[data-info]').forEach(b=>b.addEventListener('click',()=>{ const r=BOLETOS.find(x=>x.token===b.dataset.info); if(!r)return; const c=r.d.comprador||{};
     const canal={mp:'Compra en línea (Mercado Pago)',manual:'Emitido por admin',cortesia:'Cortesía',test:'Prueba'}[r.d.canal]||(r.d.canal||'—');
     const pagoLbl={efectivo:'Efectivo',tarjeta:'Tarjeta',transferencia:'Transferencia'}[r.d.pago]||'';
