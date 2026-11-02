@@ -303,7 +303,7 @@
     </div>
   </div>
   <div class="fightbar"><span>{{ me.banner }}</span></div>
-  <div style="position:relative;display:flex;flex-direction:{{ fightDir }};min-height:{{ fightCoMinH }};background:#070510;">
+  <div style="position:relative;display:{{ coDisp }};flex-direction:{{ fightDir }};min-height:{{ fightCoMinH }};background:#070510;">
     <div style="flex:1;background:#0b0b0e url(uploads/fondo-negro.webp) center center / cover no-repeat;padding:clamp(22px,4vw,44px) clamp(18px,3.5vw,44px);display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;min-height:clamp(390px,46vw,470px);">
       <img src="{{ co.r.img }}" alt="Peleador rojo" style="position:absolute;bottom:0;right:clamp(0px,2vw,16px);height:99%;max-width:64%;object-fit:contain;object-position:bottom right;z-index:1;pointer-events:none;">
       <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(8,4,16,.92) 0%,rgba(8,4,16,.32) 34%,transparent 62%);z-index:2;pointer-events:none;"></div>
@@ -338,7 +338,7 @@
       </div>
     </div>
   </div>
-  <div class="fightbar"><span>{{ co.banner }}</span></div>
+  <div class="fightbar" style="display:{{ coBarDisp }};"><span>{{ co.banner }}</span></div>
   <div style="padding:40px clamp(16px,4vw,40px) 18px;text-align:center;display:{{ carteleraDisp }};">
     <span style="font-size:10px;font-weight:700;letter-spacing:.45em;color:#D4A017;text-transform:uppercase;">— MMA Profesional —</span>
   </div>
@@ -845,7 +845,8 @@ class Component extends DCLogic {
         // Las caras del banner se recortan una sola vez, aqui, y no al dibujar:
         // la pagina se vuelve a dibujar sola y borraria cualquier arreglo hecho
         // sobre el <img> ya puesto.
-        const pr = a.find(p => p.tipo === 'principal') || {}, cs = a.find(p => p.tipo === 'coestelar') || {};
+        const sigue = a.filter(p => p.tipo === 'cartelera').sort((x, y) => (y.orden || 0) - (x.orden || 0))[0];
+        const pr = a.find(p => p.tipo === 'principal') || {}, cs = a.find(p => p.tipo === 'coestelar') || sigue || {};
         const ft = f => (f && f.fotos && f.fotos[0]) || '';
         if (window.recortaRostro) Promise.all([ft(pr.rojo), ft(pr.azul), ft(cs.rojo), ft(cs.azul)].map(window.recortaRostro))
           .then(([er, ea, cr, ca]) => this.setState({ caras: { er, ea, cr, ca } }))
@@ -871,6 +872,9 @@ class Component extends DCLogic {
     const plist = Array.isArray(this.state.peleas) ? this.state.peleas : [];
     const principal = plist.find(p => p.tipo === 'principal');
     const coest = plist.find(p => p.tipo === 'coestelar');
+    // Mientras no haya pelea co-estelar el panel entero no se dibuja.
+    const coDisp = coest ? 'flex' : 'none';
+    const coBarDisp = coest ? 'block' : 'none';
     const me = {
       banner: 'ESTELAR · ' + ((principal && principal.banner) || 'PESO LIGERO · 155 LB'),
       r: corner(principal && principal.rojo, SIL_R),
@@ -886,7 +890,11 @@ class Component extends DCLogic {
     // de mayor a menor para que la pagina siga el orden del evento al reves.
     // Banner: mientras se recortan las caras se usa la foto completa.
     const cr_ = this.state.caras || {};
-    const bn = { er: cr_.er || me.r.img, ea: cr_.ea || me.a.img, cr: cr_.cr || co.r.img, ca: cr_.ca || co.a.img };
+    // Si no hay co-estelar, las dos caras de la derecha salen de la pelea que
+    // sigue a la estelar, para que el banner nunca quede con huecos.
+    const sigue = coest || plist.filter(p => p.tipo === 'cartelera').sort((a, b) => (b.orden || 0) - (a.orden || 0))[0];
+    const sigR = corner(sigue && sigue.rojo, SIL_R), sigA = corner(sigue && sigue.azul, SIL_A);
+    const bn = { er: cr_.er || me.r.img, ea: cr_.ea || me.a.img, cr: cr_.cr || sigR.img, ca: cr_.ca || sigA.img };
     const prelimList = plist.filter(p => p.tipo === 'preliminar').sort((a, b) => (b.orden || 0) - (a.orden || 0));
     const av = (f) => (f && f.fotos && f.fotos[0]) || '';
     const dsp = (img) => img ? 'block' : 'none';
@@ -962,7 +970,7 @@ class Component extends DCLogic {
       fightCoMinH: isMobile ? '170px' : '240px',
       f2TextAlign: 'right',
       f2Align: 'flex-end',
-      me, co, bn, prelims, prelimsFoto, prelimsSinFoto, carteleraFoto, carteleraSinFoto, carteleraDisp, feedItems, vipPackages, particles
+      me, co, coDisp, coBarDisp, bn, prelims, prelimsFoto, prelimsSinFoto, carteleraFoto, carteleraSinFoto, carteleraDisp, feedItems, vipPackages, particles
     };
   }
 }
