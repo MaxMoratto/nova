@@ -187,12 +187,12 @@
           <div>
             <label>Tipo de pelea</label>
             <select id="p_tipo">
-              <option value="principal">Pelea principal (estelar)</option>
+              <option value="principal">Estelar</option>
               <option value="coestelar">Co-estelar</option>
-              <option value="cartelera">Cartelera principal</option>
-              <option value="preliminar">Preliminar</option>
+              <option value="cartelera">MMA Profesional</option>
+              <option value="preliminar">Nova Strike Prospects (Amateur)</option>
             </select>
-            <div style="font-size:11px;color:#7a8699;margin-top:4px;line-height:1.35">Solo 1 principal y 1 co-estelar. Las peleas fuertes → <b>"Cartelera principal"</b>; las de apertura → <b>"Preliminar"</b>.</div>
+            <div style="font-size:11px;color:#7a8699;margin-top:4px;line-height:1.35">Solo 1 estelar y 1 co-estelar. Las peleas profesionales → <b>"MMA Profesional"</b>; las amateur → <b>"Nova Strike Prospects"</b>.</div>
           </div>
           <div>
             <label>Número de pelea (1 = primera del evento)</label>
@@ -582,7 +582,7 @@ $('saveFightBtn').addEventListener('click',async()=>{ const m=$('fightMsg'); m.c
     archivarPeleadores(data);
     clearForm();
   }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; } b.disabled=false; });
-const TIPO_LBL={principal:'Pelea principal',coestelar:'Co-estelar',cartelera:'Cartelera principal',preliminar:'Preliminar'};
+const TIPO_LBL={principal:'Estelar',coestelar:'Co-estelar',cartelera:'MMA Profesional',preliminar:'Nova Strike Prospects'};
 let FIGHTS_ROWS=[], FIGHTS_COUNT=0;
 async function moveFight(id, dir){
   const ids=FIGHTS_ROWS.map(r=>r.id); const i=ids.indexOf(id); const j=i+dir;

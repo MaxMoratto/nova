@@ -340,7 +340,7 @@
   </div>
   <div class="fightbar"><span>{{ co.banner }}</span></div>
   <div style="padding:40px clamp(16px,4vw,40px) 18px;text-align:center;display:{{ carteleraDisp }};">
-    <span style="font-size:10px;font-weight:700;letter-spacing:.45em;color:#D4A017;text-transform:uppercase;">— Cartelera Principal —</span>
+    <span style="font-size:10px;font-weight:700;letter-spacing:.45em;color:#D4A017;text-transform:uppercase;">— MMA Profesional —</span>
   </div>
   <div style="padding:0 clamp(16px,4vw,40px);max-width:1200px;margin:0 auto;display:{{ carteleraDisp }};">
     <sc-for list="{{ carteleraFoto }}" as="fight" hint-placeholder-count="1">
@@ -402,7 +402,7 @@
     </div>
   </div>
   <div style="padding:40px clamp(16px,4vw,40px) 18px;text-align:center;">
-    <span style="font-size:10px;font-weight:700;letter-spacing:.45em;color:rgba(255,255,255,.28);text-transform:uppercase;">— Cartelera Preliminar —</span>
+    <span style="font-size:10px;font-weight:700;letter-spacing:.45em;color:rgba(255,255,255,.28);text-transform:uppercase;">— Nova Strike Prospects · Amateur —</span>
   </div>
   <div style="padding:0 clamp(16px,4vw,40px) 68px;max-width:1200px;margin:0 auto;">
     <div style="display:flex;flex-direction:column;gap:10px;">
@@ -802,7 +802,7 @@ class Component extends DCLogic {
     const principal = plist.find(p => p.tipo === 'principal');
     const coest = plist.find(p => p.tipo === 'coestelar');
     const me = {
-      banner: 'PELEA PRINCIPAL · ' + ((principal && principal.banner) || 'PESO LIGERO · 155 LB'),
+      banner: 'ESTELAR · ' + ((principal && principal.banner) || 'PESO LIGERO · 155 LB'),
       r: corner(principal && principal.rojo, SIL_R),
       a: corner(principal && principal.azul, SIL_A)
     };
@@ -820,7 +820,7 @@ class Component extends DCLogic {
     const prelimsSinFoto = prelims.filter(p => p.r1disp !== 'block' && p.r2disp !== 'block');
     const metaOf = (f) => [noneVal(f && f.modalidad), noneVal(f && f.categoria)].filter(Boolean).join(' · ');
     const dosLineas = (s) => { const t = String(s).split(/\s+/); return { l1: t[0] || '', l2: t.slice(1).join(' ') }; };
-    const buildRow = (p) => { const a = av(p.rojo), b = av(p.azul); const n1 = dosLineas(nm(p.rojo)), n2 = dosLineas(nm(p.azul)); const bn = ((p && p.banner) || '').trim(); return { r1: nm(p.rojo), r1l1: n1.l1, r1l2: n1.l2, r1rec: rec(p.rojo), r1img: a || SIL_R, r1disp: 'block', r1meta: metaOf(p.rojo), r2: nm(p.azul), r2l1: n2.l1, r2l2: n2.l2, r2rec: rec(p.azul), r2img: b || SIL_A, r2disp: 'block', r2meta: metaOf(p.azul), banner: 'CARTELERA PRINCIPAL' + (bn ? ' · ' + bn.toUpperCase() : '') }; };
+    const buildRow = (p) => { const a = av(p.rojo), b = av(p.azul); const n1 = dosLineas(nm(p.rojo)), n2 = dosLineas(nm(p.azul)); const bn = ((p && p.banner) || '').trim(); return { r1: nm(p.rojo), r1l1: n1.l1, r1l2: n1.l2, r1rec: rec(p.rojo), r1img: a || SIL_R, r1disp: 'block', r1meta: metaOf(p.rojo), r2: nm(p.azul), r2l1: n2.l1, r2l2: n2.l2, r2rec: rec(p.azul), r2img: b || SIL_A, r2disp: 'block', r2meta: metaOf(p.azul), banner: 'MMA PROFESIONAL' + (bn ? ' · ' + bn.toUpperCase() : '') }; };
     const carteleraList = plist.filter(p => p.tipo === 'cartelera').sort((a, b) => (a.orden || 99) - (b.orden || 99));
     const carteleraRows = carteleraList.map(buildRow);
     const carteleraFoto = carteleraRows.filter(p => p.r1disp === 'block' || p.r2disp === 'block');
