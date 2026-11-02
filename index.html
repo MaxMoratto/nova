@@ -546,69 +546,77 @@
 // distintos. Aqui se localiza la figura por su transparencia y se recorta el
 // rostro: todos quedan igual, venga como venga la foto. Si la imagen no se
 // puede leer, se queda tal cual y no se rompe nada.
-function encuadraRostro(img){
-  if(!img || img.dataset.encuadrado) return;
-  try{
-    const W=img.naturalWidth, H=img.naturalHeight; if(!W||!H) return;
-    const c=document.createElement("canvas"); c.width=W; c.height=H;
-    const g=c.getContext("2d"); g.drawImage(img,0,0);
-    const d=g.getImageData(0,0,W,H).data;
-    const anchoEn=(y)=>{ let a0=W,a1=-1;
-      for(let x=0;x<W;x++) if(d[(y*W+x)*4+3]>40){ if(x<a0)a0=x; if(x>a1)a1=x; }
-      return a1>=a0 ? {a0,a1,w:a1-a0} : null; };
-    // 1) donde empieza y termina la figura
-    let x0=W,y0=H,x1=0,y1=0;
-    for(let y=0;y<H;y+=2) for(let x=0;x<W;x+=2)
-      if(d[(y*W+x)*4+3]>40){ if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; }
-    if(x1<=x0||y1<=y0) return;
-    const A=y1-y0+1;
-    // 2) alto de la cabeza: bajando desde arriba, donde se angosta el cuello
-    let cabeza=Math.round(A*0.18);
-    for(let k=8;k<32;k++){
-      const y=y0+Math.round(A*k/100), yAnt=y0+Math.round(A*(k-1)/100);
-      if(y>=H) break;
-      const aqui=anchoEn(y), antes=anchoEn(yAnt);
-      if(aqui&&antes&&antes.w&&aqui.w<antes.w*0.8){ cabeza=Math.round(A*k/100); break; }
-    }
-    // 3) centro horizontal de la cabeza
-    let c0=W,c1=-1;
-    for(let y=y0;y<Math.min(H,y0+cabeza);y++){ const r=anchoEn(y); if(r){ if(r.a0<c0)c0=r.a0; if(r.a1>c1)c1=r.a1; } }
-    if(c1<c0) return;
-    const cx=(c0+c1)/2;
-    // 4) recorte: la cabeza ocupa OCUPA del alto, centrada. La relacion
-    //    es la del panel, para que object-fit:cover no vuelva a cortar arriba.
-    const OCUPA=0.68, RELACION=1.84;
-    const alto=Math.round(cabeza/OCUPA), ancho=Math.round(alto*RELACION);
-    const centroCabeza=y0+cabeza/2;
-    const left=Math.max(0,Math.min(Math.round(cx-ancho/2), Math.max(0,W-ancho)));
-    const top=Math.max(0,Math.min(Math.round(centroCabeza-alto/2), Math.max(0,H-alto)));
-    const w=Math.min(ancho,W-left), h=Math.min(alto,H-top);
-    if(w<8||h<8) return;
-    const r=document.createElement("canvas"); r.width=w; r.height=h;
-    r.getContext("2d").drawImage(img,left,top,w,h,0,0,w,h);
-    img.dataset.encuadrado="1";
-    img.src=r.toDataURL("image/webp",0.92);
-  }catch(e){}
-}
+// Devuelve la cara recortada de una foto de peleador, lista para el banner.
+// Las fotos traen al peleador en escalas y posiciones distintas dentro de su
+// archivo, asi que recortar con CSS los deja de tamanos distintos. Aqui se
+// localiza la figura por su transparencia, se MIDE la cabeza (bajando hasta
+// donde el ancho se angosta en el cuello) y se recorta con esa medida: todos
+// quedan iguales, venga como venga la foto.
+window.recortaRostro = function(src){
+  return new Promise(function(listo){
+    if(!src){ listo(""); return; }
+    const img=new Image();
+    img.onerror=function(){ listo(""); };
+    img.onload=function(){
+      try{
+        const W=img.naturalWidth, H=img.naturalHeight;
+        if(!W||!H){ listo(""); return; }
+        const c=document.createElement("canvas"); c.width=W; c.height=H;
+        const g=c.getContext("2d"); g.drawImage(img,0,0);
+        const d=g.getImageData(0,0,W,H).data;
+        const anchoEn=function(y){ let a0=W,a1=-1;
+          for(let x=0;x<W;x++) if(d[(y*W+x)*4+3]>40){ if(x<a0)a0=x; if(x>a1)a1=x; }
+          return a1>=a0 ? {a0:a0,a1:a1,w:a1-a0} : null; };
+        let x0=W,y0=H,x1=0,y1=0;
+        for(let y=0;y<H;y+=2) for(let x=0;x<W;x+=2)
+          if(d[(y*W+x)*4+3]>40){ if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; }
+        if(x1<=x0||y1<=y0){ listo(""); return; }
+        const A=y1-y0+1;
+        let cabeza=Math.round(A*0.18);
+        for(let k=8;k<32;k++){
+          const y=y0+Math.round(A*k/100), yAnt=y0+Math.round(A*(k-1)/100);
+          if(y>=H) break;
+          const aqui=anchoEn(y), antes=anchoEn(yAnt);
+          if(aqui&&antes&&antes.w&&aqui.w<antes.w*0.8){ cabeza=Math.round(A*k/100); break; }
+        }
+        let c0=W,c1=-1;
+        for(let y=y0;y<Math.min(H,y0+cabeza);y++){ const r=anchoEn(y); if(r){ if(r.a0<c0)c0=r.a0; if(r.a1>c1)c1=r.a1; } }
+        if(c1<c0){ listo(""); return; }
+        const cx=(c0+c1)/2;
+        const OCUPA=0.68, RELACION=1.84;   // la cabeza ocupa 68% del alto; relacion del panel
+        const alto=Math.round(cabeza/OCUPA), ancho=Math.round(alto*RELACION);
+        const centro=y0+cabeza/2;
+        const left=Math.max(0,Math.min(Math.round(cx-ancho/2), Math.max(0,W-ancho)));
+        const top=Math.max(0,Math.min(Math.round(centro-alto/2), Math.max(0,H-alto)));
+        const w=Math.min(ancho,W-left), h=Math.min(alto,H-top);
+        if(w<8||h<8){ listo(""); return; }
+        const r=document.createElement("canvas"); r.width=w; r.height=h;
+        r.getContext("2d").drawImage(img,left,top,w,h,0,0,w,h);
+        listo(r.toDataURL("image/webp",0.92));
+      }catch(e){ listo(""); }
+    };
+    img.src=src;
+  });
+};
 </script>
 <!-- BANNER PELEADORES: las cuatro caras salen de la cartelera (estelar y
      co-estelar), no de archivos fijos. Al cambiar las peleas, cambia solo. -->
 <section style="position:relative;height:clamp(180px,24vw,300px);overflow:hidden;background:radial-gradient(120% 160% at 50% 130%,#2a0409 0%,#140309 45%,#070307 100%);border-top:2px solid rgba(255,0,51,.5);border-bottom:1px solid rgba(255,0,51,.18);">
   <div style="position:absolute;top:0;bottom:0;left:-8%;width:116%;display:flex;transform:skewX(-11deg);">
     <div style="flex:1;position:relative;overflow:hidden;border-right:2px solid rgba(255,0,51,.55);">
-      <img src="{{ me.r.img }}" alt="" onload="encuadraRostro(this)" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center;transform:skewX(11deg) scale(1.15);filter:grayscale(.55) brightness(.8) contrast(1.15);">
+      <img src="{{ bn.er }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center;transform:skewX(11deg) scale(1.15);filter:grayscale(.55) brightness(.8) contrast(1.15);">
       <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,0,51,.08),rgba(120,0,20,.55));"></div>
     </div>
     <div style="flex:1;position:relative;overflow:hidden;border-right:2px solid rgba(255,0,51,.55);">
-      <img src="{{ me.a.img }}" alt="" onload="encuadraRostro(this)" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center;transform:skewX(11deg) scale(1.15);filter:grayscale(1) brightness(.72) contrast(1.2);">
+      <img src="{{ bn.ea }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center;transform:skewX(11deg) scale(1.15);filter:grayscale(1) brightness(.72) contrast(1.2);">
       <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(20,20,28,.55));"></div>
     </div>
     <div style="flex:1;position:relative;overflow:hidden;border-right:2px solid rgba(255,0,51,.55);">
-      <img src="{{ co.r.img }}" alt="" onload="encuadraRostro(this)" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center;transform:skewX(11deg) scale(1.15);filter:grayscale(.55) brightness(.8) contrast(1.15);">
+      <img src="{{ bn.cr }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center;transform:skewX(11deg) scale(1.15);filter:grayscale(.55) brightness(.8) contrast(1.15);">
       <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,0,51,.08),rgba(120,0,20,.55));"></div>
     </div>
     <div style="flex:1;position:relative;overflow:hidden;">
-      <img src="{{ co.a.img }}" alt="" onload="encuadraRostro(this)" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center;transform:skewX(11deg) scale(1.15);filter:grayscale(1) brightness(.72) contrast(1.2);">
+      <img src="{{ bn.ca }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center;transform:skewX(11deg) scale(1.15);filter:grayscale(1) brightness(.72) contrast(1.2);">
       <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(20,20,28,.55));"></div>
     </div>
   </div>
@@ -781,7 +789,8 @@ class Component extends DCLogic {
     days: 0, hours: 0, mins: 0, secs: 0,
     navScrolled: false, mobileMenuOpen: false,
     windowWidth: window.innerWidth || 1440,
-    peleas: null
+    peleas: null,
+    caras: null   // rostros del banner, recortados una vez al cargar la cartelera
   };
 
   componentDidMount() {
@@ -832,6 +841,14 @@ class Component extends DCLogic {
       if (!fb.apps.length) fb.initializeApp({ apiKey: 'AIzaSyAXxTUFo0CHFZnAs0wGrYHLTwwVzZ_ArZA', authDomain: 'nova-dd664.firebaseapp.com', projectId: 'nova-dd664', storageBucket: 'nova-dd664.firebasestorage.app', messagingSenderId: '967862553249', appId: '1:967862553249:web:3524af97999ce667bafee0' });
       fb.firestore().collection('peleas').onSnapshot(snap => {
         const a = []; snap.forEach(d => a.push(d.data())); this.setState({ peleas: a });
+        // Las caras del banner se recortan una sola vez, aqui, y no al dibujar:
+        // la pagina se vuelve a dibujar sola y borraria cualquier arreglo hecho
+        // sobre el <img> ya puesto.
+        const pr = a.find(p => p.tipo === 'principal') || {}, cs = a.find(p => p.tipo === 'coestelar') || {};
+        const ft = f => (f && f.fotos && f.fotos[0]) || '';
+        if (window.recortaRostro) Promise.all([ft(pr.rojo), ft(pr.azul), ft(cs.rojo), ft(cs.azul)].map(window.recortaRostro))
+          .then(([er, ea, cr, ca]) => this.setState({ caras: { er, ea, cr, ca } }))
+          .catch(() => {});
       }, () => {});
     } catch (e) { /* si falla, se queda la cartelera por defecto */ }
   }
@@ -866,6 +883,9 @@ class Component extends DCLogic {
     // La cartelera se lee de arriba hacia abajo empezando por la estelar: la
     // pelea 13 es la ultima de la noche y la 1 la primera, asi que se ordenan
     // de mayor a menor para que la pagina siga el orden del evento al reves.
+    // Banner: mientras se recortan las caras se usa la foto completa.
+    const cr_ = this.state.caras || {};
+    const bn = { er: cr_.er || me.r.img, ea: cr_.ea || me.a.img, cr: cr_.cr || co.r.img, ca: cr_.ca || co.a.img };
     const prelimList = plist.filter(p => p.tipo === 'preliminar').sort((a, b) => (b.orden || 0) - (a.orden || 0));
     const av = (f) => (f && f.fotos && f.fotos[0]) || '';
     const dsp = (img) => img ? 'block' : 'none';
@@ -941,7 +961,7 @@ class Component extends DCLogic {
       fightCoMinH: isMobile ? '170px' : '240px',
       f2TextAlign: 'right',
       f2Align: 'flex-end',
-      me, co, prelims, prelimsFoto, prelimsSinFoto, carteleraFoto, carteleraSinFoto, carteleraDisp, feedItems, vipPackages, particles
+      me, co, bn, prelims, prelimsFoto, prelimsSinFoto, carteleraFoto, carteleraSinFoto, carteleraDisp, feedItems, vipPackages, particles
     };
   }
 }
