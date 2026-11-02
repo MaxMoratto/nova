@@ -540,24 +540,60 @@
   </div>
 </section>
 
+<script>
+// Las fotos de la cartelera traen al peleador en escalas y posiciones distintas
+// dentro de su archivo, asi que recortarlas solo con CSS los deja de tamanos
+// distintos. Aqui se localiza la figura por su transparencia y se recorta el
+// rostro: todos quedan igual, venga como venga la foto. Si la imagen no se
+// puede leer, se queda tal cual y no se rompe nada.
+function encuadraRostro(img){
+  if(!img || img.dataset.encuadrado) return;
+  try{
+    const W=img.naturalWidth, H=img.naturalHeight; if(!W||!H) return;
+    const c=document.createElement("canvas"); c.width=W; c.height=H;
+    const g=c.getContext("2d"); g.drawImage(img,0,0);
+    const d=g.getImageData(0,0,W,H).data;
+    let x0=W,y0=H,x1=0,y1=0;
+    for(let y=0;y<H;y+=2) for(let x=0;x<W;x+=2)
+      if(d[(y*W+x)*4+3]>40){ if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; }
+    if(x1<=x0||y1<=y0) return;
+    const A=y1-y0+1;
+    // centro horizontal de la cabeza: franja de arriba de la figura
+    const franja=Math.max(2,Math.round(A*0.12));
+    let c0=W,c1=0;
+    for(let y=y0;y<Math.min(H,y0+franja);y++) for(let x=0;x<W;x++)
+      if(d[(y*W+x)*4+3]>40){ if(x<c0)c0=x; if(x>c1)c1=x; }
+    if(c1<=c0) return;
+    const cx=(c0+c1)/2;
+    const alto=Math.round(A*0.30), ancho=Math.round(alto*1.4);
+    const left=Math.max(0,Math.min(Math.round(cx-ancho/2), W-ancho));
+    const top=Math.max(0,Math.min(Math.round(y0-A*0.04), H-alto));
+    const w=Math.min(ancho,W-left), h=Math.min(alto,H-top);
+    const r=document.createElement("canvas"); r.width=w; r.height=h;
+    r.getContext("2d").drawImage(img,left,top,w,h,0,0,w,h);
+    img.dataset.encuadrado="1";
+    img.src=r.toDataURL("image/webp",0.92);
+  }catch(e){}
+}
+</script>
 <!-- BANNER PELEADORES: las cuatro caras salen de la cartelera (estelar y
      co-estelar), no de archivos fijos. Al cambiar las peleas, cambia solo. -->
 <section style="position:relative;height:clamp(180px,24vw,300px);overflow:hidden;background:radial-gradient(120% 160% at 50% 130%,#2a0409 0%,#140309 45%,#070307 100%);border-top:2px solid rgba(255,0,51,.5);border-bottom:1px solid rgba(255,0,51,.18);">
   <div style="position:absolute;top:0;bottom:0;left:-8%;width:116%;display:flex;transform:skewX(-11deg);">
     <div style="flex:1;position:relative;overflow:hidden;border-right:2px solid rgba(255,0,51,.55);">
-      <img src="{{ me.r.img }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 8%;transform:skewX(11deg) scale(1.15);filter:grayscale(.55) brightness(.8) contrast(1.15);">
+      <img src="{{ me.r.img }}" alt="" onload="encuadraRostro(this)" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 8%;transform:skewX(11deg) scale(1.15);filter:grayscale(.55) brightness(.8) contrast(1.15);">
       <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,0,51,.08),rgba(120,0,20,.55));"></div>
     </div>
     <div style="flex:1;position:relative;overflow:hidden;border-right:2px solid rgba(255,0,51,.55);">
-      <img src="{{ me.a.img }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 8%;transform:skewX(11deg) scale(1.15);filter:grayscale(1) brightness(.72) contrast(1.2);">
+      <img src="{{ me.a.img }}" alt="" onload="encuadraRostro(this)" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 8%;transform:skewX(11deg) scale(1.15);filter:grayscale(1) brightness(.72) contrast(1.2);">
       <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(20,20,28,.55));"></div>
     </div>
     <div style="flex:1;position:relative;overflow:hidden;border-right:2px solid rgba(255,0,51,.55);">
-      <img src="{{ co.r.img }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 6%;transform:skewX(11deg) scale(1.15);filter:grayscale(.55) brightness(.8) contrast(1.15);">
+      <img src="{{ co.r.img }}" alt="" onload="encuadraRostro(this)" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 6%;transform:skewX(11deg) scale(1.15);filter:grayscale(.55) brightness(.8) contrast(1.15);">
       <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,0,51,.08),rgba(120,0,20,.55));"></div>
     </div>
     <div style="flex:1;position:relative;overflow:hidden;">
-      <img src="{{ co.a.img }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 6%;transform:skewX(11deg) scale(1.15);filter:grayscale(1) brightness(.72) contrast(1.2);">
+      <img src="{{ co.a.img }}" alt="" onload="encuadraRostro(this)" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 6%;transform:skewX(11deg) scale(1.15);filter:grayscale(1) brightness(.72) contrast(1.2);">
       <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(20,20,28,.55));"></div>
     </div>
   </div>
