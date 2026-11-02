@@ -583,9 +583,10 @@ window.recortaRostro = function(src){
         for(let y=y0;y<Math.min(H,y0+cabeza);y++){ const r=anchoEn(y); if(r){ if(r.a0<c0)c0=r.a0; if(r.a1>c1)c1=r.a1; } }
         if(c1<c0){ listo(""); return; }
         const cx=(c0+c1)/2;
-        const OCUPA=0.68, RELACION=1.84;   // la cabeza ocupa 68% del alto; relacion del panel
+        const OCUPA=0.44, RELACION=1.84;   // la cabeza ocupa 44% del alto: se ven los hombros
+        const AIRE=0.13;                   // aire sobre la coronilla, en fraccion del recorte
         const alto=Math.round(cabeza/OCUPA), ancho=Math.round(alto*RELACION);
-        const centro=y0+cabeza/2;
+        const centro=y0+(0.5-AIRE)*alto;
         const left=Math.max(0,Math.min(Math.round(cx-ancho/2), Math.max(0,W-ancho)));
         const top=Math.max(0,Math.min(Math.round(centro-alto/2), Math.max(0,H-alto)));
         const w=Math.min(ancho,W-left), h=Math.min(alto,H-top);
