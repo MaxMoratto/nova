@@ -811,7 +811,10 @@ class Component extends DCLogic {
       r: corner(coest && coest.rojo, SIL_R),
       a: corner(coest && coest.azul, SIL_A)
     };
-    const prelimList = plist.filter(p => p.tipo === 'preliminar').sort((a, b) => (a.orden || 99) - (b.orden || 99));
+    // La cartelera se lee de arriba hacia abajo empezando por la estelar: la
+    // pelea 13 es la ultima de la noche y la 1 la primera, asi que se ordenan
+    // de mayor a menor para que la pagina siga el orden del evento al reves.
+    const prelimList = plist.filter(p => p.tipo === 'preliminar').sort((a, b) => (b.orden || 0) - (a.orden || 0));
     const av = (f) => (f && f.fotos && f.fotos[0]) || '';
     const dsp = (img) => img ? 'block' : 'none';
     const ph = { r1: 'POR REVELAR', r1rec: '0-0-0', r1img: SIL_R, r1disp: 'block', r2: 'POR REVELAR', r2rec: '0-0-0', r2img: SIL_A, r2disp: 'block' };
@@ -821,7 +824,7 @@ class Component extends DCLogic {
     const metaOf = (f) => [noneVal(f && f.modalidad), noneVal(f && f.categoria)].filter(Boolean).join(' · ');
     const dosLineas = (s) => { const t = String(s).split(/\s+/); return { l1: t[0] || '', l2: t.slice(1).join(' ') }; };
     const buildRow = (p) => { const a = av(p.rojo), b = av(p.azul); const n1 = dosLineas(nm(p.rojo)), n2 = dosLineas(nm(p.azul)); const bn = ((p && p.banner) || '').trim(); return { r1: nm(p.rojo), r1l1: n1.l1, r1l2: n1.l2, r1rec: rec(p.rojo), r1img: a || SIL_R, r1disp: 'block', r1meta: metaOf(p.rojo), r2: nm(p.azul), r2l1: n2.l1, r2l2: n2.l2, r2rec: rec(p.azul), r2img: b || SIL_A, r2disp: 'block', r2meta: metaOf(p.azul), banner: 'MMA PROFESIONAL' + (bn ? ' · ' + bn.toUpperCase() : '') }; };
-    const carteleraList = plist.filter(p => p.tipo === 'cartelera').sort((a, b) => (a.orden || 99) - (b.orden || 99));
+    const carteleraList = plist.filter(p => p.tipo === 'cartelera').sort((a, b) => (b.orden || 0) - (a.orden || 0));
     const carteleraRows = carteleraList.map(buildRow);
     const carteleraFoto = carteleraRows.filter(p => p.r1disp === 'block' || p.r2disp === 'block');
     const carteleraSinFoto = carteleraRows.filter(p => p.r1disp !== 'block' && p.r2disp !== 'block');
