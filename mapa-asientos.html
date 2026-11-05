@@ -232,7 +232,9 @@ seatsG.addEventListener('mouseleave',()=>tip.classList.remove('on'));
 function avail(zone){let a=0;for(const s of SEATS)if(s.zone===zone&&!state.selected.has(s.id)&&!taken.has(s.id))a++;return a;}
 function zoneTotal(zone){return SEATS.filter(s=>s.zone===zone).length;}
 const zonesBox=document.getElementById('zones');
-const ZFLOOR={VIP:'PB',VIPA:'1P',GENERAL:'PB'};
+// En que piso vive cada zona: se saca del propio mapa para que no se
+// quede viejo cuando una zona cambia de piso. General no tiene asiento.
+const ZFLOOR=(function(){ const m={GENERAL:'PB'}; SEATS.forEach(s=>{ if(!m[s.zone]) m[s.zone]=s.floor; }); return m; })();
 function goFloor(fl){ if(curFloor===fl)return; curFloor=fl;
   document.querySelectorAll('.floorsw button').forEach(x=>x.classList.toggle('on',x.dataset.f===fl)); renderFloor(); }
 function focusZone(z){                                   // llevar el mapa a la seccion de la zona

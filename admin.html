@@ -147,6 +147,7 @@
           <div><label>Tipo</label><select id="b_tipo">
             <option value="VIP">VIP mesa ($1500)</option>
             <option value="VIPA">VIP asiento ($950)</option>
+            <option value="PREF">Preferente ($750)</option>
             <option value="GENERAL">General · lugar por llegada ($550)</option>
           </select></div>
           <div id="f_vip"><div class="grid2"><div><label>Mesa</label><select id="b_mesa"></select></div><div><label>Asiento</label><select id="b_asiento"></select></div></div></div>
@@ -619,6 +620,10 @@ function fillVipaNums(){ fillNums($('b_vipa_n'),VIPA_MAX[$('b_vipa_sec').value]|
 fillVipaNums(); $('b_vipa_sec').addEventListener('change',fillVipaNums);
 function fillPrefNums(){ fillNums($('b_pref_n'),PREF_MAX[$('b_pref_sec').value]||25); }
 fillPrefNums(); $('b_pref_sec').addEventListener('change',fillPrefNums);
+// El texto de cada tipo se arma con el precio de verdad, no con uno escrito a mano.
+(function(){ const extra={GENERAL:' · lugar por llegada'};
+  Array.from($('b_tipo').options).forEach(o=>{ const t=o.value;
+    if(PRECIO[t]!=null) o.textContent=TIPO_LBL_B[t]+(extra[t]||'')+' ($'+PRECIO[t]+')'; }); })();
 function syncEmitFields(){ const t=$('b_tipo').value;
   $('f_vip').style.display=t==='VIP'?'block':'none';
   $('f_vipa').style.display=t==='VIPA'?'block':'none';

@@ -71,3 +71,6 @@ portadav.jpeg
 # Respaldos con datos personales de compradores: NUNCA subir a un repo publico
 NOVA-boletos-*.csv
 cartelera-*.json
+
+.vercel
+.env*
