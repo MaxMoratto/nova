@@ -59,24 +59,26 @@ const FOLIO2 = { x:.515, y:.877, f:.016 };
 // Plantillas de noviembre 2026 (20 nov, Foro San Rafael, puertas 6:00 PM).
 // La hora, la sede, la fecha y el piso vienen impresos en el arte: aqui solo se
 // dibujan el QR, el folio y el lugar. El arte no reserva espacio para el QR, asi
-// que va sobre un recuadro blanco en la franja despejada entre los dos peleadores.
-const QR3 = { x:.33, y:.600, w:.34, h:.191, panel:true };
-const FOLIO3 = { x:.50, y:.845, f:.019, a:'center' };
-// La franja de datos es igual en los cuatro disenos: tres columnas y una sola
-// fila de valores. Medidas sobre el PDF, en fraccion del boleto.
-const COL_MEDIO = .4975, COL_DER = .7111, FILA_DATOS = .5507, TAM_DATO = .034;
+// que va sobre un recuadro blanco en la franja despejada entre los dos peleadores,
+// que mide 319 px de ancho en las cuatro plantillas.
+const QR3 = { x:.416, y:.700, w:.220, h:.124, panel:true };
+const FOLIO3 = { x:.526, y:.848, f:.019, a:'center' };
+// La franja de datos es igual en los cuatro disenos: tres columnas (PISO, MESA,
+// ASIENTO) y una sola fila de valores. Los separadores caen en x=555 y x=869 de
+// 1400, y la linea base del valor en y=1388 de 2488.
+const COL_MEDIO = .5086, COL_DER = .7321, FILA_DATOS = .5579, TAM_DATO = .042;
 const FR = {
-  VIP:     { img:'uploads/tk_vipmesa_nov.webp', qr:QR3, folio:FOLIO3, color:'#FEFEFE',
+  VIP:     { img:'uploads/tk_vipmesa_nov2.webp', qr:QR3, folio:FOLIO3, color:'#FEFEFE',
              fields:[ {t:'mesa', x:COL_MEDIO, y:FILA_DATOS, f:TAM_DATO},
                       {t:'asiento', x:COL_DER, y:FILA_DATOS, f:TAM_DATO} ] },
-  VIPA:    { img:'uploads/tk_vipa_nov.webp', qr:QR3, folio:FOLIO3, color:'#dec085',
-             fields:[ {t:'sec', x:COL_MEDIO, y:FILA_DATOS, f:TAM_DATO},
-                      {t:'num', x:COL_DER, y:FILA_DATOS, f:TAM_DATO} ] },
-  PREF:    { img:'uploads/tk_pref_nov.webp', qr:QR3, folio:FOLIO3, color:'#e6c789',
-             fields:[ {t:'sec', x:COL_MEDIO, y:FILA_DATOS, f:TAM_DATO},
-                      {t:'num', x:COL_DER, y:FILA_DATOS, f:TAM_DATO} ] },
+  // VIP asiento y Preferente tienen mesa, pero las mesas no estan numeradas: la
+  // columna MESA se deja vacia y el lugar va completo bajo ASIENTO, como A-07.
+  VIPA:    { img:'uploads/tk_vipa_nov2.webp', qr:QR3, folio:FOLIO3, color:'#dec085',
+             fields:[ {t:'lugar', x:COL_DER, y:FILA_DATOS, f:TAM_DATO} ] },
+  PREF:    { img:'uploads/tk_pref_nov2.webp', qr:QR3, folio:FOLIO3, color:'#e6c789',
+             fields:[ {t:'lugar', x:COL_DER, y:FILA_DATOS, f:TAM_DATO} ] },
   // General es lugar por orden de llegada: no lleva asiento.
-  GENERAL: { img:'uploads/tk_general_nov.webp', qr:QR3, folio:FOLIO3, color:'#bcbcbe', fields:[] }
+  GENERAL: { img:'uploads/tk_general_nov2.webp', qr:QR3, folio:FOLIO3, color:'#bcbcbe', fields:[] }
 };
 const params=new URLSearchParams(location.search);
 const token=params.get('t')||'DEMO-TOKEN';
@@ -117,13 +119,15 @@ async function render(d){
   // Nombre de quien va a usar el boleto, cuando ya se puso.
   if(d.titular){ ctx.textAlign='center';
     ctx.font='bold '+(H*0.013)+'px Arial, sans-serif'; ctx.fillStyle='rgba(255,255,255,.45)';
-    ctx.fillText('A NOMBRE DE', W/2, H*0.879);
+    const cx = FOLIO3.x*W;                 // debajo del QR, no en el centro del boleto
+    ctx.fillText('A NOMBRE DE', cx, H*0.879);
     ctx.font='bold '+(H*0.021)+'px Arial, sans-serif'; ctx.fillStyle=cfg.color||'#FEFEFE';
-    ctx.fillText(String(d.titular).toUpperCase(), W/2, H*0.903); }
+    ctx.fillText(String(d.titular).toUpperCase(), cx, H*0.903, W*0.42); }
   for(const f of (cfg.fields||[])){
     const v = f.t==='mesa'    ? (d.mesa!=null?d.mesa:'—')
             : f.t==='asiento' ? (d.asiento!=null?d.asiento:'—')
             : f.t==='pref'    ? (d.sec?d.sec+'-'+String(d.num!=null?d.num:0).padStart(2,'0'):'—')
+            : f.t==='lugar'   ? (d.sec?d.sec+'-'+String(d.num!=null?d.num:0).padStart(2,'0'):'—')
             : f.t==='sec'     ? (d.sec||'—')
             : f.t==='num'     ? (d.num!=null?d.num:'—')
             : '';
