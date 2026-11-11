@@ -223,12 +223,12 @@
     <div style="flex:2 1 440px;min-width:300px;border:1px solid rgba(255,255,255,.07);background:#0C0812;padding:clamp(18px,2.4vw,28px) clamp(12px,2vw,22px);display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(6px,1.4vw,16px);align-items:center;">
       <div style="text-align:center;">
         <svg width="36" height="36" viewBox="0 0 100 100" fill="none" stroke="#FF0033" stroke-width="6" style="margin-bottom:8px;"><polygon points="31,7 69,7 93,31 93,69 69,93 31,93 7,69 7,31"/></svg>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,3.6vw,44px);color:#fff;line-height:.9;">11</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,3.6vw,44px);color:#fff;line-height:.9;">{{ nPeleas }}</div>
         <div style="font-size:clamp(8px,.95vw,10px);color:rgba(255,255,255,.5);letter-spacing:.13em;text-transform:uppercase;margin-top:5px;line-height:1.3;">Peleas<br>en cartelera</div>
       </div>
       <div style="text-align:center;">
         <svg width="34" height="36" viewBox="0 0 100 100" fill="#FF0033" style="margin-bottom:8px;"><circle cx="50" cy="22" r="14"/><path d="M50 40c-19 0-24 17-24 40h14l3 16h14l3-16h14c0-23-5-40-24-40z"/></svg>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,3.6vw,44px);color:#fff;line-height:.9;">22</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,3.6vw,44px);color:#fff;line-height:.9;">{{ nPeleadores }}</div>
         <div style="font-size:clamp(8px,.95vw,10px);color:rgba(255,255,255,.5);letter-spacing:.13em;text-transform:uppercase;margin-top:5px;line-height:1.3;">Peleadores<br>de Élite</div>
       </div>
       <div style="text-align:center;">
@@ -528,7 +528,6 @@
     <div style="font-size:10px;font-weight:700;letter-spacing:.45em;color:rgba(255,255,255,.28);text-transform:uppercase;">Sponsors &amp; Patrocinadores</div>
   </div>
   <div class="sponsor-row" style="display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:clamp(18px,3.5vw,44px);max-width:1040px;margin:0 auto;">
-    <img src="uploads/logos/kingbull.webp" alt="King Bull" style="height:clamp(34px,5.2vw,52px);width:auto;opacity:.85;transition:opacity .25s,transform .25s;" style-hover="opacity:1;transform:translateY(-2px);">
     <img src="uploads/logos/cormi.webp" alt="Grupo Cormi" style="height:clamp(46px,7vw,66px);width:auto;opacity:.9;transition:opacity .25s,transform .25s;" style-hover="opacity:1;transform:translateY(-2px);">
     <img src="uploads/logos/forosanrafael.webp" alt="Foro San Rafael" style="height:clamp(34px,5.2vw,52px);width:auto;opacity:.9;transition:opacity .25s,transform .25s;" style-hover="opacity:1;transform:translateY(-2px);">
     <img src="uploads/logos/bds.webp" alt="BDS" style="height:clamp(44px,6.6vw,62px);width:auto;opacity:.88;transition:opacity .25s,transform .25s;" style-hover="opacity:1;transform:translateY(-2px);">
@@ -870,6 +869,11 @@ class Component extends DCLogic {
     const noneVal = (v) => { const s = (v || '').trim(); return (!s || /^ningun/i.test(s)) ? '' : s.toUpperCase(); };
     const corner = (f, defImg) => { const name = nm(f); const parts = name.split(/\s+/); const md = noneVal(f && f.modalidad); const ct = noneVal(f && f.categoria); return { img: (f && f.fotos && f.fotos[0]) || defImg, name, line1: parts[0], line2: parts.slice(1).join(' '), rec: rec(f), modalidad: md, meta: [md, ct].filter(Boolean).join(' · ') }; };
     const plist = Array.isArray(this.state.peleas) ? this.state.peleas : [];
+    // Los contadores de arriba se sacan de la cartelera, para que no se queden
+    // viejos cada vez que entra o sale una pelea. Mientras Firestore responde
+    // se usa el numero del evento, no un cero.
+    const nPeleas = plist.filter(p => p.activo !== false).length || 12;
+    const nPeleadores = nPeleas * 2;
     const principal = plist.find(p => p.tipo === 'principal');
     const coest = plist.find(p => p.tipo === 'coestelar');
     // Mientras no haya pelea co-estelar el panel entero no se dibuja.
@@ -970,7 +974,7 @@ class Component extends DCLogic {
       fightCoMinH: isMobile ? '170px' : '240px',
       f2TextAlign: 'right',
       f2Align: 'flex-end',
-      me, co, coDisp, coBarDisp, bn, prelims, prelimsFoto, prelimsSinFoto, carteleraFoto, carteleraSinFoto, carteleraDisp, feedItems, vipPackages, particles
+      me, co, coDisp, coBarDisp, bn, nPeleas, nPeleadores, prelims, prelimsFoto, prelimsSinFoto, carteleraFoto, carteleraSinFoto, carteleraDisp, feedItems, vipPackages, particles
     };
   }
 }

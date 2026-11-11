@@ -1,6 +1,7 @@
 // Comprueba que, sin pelea co-estelar, el panel se oculta y las dos caras de
 // la derecha del banner salen de la pelea que sigue a la estelar.
 const assert = require('assert');
+const fs = require('fs');
 
 const SIL_R = 'uploads/silueta-n1.webp', SIL_A = 'uploads/silueta-b1.webp';
 const corner = (f, def) => ({ img: (f && f.fotos && f.fotos[0]) || def });
@@ -57,4 +58,26 @@ assert.strictEqual(z.coDisp, 'none');
 assert.strictEqual(z.bn.cr, SIL_R);
 assert.strictEqual(z.bn.ca, SIL_A);
 
-console.log('test-cartelera: 6 comprobaciones OK');
+// 7. Los contadores de arriba cuentan las peleas de verdad, no un numero fijo.
+const cuenta = (plist) => {
+  const n = plist.filter(p => p.activo !== false).length || 12;
+  return { nPeleas: n, nPeleadores: n * 2 };
+};
+assert.deepStrictEqual(cuenta(cartel), { nPeleas: 4, nPeleadores: 8 });
+assert.deepStrictEqual(cuenta(cartel.concat([{ tipo: 'cartelera', orden: '9' }])), { nPeleas: 5, nPeleadores: 10 });
+assert.deepStrictEqual(cuenta(cartel.concat([{ tipo: 'cartelera', activo: false }])), { nPeleas: 4, nPeleadores: 8 });
+// Mientras la base responde no debe verse un cero.
+assert.strictEqual(cuenta([]).nPeleas, 12);
+
+// 8. El sitio los pide a la plantilla y no los trae escritos a mano.
+const sitio = fs.readFileSync('index.html', 'utf8');
+assert.ok(sitio.includes('{{ nPeleas }}'), 'el contador de peleas volvio a quedar fijo');
+assert.ok(sitio.includes('{{ nPeleadores }}'), 'el contador de peleadores volvio a quedar fijo');
+assert.ok(/nPeleas = plist\.filter/.test(sitio), 'el contador no se saca de la cartelera');
+
+// 9. Todo logo de patrocinador que el sitio nombra tiene que existir.
+const logos = [...sitio.matchAll(/uploads\/logos\/([\w.-]+)/g)].map(m => 'uploads/logos/' + m[1]);
+assert.ok(logos.length > 0, 'no hay logos en el sitio');
+[...new Set(logos)].forEach(l => assert.ok(fs.existsSync(l), 'el sitio pide ' + l + ', que no existe'));
+
+console.log('test-cartelera: 9 comprobaciones OK');
