@@ -80,4 +80,16 @@ const logos = [...sitio.matchAll(/uploads\/logos\/([\w.-]+)/g)].map(m => 'upload
 assert.ok(logos.length > 0, 'no hay logos en el sitio');
 [...new Set(logos)].forEach(l => assert.ok(fs.existsSync(l), 'el sitio pide ' + l + ', que no existe'));
 
-console.log('test-cartelera: 9 comprobaciones OK');
+// 10. La portada del video que pide el sitio tiene que existir.
+const portadas = [...new Set([...sitio.matchAll(/uploads\/(portada[\w.-]*)/g)].map(m => 'uploads/' + m[1]))];
+assert.strictEqual(portadas.length, 1, 'el sitio pide ' + portadas.length + ' portadas distintas');
+assert.ok(fs.existsSync(portadas[0]), 'falta la portada ' + portadas[0]);
+assert.ok(fs.statSync(portadas[0]).size > 20000, 'la portada se ve demasiado chica');
+
+// 11. El admin no debe poder meter peleas de demostracion a la cartelera real.
+const admin = fs.readFileSync('admin.html', 'utf8');
+assert.ok(!/seedBtn/.test(admin), 'volvio el boton de sembrar cartelera');
+['VOLKOV', 'KAROL ROSA', 'CARLOS MENDEZ'].forEach(n =>
+  assert.ok(!admin.includes(n), 'el admin trae de vuelta al peleador de demostracion ' + n));
+
+console.log('test-cartelera: 11 comprobaciones OK');

@@ -1,0 +1,6 @@
+{
+  "fecha": "20 NOVIEMBRE 2026 · CDMX",
+  "estelar":   { "rojo": "Eduardo Villa",  "azul": "Luis Dominguez", "rojoFoto": "est-rojo.webp", "azulFoto": "est-azul.webp" },
+  "coestelar": { "rojo": "Ivan Canul",     "azul": "Axel Garcia",    "rojoFoto": "coe-rojo.webp", "azulFoto": "coe-azul.webp" },
+  "patrocinadores": ["cormi.webp", "forosanrafael.webp", "bds.webp", "lil.webp", "logof.webp"]
+}

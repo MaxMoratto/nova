@@ -184,7 +184,7 @@
       </div>
     <div id="tab-peleas" style="display:none">
       <div class="card">
-        <div class="topbar" style="margin-bottom:14px"><h2 style="margin:0" id="formTitle">Nueva pelea</h2><button class="mini" id="backupFightsBtn" title="Descarga la cartelera completa, con fotos, antes de borrarla">&#8681; Respaldar cartelera</button><button class="mini" id="seedBtn">Sembrar cartelera actual</button></div>
+        <div class="topbar" style="margin-bottom:14px"><h2 style="margin:0" id="formTitle">Nueva pelea</h2><button class="mini" id="backupFightsBtn" title="Descarga la cartelera completa, con fotos, antes de borrarla">&#8681; Respaldar cartelera</button></div>
         <div class="grid2">
           <div>
             <label>Tipo de pelea</label>
@@ -596,7 +596,7 @@ async function moveFight(id, dir){
 }
 function watchFights(){ db.collection(FIGHTS_COL).onSnapshot(snap=>{ const box=$('fightList'),rows=[]; snap.forEach(doc=>rows.push({id:doc.id,d:doc.data()}));
     rows.sort((a,b)=>(a.d.orden||99)-(b.d.orden||99)); FIGHTS_ROWS=rows; FIGHTS_COUNT=rows.length; $('fightCount').textContent=rows.length;
-    if(!rows.length){ box.innerHTML='<div class="empty">Aún no hay peleas. Usa "Sembrar cartelera actual" o agrega una arriba.</div>'; return; } box.innerHTML='';
+    if(!rows.length){ box.innerHTML='<div class="empty">Aún no hay peleas. Agrega la primera con el formulario de arriba.</div>'; return; } box.innerHTML='';
     rows.forEach((r,i)=>{ const d=r.d; const el=document.createElement('div'); el.className='fight-item';
       const up = i>0 ? '<button class="mini" data-up="'+r.id+'" title="Subir">▲</button>' : '<button class="mini" disabled style="opacity:.25">▲</button>';
       const dn = i<rows.length-1 ? '<button class="mini" data-down="'+r.id+'" title="Bajar">▼</button>' : '<button class="mini" disabled style="opacity:.25">▼</button>';
@@ -606,12 +606,8 @@ function watchFights(){ db.collection(FIGHTS_COL).onSnapshot(snap=>{ const box=$
     box.querySelectorAll('[data-up]').forEach(b=>b.addEventListener('click',()=>moveFight(b.dataset.up,-1)));
     box.querySelectorAll('[data-down]').forEach(b=>b.addEventListener('click',()=>moveFight(b.dataset.down,1)));
   }, err=>{ $('fightList').innerHTML='<div class="empty">Error: '+err.message+'</div>'; }); }
-$('seedBtn').addEventListener('click',async()=>{ if(!confirm('Agregar las 2 peleas actuales a la base?'))return;
-  const seed=[
-    { tipo:'principal',orden:1,banner:'PESO SEMICOMPLETO · 93 KG', rojo:{nombre:'CARLOS MENDEZ',apodo:'EL TORO',edad:'',altura:'',peso:'93 kg',record:'15-3-0',ciudad:'CDMX, MEX',fotos:['uploads/toro2-cutout.png']}, azul:{nombre:'DMITRI VOLKOV',apodo:'IRON',edad:'',altura:'',peso:'93 kg',record:'18-1-0',ciudad:'MOSCÚ, RUS',fotos:['uploads/toro-cutout.png']}, activo:true },
-    { tipo:'coestelar',orden:2,banner:'PESO GALLO FEMENIL · 61 KG', rojo:{nombre:'AILIN PÉREZ',apodo:'FLUFFY',edad:'',altura:'',peso:'61 kg',record:'12-2-0',ciudad:'BUENOS AIRES, ARG',fotos:['uploads/ailin-cutout.png']}, azul:{nombre:'KAROL ROSA',apodo:'A FERA',edad:'',altura:'',peso:'61 kg',record:'18-5-0',ciudad:'SÃO PAULO, BRA',fotos:['uploads/ROSA_KAROL_L_04-22.png']}, activo:true }
-  ];
-  try{ for(const f of seed) await db.collection(FIGHTS_COL).add(f); alert('✓ Sembrado.'); }catch(e){ alert('Error: '+e.message); } });
+// El boton de "Sembrar cartelera" se quito: metia dos peleas de demostracion
+// (Mendez vs Volkov y Perez vs Rosa) a la cartelera de verdad con un clic.
 
 /* ===== BOLETOS ===== */
 function fillNums(sel,max,pre){ sel.innerHTML=''; for(let i=1;i<=max;i++){ const o=document.createElement('option'); o.value=i; o.textContent=(pre||'')+i; sel.appendChild(o); } }
