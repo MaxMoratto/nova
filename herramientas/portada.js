@@ -28,21 +28,29 @@ async function medir(f) {
   return { w, h, y0, y1, cab, cx: (c0 + c1) / 2 };
 }
 
-// Cuerpo completo escalado para que entre en la portada, apagado hacia abajo.
-async function cuerpo(f, alto, apaga) {
+// Cuerpo escalado por el alto de la cabeza, no por el de la figura: las fotos
+// vienen con encuadres distintos y si se escalan por el cuerpo uno queda con
+// la cabeza mas grande que el otro. La barbilla de los dos cae en la misma
+// linea, para que se vean parejos.
+async function cuerpo(f, altoCabeza, barbillaY, apagaY) {
   const m = await medir(f);
-  const s = alto / (m.h - m.y0);
+  const s = altoCabeza / m.cab;
   const nw = Math.round(m.w * s), nh = Math.round(m.h * s);
-  let b = await sharp(f).resize(nw, nh).modulate({ brightness: 0.92, saturation: 0.82 }).linear(1.08, -10).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const top = Math.round(barbillaY - (m.y0 + m.cab) * s);
+  const b = await sharp(f).resize(nw, nh).modulate({ brightness: 0.92, saturation: 0.82 }).linear(1.08, -10)
+    .ensureAlpha().raw().toBuffer({ resolveWithObject: true });
   const { data, info } = b;
   for (let y = 0; y < info.height; y++) {
-    const t = (y - apaga) / (info.height - apaga);
-    const k = y > apaga ? Math.max(0, 1 - 0.92 * t) : 1;
+    const yb = top + y;                                  // donde cae esa fila en la portada
+    const k = yb > apagaY ? Math.max(0, 1 - 0.95 * (yb - apagaY) / (H - apagaY)) : 1;
     if (k >= 0.999) continue;
     for (let x = 0; x < info.width; x++) { const i = (y * info.width + x) * 4; data[i] *= k; data[i + 1] *= k; data[i + 2] *= k; }
   }
-  const png = await sharp(data, { raw: { width: info.width, height: info.height, channels: 4 } }).png().toBuffer();
-  return { buf: png, w: info.width, h: info.height, top: Math.round(-m.y0 * s), cx: Math.round(m.cx * s) };
+  // lo que se sale de la portada se recorta: sharp no pega algo mas grande
+  let png = await sharp(data, { raw: { width: info.width, height: info.height, channels: 4 } }).png().toBuffer();
+  const cy = Math.max(0, -top), ch = Math.min(info.height - cy, H - Math.max(0, top));
+  png = await sharp(png).extract({ left: 0, top: cy, width: info.width, height: ch }).png().toBuffer();
+  return { buf: png, w: info.width, top: Math.max(0, top), cx: Math.round(m.cx * s) };
 }
 
 // Cara recortada en circulo, para la co-estelar.
@@ -85,10 +93,10 @@ const apellido = n => { const p = String(n).trim().split(/\s+/); return (p.lengt
     '</svg>');
 
   // ---- peleadores de la estelar ----
-  const ALTO = 625, APAGA = 430;
-  const izq = await cuerpo(datos.estelar.rojoFoto, ALTO, APAGA);
-  const der = await cuerpo(datos.estelar.azulFoto, ALTO, APAGA);
-  const yIzq = H - ALTO - izq.top, yDer = H - ALTO - der.top;
+  const CABEZA = 120, BARBILLA = 222, APAGA = 470;
+  const izq = await cuerpo(datos.estelar.rojoFoto, CABEZA, BARBILLA, APAGA);
+  const der = await cuerpo(datos.estelar.azulFoto, CABEZA, BARBILLA, APAGA);
+  const yIzq = izq.top, yDer = der.top;
   const xIzq = Math.round(150 - izq.cx), xDer = Math.round(W - 150 - der.cx);
 
   // ---- caras de la co-estelar ----
