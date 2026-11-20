@@ -13,6 +13,10 @@ const EVENTO_ACTIVO = 'NOVA-20NOV2026';
 // mapa solo dicen QUE se compra; cuanto cuesta se calcula aqui. Sin esto, un
 // error del mapa (o alguien manipulando la pagina) cobra lo que se le antoje.
 const PRECIOS = { VIP: 1500, VIPA: 950, PREF: 750, GENERAL: 550 };
+// Zonas cerradas al publico: el mapa ya no las ofrece, pero el servidor tambien
+// las rechaza, porque el mapa corre en el navegador del comprador y se puede
+// manipular. Para reabrir una zona se quita de esta lista.
+const ZONAS_CERRADAS = ['GENERAL'];
 const COMISION = 0.042;
 const ETIQUETA = { VIP: 'VIP Mesa', VIPA: 'VIP Asiento', PREF: 'Preferente', GENERAL: 'General (lugar por llegada)' };
 function zonaDe(id) {
@@ -33,7 +37,7 @@ function cotizar(seatIds, genQty) {
     mpItems.push({ title: ETIQUETA[z], quantity: cuenta[z], unit_price: PRECIOS[z], currency_id: 'MXN' });
     subtotal += cuenta[z] * PRECIOS[z];
   }
-  if (genQty > 0) {
+  if (genQty > 0 && !ZONAS_CERRADAS.includes('GENERAL')) {
     mpItems.push({ title: ETIQUETA.GENERAL, quantity: genQty, unit_price: PRECIOS.GENERAL, currency_id: 'MXN' });
     subtotal += genQty * PRECIOS.GENERAL;
   }
@@ -68,6 +72,13 @@ module.exports = async (req, res) => {
     // En este recinto VIP Asiento y Preferente son lugares numerados: viajan en
     // seats, no como cantidad. Solo General se vende por cantidad.
     const vipaQty = 0;
+    // Si la zona esta cerrada no se cobra nada, aunque el carrito la traiga.
+    const cerradas = seatIds.map(zonaDe).filter(z => ZONAS_CERRADAS.includes(z));
+    if (genQty > 0 && ZONAS_CERRADAS.includes('GENERAL')) cerradas.push('GENERAL');
+    if (cerradas.length) {
+      const nombres = [...new Set(cerradas)].map(z => ETIQUETA[z]).join(', ');
+      return res.status(409).json({ error: 'La venta en linea de ' + nombres + ' ya cerro.' });
+    }
 
     // Preferente esta bloqueada hasta tener su precio definitivo. Se valida aqui,
     // en el servidor, porque el navegador se puede manipular: sin esto alguien
@@ -194,3 +205,5 @@ module.exports = async (req, res) => {
 };
 
 module.exports.cotizar = cotizar;
+module.exports.ZONAS_CERRADAS = ZONAS_CERRADAS;
+module.exports.PRECIOS = PRECIOS;

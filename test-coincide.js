@@ -123,5 +123,24 @@ const money = n => '$' + n.toLocaleString('en-US');
   assert.ok(sitio.includes(txt), 'el sitio no anuncia ' + z + ' a ' + money(precios[z]));
 });
 
+// ---- 11. El mapa y el servidor cierran las mismas zonas ----
+// El mapa corre en el navegador del comprador: si solo se cierra ahi, basta
+// con editar la pagina para seguir comprando. Los dos lados deben coincidir.
+const { ZONAS_CERRADAS } = (() => {
+  const Module = require('module'), orig = Module._load;
+  Module._load = function (r) {
+    if (r === 'firebase-admin') return { apps: [], initializeApp() {}, credential: { cert() {} }, firestore() {} };
+    return orig.apply(this, arguments);
+  };
+  const m = require('./api/mercadopago.js'); Module._load = orig; return m;
+})();
+const cerradasMapa = [...mapa.matchAll(/(\w+):\s*\{[^}]*cerrada\s*:\s*true/g)].map(m => m[1]);
+assert.deepStrictEqual(cerradasMapa.sort(), [...ZONAS_CERRADAS].sort(),
+  'el mapa cierra [' + cerradasMapa + '] y el servidor [' + ZONAS_CERRADAS + ']');
+cerradasMapa.forEach(z => {
+  assert.ok(gen.includes(z + ':') && /cerrada\s*:\s*true/.test(gen),
+    'el generador no trae cerrada la zona ' + z);
+});
+
 const resumen = Object.keys(porZona).sort().map(z => z + ' ' + porZona[z] + ' (' + piso[z] + ')').join(' | ');
-console.log('test-coincide: ' + resumen + ' | GENERAL ' + totalGen + ' (sin lugar) -- 10 bloques OK');
+console.log('test-coincide: ' + resumen + ' | GENERAL ' + totalGen + ' (sin lugar) -- 11 bloques OK');

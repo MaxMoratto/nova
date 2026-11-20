@@ -164,7 +164,7 @@ const ZONES = {
   VIPA: { label:'VIP (asiento)', color:'#e11d2a', bright:'#ff8f98', price:950 },
   // Precio confirmado el 29-sep-2026.
   PREF: { label:'Preferente', color:'#D2AE6D', bright:'#e6c789', price:750 },
-  GENERAL: { label:'General', color:'#c8ccd4', bright:'#e8eaee', price:550, general:true, total:250 }
+  GENERAL: { label:'General', color:'#c8ccd4', bright:'#e8eaee', price:550, general:true, total:250, cerrada:true }
 };
 // Venta ABIERTA. Son dos interruptores y los dos tienen que estar puestos:
 //   1) este de aqui, que muestra los botones de compra en la pagina;
@@ -250,6 +250,10 @@ function focusZone(z){                                   // llevar el mapa a la 
   if(innerWidth<=940){const st=document.querySelector('.stage'); if(st)st.scrollIntoView({behavior:'smooth',block:'start'});}
 }
 function qtyRow(z,sub,pfx){ const Z=ZONES[z]; const row=document.createElement('div');row.className='zrow';row.dataset.zone=z;
+  // Zona cerrada: se queda a la vista, con su aviso, pero sin precio ni botones.
+  if(Z.cerrada){
+    row.innerHTML='<span class="sw" style="background:'+Z.bright+';opacity:.45"></span><div class="zn"><b style="opacity:.6">'+Z.label+'</b><small>'+sub+' &#183; venta en linea cerrada</small></div><div class="zp"><b style="color:var(--gold)">CERRADA</b></div>';
+    row.addEventListener('click',()=>focusZone(z)); zonesBox.appendChild(row); return; }
   row.innerHTML='<span class="sw" style="background:'+Z.bright+'"></span><div class="zn"><b>'+Z.label+'</b><small>'+sub+'</small></div><div class="gqty"><button class="qb" id="'+pfx+'minus">&#8722;</button><b id="'+pfx+'qty">0</b><button class="qb" id="'+pfx+'plus">+</button></div><div class="zp"><b style="color:'+Z.bright+'">'+money(Z.price)+'</b><small>c/u</small></div>';
   row.addEventListener('click',e=>{if(e.target.closest('.qb'))return; focusZone(z);}); zonesBox.appendChild(row); }
 function seatRow(zona,sub){ const Z=ZONES[zona];
@@ -268,7 +272,8 @@ function qtySet(z,v){ if(z==='VIPA')state.vipaQty=v; else state.generalQty=v; }
 function soldOf(z){ return z==='VIPA'?vipaSold:generalSold; }
 function updateQty(){ const g=document.getElementById('gqty'); if(g)g.textContent=state.generalQty; const v=document.getElementById('vqty'); if(v)v.textContent=state.vipaQty;
   const w=document.getElementById('gpavailwrap'); if(w){const t=ZONES.GENERAL.total,u=Math.min(t,generalSold+state.generalQty); w.innerHTML='<b>'+(t-u)+'</b> de '+t+' disponibles'; const f=document.getElementById('gpfill'); if(f)f.style.width=(t?u/t*100:0)+'%';} }
-function qtyInc(z){ if(soldOf(z)+qtyGet(z)<ZONES[z].total){qtySet(z,qtyGet(z)+1);updateQty();renderCart();} else flash('No quedan m&aacute;s lugares '+ZONES[z].label); }
+function qtyInc(z){ if(ZONES[z].cerrada){ flash('La venta en l&iacute;nea de '+ZONES[z].label+' ya cerr&oacute;.'); return; }
+  if(soldOf(z)+qtyGet(z)<ZONES[z].total){qtySet(z,qtyGet(z)+1);updateQty();renderCart();} else flash('No quedan m&aacute;s lugares '+ZONES[z].label); }
 function qtyDec(z){ if(qtyGet(z)>0){qtySet(z,qtyGet(z)-1);updateQty();renderCart();} }
 function bindGen(){ const b=(id,fn)=>{const e=document.getElementById(id);if(e)e.onclick=fn;}; b('gplus',()=>qtyInc('GENERAL')); b('gminus',()=>qtyDec('GENERAL')); b('vplus',()=>qtyInc('VIPA')); b('vminus',()=>qtyDec('VIPA')); }
 function hl(z){seatsG.classList.toggle('dimmed',!!z); if(z){for(const s of SEATS){if(s.floor!==curFloor)continue;const n=nodeOf(s.id);if(n)n.classList.toggle('hl',s.zone===z);}}else seatsG.querySelectorAll('.hl').forEach(n=>n.classList.remove('hl')); }
